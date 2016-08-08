@@ -252,6 +252,15 @@
     <Compile Include="XMLHandle.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Content Include="TempXmlDoc\LUT_sld_mapping_file.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TempXmlDoc\LUT_sld_WorldMap_mapping_file.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TempXmlDoc\Preconfigure_Converter.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <EmbeddedResource Include="AboutFrame.resx">
       <DependentUpon>AboutFrame.cs</DependentUpon>
       <SubType>Designer</SubType>
