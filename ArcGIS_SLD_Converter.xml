@@ -4,5 +4,165 @@
         <name>ArcGIS_SLD_Converter</name>
     </assembly>
     <members>
+        <member name="M:ArcGIS_SLD_Converter.Motherform.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="T:ArcGIS_SLD_Converter.Motherform.Language">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:ArcGIS_SLD_Converter.Motherform.Fileinfo">
+            <summary>
+            保存文件类型
+            </summary>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.Motherform.SortMe(System.Collections.ArrayList)">
+            <summary>
+            数组排序
+            </summary>
+            <param name="al"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.Motherform.GetFileInfo(System.String,ArcGIS_SLD_Converter.Motherform.Fileinfo)">
+            <summary>
+            获取保存文件信息
+            </summary>
+            <param name="FileName"></param>
+            <param name="WhatDoIWant"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.Motherform.MinimizeWindow">
+            <summary>
+            窗体最小化
+            </summary>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.Motherform.MyTermination">
+            <summary>
+            关闭应用程序
+            </summary>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.Motherform.DoEvents">
+            <summary>
+            处理所有的当前在消息队列中的Windows消息
+            </summary>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.Motherform.InitCommonXML">
+            <summary>
+            初始化配置
+            </summary>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.Motherform.InitControlNameVariables">
+            <summary>
+            加载配置文件显示信息
+            </summary>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.Motherform.InitControls">
+            <summary>
+            初始化显示信息
+            </summary>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.Motherform.InitTooltips">
+            <summary>
+            初始化提示信息
+            </summary>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.Motherform.Preconfigure">
+            <summary>
+            加载比例尺设置信息
+            </summary>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.Motherform.ReadBackValues">
+            <summary>
+            记录比例尺配置信息
+            </summary>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.Motherform.LoadCboScalesNew">
+            <summary>
+            重新加载比例尺信息
+            </summary>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.Motherform.ErrorMsg(System.String,System.String,System.String)">
+            <summary>
+            显示错误信息
+            </summary>
+            <param name="Message"></param>
+            <param name="ExMessage"></param>
+            <param name="FunctionName"></param>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.Motherform.InfoMsg(System.String,System.String)">
+            <summary>
+            显示提示信息
+            </summary>
+            <param name="message"></param>
+            <param name="functionname"></param>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.Motherform.ShowWorld">
+            <summary>
+            显示图片
+            </summary>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.Motherform.HideWorld">
+            <summary>
+            隐藏图片
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.Motherform.GetSLDFilename">
+            <summary>
+            SLD文件名称
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.Motherform.GetInfoIncludeLayerNames">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.Motherform.GetInfoSeparateLayers">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.Motherform.GetSLDPath">
+            <summary>
+            SLD文件路径
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.Motherform.GetSLDFile">
+            <summary>
+            获取SLD文件路径
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.Motherform.GetXSDFilename">
+            <summary>
+            获取XSD文件路径
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.Motherform.GetSLDFileFromConfigXML">
+            <summary>
+            获取SLD配置文件路径
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.Motherform.GetCurrentLanguage">
+            <summary>
+            获取语言系统
+            </summary>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.Motherform.Button1_Click(System.Object,System.EventArgs)">
+            <summary>
+            进行转换
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.Motherform.Button2_Click(System.Object,System.EventArgs)">
+            <summary>
+            选择SLD保存路径
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
     </members>
 </doc>

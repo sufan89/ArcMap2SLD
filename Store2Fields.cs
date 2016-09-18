@@ -1,4 +1,3 @@
-// VBConversions Note: VB project level imports
 using System;
 using System.Drawing;
 using System.Diagnostics;
@@ -6,42 +5,6 @@ using System.Data;
 using Microsoft.VisualBasic;
 using System.Collections;
 using System.Windows.Forms;
-// End of VB project level imports
-
-
-//####################################################################################################################
-//*******************ArcGIS_SLD_Converter*****************************************************************************
-//*******************Class: Store2Fields******************************************************************************
-//*******************AUTHOR: Albrecht Weiser, University of applied Sciences in Mainz, Germany 2005*******************
-//The Application was part of my Diploma thesis:**********************************************************************
-//"Transforming map-properties of maps in esri-data to an OGC-conformous SLD-document, for publishing the ArcGIS-map *
-//with an OGC- conformous map-server"*********************************************************************************
-//ABSTRACT:
-//The program so called "ArcGIS-map to SLD Converter" analyses an
-//ArcMap-Project with respect to its symbolisation and assembles an SLD
-//for the OGC-Web Map Service (WMS) from the gathered data. The program
-//is started parallel to a running ArcMap 9.X-session. Subsequently the
-//application deposits an SLD-file which complies the symbolisation of
-//the available ArcMap-project. With the SLD a WMS-project may be
-//classified and styled according to the preceding ArcMap-project. The
-//application is written in VisualBasic.NET and uses the .NET 2.0
-//Framework (plus XML files for configuration). For more informtion
-//refer to:
-//http://arcmap2sld.geoinform.fh-mainz.de/ArcMap2SLDConverter_Eng.htm.
-//LICENSE:
-//This program is free software under the license of the GNU Lesser General Public License (LGPL) As published by the Free Software Foundation.
-//With the use and further development of this code you accept the terms of LGPL. For questions of the License refer to:
-//http://www.gnu.org/licenses/lgpl.html
-//DISCLAIMER:
-//THE USE OF THE SOFTWARE ArcGIS-map to SLD Converter HAPPENS AT OWN RISK.
-//I CANNOT ISSUE A GUARANTEE FOR ANY DISADVANTAGES (INCLUDING LOSS OF DATA; ETC.) THAT
-//MAY ARISE FROM USING THIS SOFTWARE.
-//DESCRIPTION:The class Store2Fields is simply a data container that is only needed in the case if a layer is classified
-//by data that is joined to the main table
-//CHANGES:
-//####################################################################################################################
-
-
 namespace ArcGIS_SLD_Converter
 {
 	public class Store2Fields

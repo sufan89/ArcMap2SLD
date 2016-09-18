@@ -1,4 +1,3 @@
-// VBConversions Note: VB project level imports
 using System;
 using System.Drawing;
 using System.Diagnostics;
@@ -6,118 +5,32 @@ using System.Data;
 using Microsoft.VisualBasic;
 using System.Collections;
 using System.Windows.Forms;
-// End of VB project level imports
-
 using System.Xml;
 using stdole;
-//using ArcGIS_SLD_Converter.Analize_ArcMap_Symbols;
 using Microsoft.VisualBasic.CompilerServices;
-
-//####################################################################################################################
-//*******************ArcGIS_SLD_Converter*****************************************************************************
-//*******************Class: Output_SLD********************************************************************************
-//*******************AUTHOR: Albrecht Weiser, University of applied Sciences in Mainz, Germany 2005*******************
-//The Application was part of my Diploma thesis:**********************************************************************
-//"Transforming map-properties of maps in esri-data to an OGC-conformous SLD-document, for publishing the ArcGIS-map *
-//with an OGC- conformous map-server"*********************************************************************************
-//ABSTRACT:
-//The program so called "ArcGIS-map to SLD Converter" analyses an
-//ArcMap-Project with respect to its symbolisation and assembles an SLD
-//for the OGC-Web Map Service (WMS) from the gathered data. The program
-//is started parallel to a running ArcMap 9.X-session. Subsequently the
-//application deposits an SLD-file which complies the symbolisation of
-//the available ArcMap-project. With the SLD a WMS-project may be
-//classified and styled according to the preceding ArcMap-project. The
-//application is written in VisualBasic.NET and uses the .NET 2.0
-//Framework (plus XML files for configuration). For more informtion
-//refer to:
-//http://arcmap2sld.geoinform.fh-mainz.de/ArcMap2SLDConverter_Eng.htm.
-//LICENSE:
-//This program is free software under the license of the GNU Lesser General Public License (LGPL) As published by the Free Software Foundation.
-//With the use and further development of this code you accept the terms of LGPL. For questions of the License refer to:
-//http://www.gnu.org/licenses/lgpl.html
-//DISCLAIMER:
-//THE USE OF THE SOFTWARE ArcGIS-map to SLD Converter HAPPENS AT OWN RISK.
-//I CANNOT ISSUE A GUARANTEE FOR ANY DISADVANTAGES (INCLUDING LOSS OF DATA; ETC.) THAT
-//MAY ARISE FROM USING THIS SOFTWARE.
-//DESCRIPTION:
-//The class Output_SLD is called by the class Analize_ArcMap_Symbols. It receives the Object of Analize_ArcMap_Symbols.
-//So it possesses the structs with all stored data. The Output_SLD creates the final SLD. Main function is "CentralProcessingFunc"
-//it rules all the other movements. The SLD-Skeleton is built by "WriteToSLD". The mapping from the ArcMap-symbols to the
-//SLD symbols is managed by the function "GetValueFromSymbolstruct()". The XML-file of the SLD is built by the class
-//"XMLHandle" The function "WriteToSLD" passes over each package of SLD-XML-code to the class "XMLHandle"
-//CHANGES:
-//04.02.2006: Language-customizing english/german
-//11.01.2007: Changing the floating point values from commaseparated to point separated (which is OGC conformous)
-//28.02.2007: - Added changes for Ionic RSW WMS: Rule.Name and FeatureTypeName
-//            - Improved code readability and consistency by moving common code
-//              blocks for point and line symbolizers to separate functions.
-//              Same for marker code to GetMarkerValue function.
-//            - Improved point symbol conversion to well known marker types,
-//              including simple, arrow symbols. For some character marker
-//              symbol fonts, consisting mainly of circles and rectangles,
-//              it tries to map the characters to well-known markers.
-//            - Improved transparent color handling: polygons with outline but no fill, and point symbols.
-//27.03.2007: - For simpleRenderer added Rule Name and Title elements, needed for Ionic.
-//            - For simple polygon features, do not default to solid fill, but look at polygon features.
-//            - For multi-layer symbols create a symbolizer for each layer.
-//            - For line features, added stroke-dasharray CSS based on the dash-type (simple lines)
-//              or the template (cartographic lines) defined for a symbol.
-//              Also implements HashLineSymbols using this.
-//            - Improved detection of no outline by checking for outline size of 0
-//            - For polygon features, don't include a fill CSS if the feature has no, or a transparent, fill.
-//            - For polygon features, don't include a stroke CSS if there is no border.
-//            - Determine opacity based on the transparency set in the symbol color.
-//            - Simplified color handling by always having no color if the color is transparent or unused.
-//25.04.2007: - Added TextSymbolizer support for simple annotation with a single feature as label.
-//12.09.2007: - Changed the logical Operator "AND" to the OGC-compliant "And". Thus changed the "LUT_SLD_mapping_file.xml"
-//            - Changed the format of the stroke-dasharray to the OGC-compliant format without the suffixes "px"
-//30.11.2007: - LowerBoundary and UpperBoundary gives now also OGC compliant Values with decimal point instaed comma
-//09.06.2008: - Add support for grouped values in UniqueValueRenderer, generating an OGC "Or" for the group of values.
-//            - Bugfix for OGC And (in LUT_SLD_mapping_file.xml the OGC "And" tag was spelled as "AND").
-//10.09.2008: - Added support for separation of  layers in multiple files
-//23.10.2008: - Bugfix at ClassBreaksRenderer. The CommaToPoint Function was not found
-//08.06.2011: - (ARIS) Added new flavor of SLD that does not refernce layer names (to be used with WorldMap).
-//####################################################################################################################
-
-
 namespace ArcGIS_SLD_Converter
 {
 	public class Output_SLD
 	{
-		
-		
-		//##################################################################################################
-		//######################################## DEKLARATIONEN ###########################################
-		//##################################################################################################
-		
-#region Membervariablen
+#region 全局变量
 		private Motherform frmMotherForm;
 		private Analize_ArcMap_Symbols m_objData;
 		private Analize_ArcMap_Symbols.StructProject m_strDataSavings;
 		private XMLHandle m_objXMLHandle;
-		private string m_cFilename; //The whole Path and Filename of the SLD
-		private string m_cFile; //The filename of the SLD
-		private string m_cPath; //Der Pfad zur SLD-Datei
-		private bool m_bSepFiles; //Layers in separate files
-		private string m_bIncludeLayerNames; //Include layer names
-#endregion
-		
-		//##################################################################################################
-		//######################################## ENUMERATIONEN ###########################################
-		//##################################################################################################
-		
-#region Enums
-		
-		
-#endregion
-		
-		//##################################################################################################
-		//########################################### ROUTINEN #############################################
-		//##################################################################################################
-		
+		private string m_cFilename; 
+		private string m_cFile; 
+		private string m_cPath; 
+		private bool m_bSepFiles; 
+		private string m_bIncludeLayerNames; 
+#endregion	
+        		
 #region Routinen
-		//This one is used if all Layers are written in one File. Then Filename contains both: path and Filename of SLD to create
+		/// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="Mother"></param>
+        /// <param name="Analize"></param>
+        /// <param name="Filename"></param>
 		public Output_SLD(Motherform Mother, Analize_ArcMap_Symbols Analize, string Filename)
 		{
 			frmMotherForm = Mother;
@@ -133,63 +46,33 @@ namespace ArcGIS_SLD_Converter
 		
 		public Output_SLD()
 		{
-			//m_cFilename = "C:\Krimskrams\bla.sld"      'Zu Testzwecken
 			CentralProcessingFunc();
 		}
 		
-#endregion //Die Public Sub New()
+#endregion 
 		
-		//##################################################################################################
-		//######################################### FUNKTIONEN #############################################
-		//##################################################################################################
+
 		
-#region Steuerungsfunktionen //(incl. SLD-Tag Schreibanweisungen)
-		
-		//************************************************************************************************
-		//Die Funktion steuert die Prozesse zentral.
-		//************************************************************************************************
+#region 
+		/// <summary>
+        /// 开始分析符号，并将符号转换成SLD
+        /// </summary>
+        /// <returns></returns>
 		private bool CentralProcessingFunc()
 		{
-			bool bSuccess;
-			bSuccess = false;
-			if (frmMotherForm.m_enumLang == Motherform.Language.Deutsch)
-			{
-				frmMotherForm.CHLabelTop("Die Ausgabe in SLD");
-				frmMotherForm.CHLabelBottom("Gespeicherte Daten werden verarbeitet");
-			}
-			else if (frmMotherForm.m_enumLang == Motherform.Language.English)
-			{
-				frmMotherForm.CHLabelTop("The Output in SLD");
-				frmMotherForm.CHLabelBottom("the stored data is beeing processed");
-			}
-			
-			// m_objXMLHandle = New XMLHandle
-			//CreateSLD()
-			if (WriteToSLD() == true)
+			bool bSuccess = false;
+            frmMotherForm.CHLabelTop(string.Format("输出SLD文件..."));
+            frmMotherForm.CHLabelBottom(string.Format("正在输出SLD文件..."));
+            if (WriteToSLD() == true)
 			{
 				bSuccess = true;
 			}
-			if (frmMotherForm.m_enumLang == Motherform.Language.Deutsch)
+            frmMotherForm.CHLabelTop(string.Format("开始..."));
+            if (bSuccess == true)
 			{
-				frmMotherForm.CHLabelTop("Fertig");
-			}
-			else if (frmMotherForm.m_enumLang == Motherform.Language.English)
-			{
-				frmMotherForm.CHLabelTop("Ready");
-			}
-			
-			if (bSuccess == true)
-			{
-				if (frmMotherForm.m_enumLang == Motherform.Language.Deutsch)
-				{
-					frmMotherForm.CHLabelBottom("Die Datei wurde angelegt.");
-				}
-				else if (frmMotherForm.m_enumLang == Motherform.Language.English)
-				{
-					frmMotherForm.CHLabelBottom("The file has been generated.");
-				}
-				
-				if (frmMotherForm.chkValidate.Checked == true)
+                frmMotherForm.CHLabelBottom(string.Format("成功创建文件..."));
+                //如果描述文件存在，则加载设置的XML头文件
+                if (frmMotherForm.chkValidate.Checked == true)
 				{
 					ValidateSLD ValSLD = new ValidateSLD(frmMotherForm);
 				}
@@ -200,38 +83,28 @@ namespace ArcGIS_SLD_Converter
 			}
 			else
 			{
-				if (frmMotherForm.m_enumLang == Motherform.Language.Deutsch)
-				{
-					frmMotherForm.CHLabelBottom("Die Datei konnte nicht angelegt werden");
-					frmMotherForm.CHLabelSmall("");
-				}
-				else if (frmMotherForm.m_enumLang == Motherform.Language.English)
-				{
-					frmMotherForm.CHLabelBottom("Could\'t generate the file");
-					frmMotherForm.CHLabelSmall("");
-				}
-				
-			}
+                frmMotherForm.CHLabelBottom(string.Format("无法创建文件..."));
+                frmMotherForm.CHLabelSmall("");
+            }
 			
-			return default(bool);
+			return true;
 		}
-		
-		
-		//************************************************************************************************
-		//Creates SLD Doc: Document Description, Root-Node
-		//************************************************************************************************
+        /// <summary>
+        /// 创建SLD文件
+        /// </summary>
+        /// <param name="FileName"></param>
+        /// <param name="bIncludeLayerNames"></param>
+        /// <returns></returns>
 		private bool CreateSLD(string FileName, bool bIncludeLayerNames)
 		{
 			m_objXMLHandle = new XMLHandle(FileName, bIncludeLayerNames);
 			m_objXMLHandle.CreateNewFile(true, bIncludeLayerNames);
 			return default(bool);
 		}
-		
-		
-		//************************************************************************************************
-		//Extracts the data from the structs and writes to SLD
-		//Firstly is decided, if the Layers are written in one or in separate files
-		//************************************************************************************************
+        /// <summary>
+        /// 将分析的符号信息写入SLD
+        /// </summary>
+        /// <returns></returns>
 		public bool WriteToSLD()
 		{
 			int i = 0;
@@ -240,9 +113,7 @@ namespace ArcGIS_SLD_Converter
 			string cLayerName = "";
 			ArrayList objFieldValues = default(ArrayList);
 			bool bDoOneLayer = default(bool);
-			double dummy = 0; //to buffer the double coming from the layer list
-			
-			//the decision if separate Layers or one Layer
+			double dummy = 0; 
 			if (m_bSepFiles == true)
 			{
 				bDoOneLayer = false;
@@ -250,18 +121,15 @@ namespace ArcGIS_SLD_Converter
 			else
 			{
 				bDoOneLayer = true;
-				//creation of the SLD with only one File using the user defined filename
 				CreateSLD(m_cFilename, bool.Parse(m_bIncludeLayerNames));
 			}
-			
-			
 			try
 			{
 				for (i = 0; i <= m_strDataSavings.LayerCount - 1; i++)
                 {
                     #region 获取图层名称
                     string strDatasetName = "";
-                    ArrayList objSymbols = default(ArrayList); //Die ArrayList mit den Symbolen eines Layers
+                    ArrayList objSymbols = default(ArrayList); 
                     if (m_strDataSavings.LayerList[i] is Analize_ArcMap_Symbols.StructUniqueValueRenderer)
                     {
                         Analize_ArcMap_Symbols.StructUniqueValueRenderer temp = (Analize_ArcMap_Symbols.StructUniqueValueRenderer)m_strDataSavings.LayerList[i];
@@ -284,25 +152,11 @@ namespace ArcGIS_SLD_Converter
                         cLayerName = System.Convert.ToString(temp.LayerName);
                     }
                     #endregion
-
-                    if (frmMotherForm.m_enumLang == Motherform.Language.Deutsch)
-					{
-						frmMotherForm.CHLabelBottom("Verarbeite Layer " + cLayerName);
-					}
-					else if (frmMotherForm.m_enumLang == Motherform.Language.English)
-					{
-						frmMotherForm.CHLabelBottom("processing layer " + cLayerName);
-					}
-					
-					//Creation of several SLD with that format: /UserDefinedPath/UserDefinedName_LayerName.sld
-					if (bDoOneLayer == false)
+                    frmMotherForm.CHLabelBottom(string.Format("正在处理图层【{0}】...", cLayerName));
+                    if (bDoOneLayer == false)
 					{
 						CreateSLD(m_cFilename + "_" + cLayerName + ".sld", bool.Parse(m_bIncludeLayerNames));
 					}
-
-
-
-					//XML-Schreibanweisungen auf Projektebene und Layerebene
 					if (Convert.ToBoolean(m_bIncludeLayerNames))
 					{
 						//' ARIS: Standard SLD output
@@ -666,7 +520,11 @@ namespace ArcGIS_SLD_Converter
 				return false;
 			}
 		}
-		
+		/// <summary>
+        /// 写标注符号信息
+        /// </summary>
+        /// <param name="Annotation"></param>
+        /// <returns></returns>
 		private bool WriteAnnotation(Analize_ArcMap_Symbols.StructAnnotation Annotation)
 		{
 			if (Annotation.IsSingleProperty && Annotation.PropertyName != "")
@@ -711,12 +569,6 @@ namespace ArcGIS_SLD_Converter
 			}
 			return true;
 		}
-		
-		//************************************************************************************************
-		//This function writes the SLD features for a PointSymbolizer based on the passed (point)symbol.
-		//Parameter:
-		//           Symbol=Die Symbolstruktur des aktuellen Symbols aus der Symbolsammlung
-		//************************************************************************************************
 		private bool WritePointFeatures(object Symbol)
 		{
 			try
@@ -778,12 +630,6 @@ namespace ArcGIS_SLD_Converter
 				return false;
 			}
 		}
-		
-		//************************************************************************************************
-		//This function writes the SLD features for a LineSymbolizer based on the passed (line)symbol.
-		//Parameter:
-		//           Symbol=Die Symbolstruktur des aktuellen Symbols aus der Symbolsammlung
-		//************************************************************************************************
 		private bool WriteLineFeatures(object Symbol)
 		{
 			try
@@ -832,16 +678,8 @@ namespace ArcGIS_SLD_Converter
 				return false;
 			}
 		}
-		
-		//************************************************************************************************
-		//Die Funktion 黚ernimmt das aktuelle Symbol und verteilt es auf die Unterfunktionen zum schreiben
-		//Bei MultilayerFillsymbol rekursiver Aufruf
-		//Parameter:
-		//           Symbol=Die Symbolstruktur des aktuellen Symbols aus der Symbolsammlung
-		//************************************************************************************************
 		private bool WritePolygonFeatures(object Symbol)
 		{
-			// WriteSolidFill(Symbol)
 			int i = 0;
             int iSecure = 0;
 			try
@@ -941,14 +779,6 @@ namespace ArcGIS_SLD_Converter
 				return false;
 			}
 		}
-		
-		
-		//************************************************************************************************
-		//Die Funktion schreibt die SLD-Anweisung f黵 eine SOLID COLOR FL腃HENF躄LUNG
-		//und 黚ernimmt die Eigenschaften aus der SimpleFill-Datenstruktur
-		//Parameter:
-		//           Symbol=Die Symbolstruktur des aktuellen Symbols aus der Symbolsammlung
-		//************************************************************************************************
 		private bool WriteSolidFill(object Symbol)
 		{
 			try
@@ -991,13 +821,6 @@ namespace ArcGIS_SLD_Converter
 			}
 			
 		}
-		
-		//************************************************************************************************
-		//Die Funktion schreibt die SLD-Anweisung f黵 eine GEPUNKTETE FL腃HENF躄LUNG
-		//und 黚ernimmt die Eigenschaften aus der MarkerFill-Datenstruktur (und z.Zt. der DotDensity-Strukt.)
-		//Parameter:
-		//           Symbol=Die Symbolstruktur des aktuellen Symbols aus der Symbolsammlung
-		//************************************************************************************************
 		private bool WriteMarkerFill(object Symbol)
 		{
 			try
@@ -1048,13 +871,6 @@ namespace ArcGIS_SLD_Converter
 			}
 			
 		}
-		
-		//************************************************************************************************
-		//Die Funktion schreibt die SLD-Anweisung f黵 eine SCHR腉E KREUZSCHRAFFUR-FL腃HENF躄LUNG
-		//und 黚ernimmt die Eigenschaften aus der LineFill-Datenstruktur.
-		//Parameter:
-		//           Symbol=Die Symbolstruktur des aktuellen Symbols aus der Symbolsammlung
-		//************************************************************************************************
         private bool WriteSlopedHatching(Analize_ArcMap_Symbols.StructLineFillSymbol Symbol)
 		{
 			double dDummy = 0;
@@ -1110,14 +926,6 @@ namespace ArcGIS_SLD_Converter
 				return false;
 			}
 		}
-		
-		
-		//************************************************************************************************
-		//Die Funktion schreibt die SLD-Anweisung f黵 eine SENKRECHTE KREUZSCHRAFFUR-FL腃HENF躄LUNG
-		//und 黚ernimmt die Eigenschaften aus der LineFill-Datenstruktur.
-		//Parameter:
-		//           Symbol=Die Symbolstruktur des aktuellen Symbols aus der Symbolsammlung
-		//************************************************************************************************
         private bool WritePerpendicularHatching(Analize_ArcMap_Symbols.StructLineFillSymbol Symbol)
 		{
 			double dDummy = 0;
@@ -1173,43 +981,12 @@ namespace ArcGIS_SLD_Converter
 				return false;
 			}
 		}
-		
 #endregion
-		
-		
 #region Symbolstructanalysefunktionen
-		
-		
-		//******************************************************************************************************************
-		//DIESE FUNKTION GILT Z.ZT. NUR ZU TESTZWECKEN UND MUSS IM REALEN GEBRAUCH VERVOLLST腘DIGT WERDEN !!!
-		//1. Die Funktion extrahiert die gew黱schten Werte aus den jeweiligen Datenstrukturen
-		//2. Hier werden die Generalisierungen gemacht von der komplexen ArcMap-Symbolisierung zur einfachen sld-Symbolisierung
-		//TODO: Vervollst鋘digung der case's f黵 jede Struktur
-		//Parameter:     SymbolStructure= die jeweilige Symbol-Datenstruktur
-		//               ValueNameOfValueYouWant= ein String, der den Wert repr鋝entiert, den man erhalten m鯿hte
-		//z.Zt. m鰃liche Werte f黵 ValueNameOfValueYouWant sind:
-		//F黵 Polygone:  "PolygonColor, PolygonBorderWidth, PolygonBorderColor, PointSize, PointColor, LineWidth, LineColor"
-		//F黵 Linien:    "LineWidth, LineColor"
-		//F黵 Punkte:    "PointColor, PointSize, PointRotation, PointOutlineColor, WellKnownName"
-		//******************************************************************************************************************
 		private string GetValueFromSymbolstruct(string ValueNameOfValueYouWant, object SymbolStructure)
 		{
 			return GetValueFromSymbolstruct(ValueNameOfValueYouWant, SymbolStructure, 0);
 		}
-		
-		//******************************************************************************************************************
-		//DIESE FUNKTION GILT Z.ZT. NUR ZU TESTZWECKEN UND MUSS IM REALEN GEBRAUCH VERVOLLST腘DIGT WERDEN !!!
-		//1. Die Funktion extrahiert die gew黱schten Werte aus den jeweiligen Datenstrukturen
-		//2. Hier werden die Generalisierungen gemacht von der komplexen ArcMap-Symbolisierung zur einfachen sld-Symbolisierung
-		//TODO: Vervollst鋘digung der case's f黵 jede Struktur
-		//Parameter:     SymbolStructure= die jeweilige Symbol-Datenstruktur
-		//               ValueNameOfValueYouWant= ein String, der den Wert repr鋝entiert, den man erhalten m鯿hte
-		//               LayerIdx = for multilayer symbols, the index of the layer to use.
-		//z.Zt. m鰃liche Werte f黵 ValueNameOfValueYouWant sind:
-		//F黵 Polygone:  "PolygonColor, PolygonBorderWidth, PolygonBorderColor, PointSize, PointColor, LineWidth, LineColor"
-		//F黵 Linien:    "LineWidth, LineColor"
-		//F黵 Punkte:    "PointColor, PointSize, PointRotation, PointOutlineColor, WellKnownName"
-		//******************************************************************************************************************
 		private string GetValueFromSymbolstruct(string ValueNameOfValueYouWant, object SymbolStructure, int LayerIdx)
 		{
 			string cReturn = "";
@@ -2203,24 +1980,14 @@ namespace ArcGIS_SLD_Converter
                 return cReturn;
 			}
 		}
-		
-		//******************************************************************************************************************
-		//This function tries to guess the SLD marker information from the ESRI point symbol.
-		//It is incomplete by default because ESRI has many font sets.
-		//The mapping is imperfect since only five well known names exist, with so many symbols in ESRI.
-		//Parameter:     SymbolStructure= The point Symbol-Datastructure
-		//               ValueNameOfValueYouWant= ein String, der den Wert repr鋝entiert, den man erhalten m鯿hte
-		//z.Zt. m鰃liche Werte f黵 ValueNameOfValueYouWant sind:
-		//"PointColor, PointSize, PointRotation, PointOutlineColor, WellKnownName"
-		//******************************************************************************************************************
 		private string GetMarkerValue(string ValueNameOfValueYouWant, object SymbolStructure)
 		{
 			string cReturn = "";
 			string cColor = "";
 			string cOutlineColor = "";
 			bool bSwitch;
-			bSwitch = false; //(ben鰐igt f黵 Multilayersymbole)der Schalter wird umgelegt, wenn es kein simple.. Symbol gibt. Dann wird der Wert des ersten Symbols genommen
-			cReturn = "0"; //Wenn keiner der 黚ergebenen ValueNames passt, wird 0 zur點kgegeben
+			bSwitch = false; 
+			cReturn = "0"; 
 			try
 			{
 				if (SymbolStructure is Analize_ArcMap_Symbols.StructSimpleMarkerSymbol)
@@ -2514,10 +2281,6 @@ namespace ArcGIS_SLD_Converter
 #endregion
 		
 #region Hilfsfunktionen
-		
-		//************************************************************************************************
-		//****** 躡ernimmt einen double der Form X,Y und wandelt ihn in die Form string X.Y **************
-		//************************************************************************************************
 		private string CommaToPoint(double value)
 		{
 			string cReturn = "";
@@ -2525,7 +2288,6 @@ namespace ArcGIS_SLD_Converter
 			cReturn = cReturn.Replace(",", ".");
 			return cReturn;
 		}
-		//躡erladen 躡ernimmt einen String X,Y und wandelt ihn in die Form X.Y
 		private string CommaToPoint(string value)
 		{
 			string cReturn = "";
@@ -2533,41 +2295,43 @@ namespace ArcGIS_SLD_Converter
 			cReturn = cReturn.Replace(",", ".");
 			return cReturn;
 		}
-		
-		
-		//************************************************************************************************
-		//********************************* Die zentrale Fehlermeldung ***********************************
-		//************************************************************************************************
+		/// <summary>
+        /// 错误信息提示框
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="exMessage"></param>
+        /// <param name="stack"></param>
+        /// <param name="functionname"></param>
+        /// <returns></returns>
 		private object ErrorMsg(string message, string exMessage, string stack, string functionname)
 		{
-			MessageBox.Show(message + "." + "\r\n" + exMessage + "\r\n" + stack, "ArcGIS_SLD_Converter | Output_SLD | " + functionname, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			MessageBox.Show(string.Format("{0}.{1}{2}{3}{4}",message,Environment.NewLine,
+                exMessage,Environment.NewLine,stack),string.Format( "{0}" , functionname), MessageBoxButtons.OK, MessageBoxIcon.Error);
 			MyTermination();
 			return null;
 		}
-		
-		//************************************************************************************************
-		//********************************* Die zentrale Infomeldung ***********************************
-		//************************************************************************************************
+        /// <summary>
+        /// 消息提示框
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="functionname"></param>
+        /// <returns></returns>
 		private object InfoMsg(string message, string functionname)
 		{
-			MessageBox.Show(message, "ArcGIS_SLD_Converter | Output_SLD | " + functionname, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+			MessageBox.Show(message, functionname, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 			return null;
 		}
-		
-		//************************************************************************************************
-		//********************************* Beenden der Anwendung ****************************************
-		//************************************************************************************************
+        /// <summary>
+        /// 关闭程序
+        /// </summary>
+        /// <returns></returns>
 		public object MyTermination()
 		{
 			ProjectData.EndApp();
 			m_objData.MyTermination();
-			//oder: application.exit
 			return null;
 		}
-		
-		
 #endregion
-		
 	}
 	
 }

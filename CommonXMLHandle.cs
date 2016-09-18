@@ -111,7 +111,7 @@ public string ErrorMessage
 			}
 			catch (Exception ex)
 			{
-				cMessage = "Fehler beim 謋fnen des Dokuments (" + ex.Message.ToString() + ")";
+				cMessage = "打开XML文档 (" + ex.Message.ToString() + ")";
 				return false;
 			}
 			return true;
@@ -125,7 +125,7 @@ public string ErrorMessage
 			}
 			catch (Exception ex)
 			{
-				cMessage = "Fehler beim Speichern des Dokuments (" + ex.Message.ToString() + ")";
+				cMessage = "保存XML文档(" + ex.Message.ToString() + ")";
 				return false;
 			}
 			return true;
@@ -142,7 +142,7 @@ public string ErrorMessage
 		{
 			if (bDocIsOpen == false)
 			{
-				cMessage = "Dokument ist nicht ge鰂fnet!";
+				cMessage = "XML文档未打开";
 				return false;
 			}
 			int i = 0;
@@ -180,7 +180,7 @@ public string ErrorMessage
 		{
 			if (bDocIsOpen == false)
 			{
-				cMessage = "Dokument ist nicht ge鰂fnet!";
+                cMessage = "XML文档未打开";
 				return false;
 			}
 			int i = 0;
@@ -415,7 +415,7 @@ public string ErrorMessage
 			}
 			catch (Exception ex)
 			{
-				cMessage = "Kein Name gefunden (" + ex.Message.ToString() + ")";
+				cMessage = "获取实体名称 (" + ex.Message.ToString() + ")";
 				return "";
 			}
 		}
@@ -433,7 +433,7 @@ public string ErrorMessage
 			}
 			catch (Exception ex)
 			{
-				cMessage = "Kein Name gefunden (" + ex.Message.ToString() + ")";
+				cMessage = "获取选择名称 (" + ex.Message.ToString() + ")";
 				return "";
 			}
 		}

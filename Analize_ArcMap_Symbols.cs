@@ -1,4 +1,3 @@
-// VBConversions Note: VB project level imports
 using System;
 using System.Drawing;
 using System.Diagnostics;
@@ -6,119 +5,58 @@ using System.Data;
 using Microsoft.VisualBasic;
 using System.Collections;
 using System.Windows.Forms;
-// End of VB project level imports
-
 using ESRI.ArcGIS.Framework;
-//using ESRI.ArcGIS.Framework.AppROTClass;
 using System.Runtime.InteropServices;
 using ESRI.ArcGIS.SystemUI;
 using ESRI.ArcGIS.ArcMapUI;
 using ESRI.ArcGIS.Carto;
-//using ESRI.ArcGIS.Carto.FeatureLayerClass;
 using ESRI.ArcGIS.Display;
 using stdole;
 using ESRI.ArcGIS.Geodatabase;
 using ESRI.ArcGIS.esriSystem;
 using System.IO;
 using Microsoft.VisualBasic.CompilerServices;
-
-//####################################################################################################################
-//*******************ArcGIS_SLD_Converter*****************************************************************************
-//*******************Class: Analize_ArcMap_Symbols********************************************************************
-//*******************AUTHOR: Albrecht Weiser, University of applied Sciences in Mainz, Germany 2005*******************
-//The Application was part of my Diploma thesis:**********************************************************************
-//"Transforming map-properties of maps in esri-data to an OGC-conformous SLD-document, for publishing the ArcGIS-map *
-//with an OGC- conformous map-server"*********************************************************************************
-//ABSTRACT:
-//The program so called "ArcGIS-map to SLD Converter" analyses an
-//ArcMap-Project with respect to its symbolisation and assembles an SLD
-//for the OGC-Web Map Service (WMS) from the gathered data. The program
-//is started parallel to a running ArcMap 9.X-session. Subsequently the
-//application deposits an SLD-file which complies the symbolisation of
-//the available ArcMap-project. With the SLD a WMS-project may be
-//classified and styled according to the preceding ArcMap-project. The
-//application is written in VisualBasic.NET and uses the .NET 1.1
-//Framework (plus XML files for configuration). For more informtion
-//refer to:
-//http://arcmap2sld.geoinform.fh-mainz.de/ArcMap2SLDConverter_Eng.htm.
-//LICENSE:
-//This program is free software under the license of the GNU Lesser General Public License (LGPL) As published by the Free Software Foundation.
-//With the use and further development of this code you accept the terms of LGPL. For questions of the License refer to:
-//http://www.gnu.org/licenses/lgpl.html
-//DISCLAIMER:
-//THE USE OF THE SOFTWARE ArcGIS-map to SLD Converter HAPPENS AT OWN RISK.
-//I CANNOT ISSUE A GUARANTEE FOR ANY DISADVANTAGES (INCLUDING LOSS OF DATA; ETC.) THAT
-//MAY ARISE FROM USING THIS SOFTWARE.
-//DESCRIPTION:
-//Analyze_ArcMap_Symbols is the central analyzing class of the application. It analyzes the ArcMap styling attributes
-//and stores the data in structs. Each renderer has its own struct. Each symbol has its own struct. The renderer itself
-//stores the symbol structs. The class is triggered by the form-class "Motherform",button "Button1" pushes the analysis
-//by the event "Button1_Click". The analysis starts at the "Analyze_ArcMap_Symbols.CentralProcessingFunc()". When ended
-//the analysis, the class  calls the class "Output_SLD" and passes the structs with the data to the class.
-//CHANGES:
-//01.02.2006: Bugfix: in function StoreLineFill()
-//04.02.2006: Language-customizing english/german
-//04.02.2006: Tooltips
-//22.01.2007: Bugfix: in StorLineFill.ICartographicLineSymbol
-//26.01.2007: The converter now supports Group Layers (They cannot be displayed because there's still no such structure
-//            in SLD, but the FeatureLayers inside the Group Layers are beeing stored. The the analysis of function
-//            AnalyseLayerSymbology was outsourced to the new function SpreadLayerStructure. There a recursive call rules
-//            the Layer order. The routine AddOneToLayerNumber counts the Layernumbers up.
-//27.03.2007: - Extract transparency based on the color.
-//            - Extract dashed line settings for cartographic lines and simple lines.
-//            - Simplified color handling by always having no color (empty string)
-//              if the color is transparent or style indicates color is not used.
-//            - Fixed several bugs where wrong object was used causing a crash, in methods
-//              StoreLineFill, StoreDotDensityFill, StorePictureFill, StoreGradientFill, StoreBarChart, StorePieChart, StoreStackedChart
-//28.03.2007: Added TextSymbolizer support for simple annotation with a single feature as label.
-//25.04.2007: Allow conversion of only layers that are visible, ignore those not visible.
-//            Using option from motherform menu to decide whether to convert all
-//            layers or just selected layers.
-//12.09.2007: Fix to handle cartographic lines with empty Template pattern.
-//09.06.2008: Add support for grouped values in UniqueValueRenderer.
-//10.09.2008: Some small code improvements
-//####################################################################################################################
-
-
-
 namespace ArcGIS_SLD_Converter
 {
 	public class Analize_ArcMap_Symbols
 	{
-		
-		//##################################################################################################
-		//#################################### DEKLARATIONEN ###############################################
-		//##################################################################################################
-		
-#region Membervariablen
-		private IMxDocument m_ObjDoc; //Das augenblicklich aktive Dokument
-		private IApplication m_ObjApp; //Die Schnittstelle zur ArcMap-Instanz
-		private IAppROT m_ObjAppROT; //Die Schnittstelle zum Erlangen der laufenden ArcMap-Instanz
-		private IObjectFactory m_ObjObjectCreator; //Die Schnittstelle, um ArcMap-Objekte generieren zu k鰊nen!!!
-		private IMap m_ObjMap; //Die Schnittstelle zum aktuellen Kartenobjekt
-		private Motherform frmMotherform; //Die Instanz der aufrufenden Mutterklasse
-		internal StructProject m_StrProject; //Die Instanz der Datenstruktur, die alle Layer enth鋖t
-		private ArrayList m_al1; //jede Arraylist enth鋖t die normalisierten Werte aus einer Tabellenspalte
+		#region 全局变量
+		private IMxDocument m_ObjDoc; 
+		private IApplication m_ObjApp; 
+		private IAppROT m_ObjAppROT; 
+		private IObjectFactory m_ObjObjectCreator; 
+		private IMap m_ObjMap; 
+		private Motherform frmMotherform; 
+		internal StructProject m_StrProject; 
+		private ArrayList m_al1; 
 		private ArrayList m_al2;
 		private ArrayList m_al3;
-		private ArrayList m_alClassifiedFields; //enth鋖t jeweils wiederum arraylist(s) von den normalisierten Werten aus den Feldern, nach denen klassifiziert wurde ( m_al1, m_al2, [m_al3])
+		private ArrayList m_alClassifiedFields; 
 		private string m_cFilename;
-#endregion
-		
-		//##################################################################################################
-		//######################################## ENUMERATIONEN ###########################################
-		//##################################################################################################
-		
-#region Enums
-		
-		//Die FeatureClass wird hier festgelegt; (ob Punkt-, Linien-, oder Polygonfeature)
+        #endregion
+
+		#region Enums
+		/// <summary>
+        /// 图层要素类型
+        /// </summary>
 		internal enum FeatureClass
 		{
+            /// <summary>
+            /// 点
+            /// </summary>
 			PointFeature = 0,
+            /// <summary>
+            /// 线
+            /// </summary>
 			LineFeature = 1,
+            /// <summary>
+            /// 面
+            /// </summary>
 			PolygonFeature = 2
 		}
-		
+		/// <summary>
+        /// 标记类型
+        /// </summary>
 		internal enum MarkerStructs
 		{
 			StructSimpleMarkerSymbol,
@@ -127,7 +65,9 @@ namespace ArcGIS_SLD_Converter
 			StructArrowMarkerSymbol,
 			StructMultilayerMarkerSymbol
 		}
-		
+		/// <summary>
+        /// 线符号类型
+        /// </summary>
 		internal enum LineStructs
 		{
 			StructSimpleLineSymbol = 0,
@@ -137,18 +77,10 @@ namespace ArcGIS_SLD_Converter
 			StructMultilayerLineSymbol = 4,
 			StructCartographicLineSymbol = 5
 		}
-		
-		
 #endregion
-		
-		//##################################################################################################
-		//#################################### DATENSTRUKTUREN #############################################
-		//##################################################################################################
-		
+
 #region Datenstrukturen
-		//************************************ Datenstruktur auf Projektebene *********************************
-		
-		//Die Datenstruktur f黵 die Layer (alle Layer in dem Projekt stecken hier drin
+
         public class ptRender
         {
             
@@ -159,479 +91,403 @@ namespace ArcGIS_SLD_Converter
         }
 		internal struct StructProject
 		{
-			public ArrayList LayerList; //Hier stecken alle Layer als StructLayer-Sammlung drin
-			public int LayerCount; //Anzahl der Layer
+			public ArrayList LayerList; 
+			public int LayerCount; 
 		}
-		//************************************ Datenstrukturen auf Layerebene *********************************
-		
-		//Die Datenstruktur f黵 den UniqueValueRenderer
 		internal struct StructUniqueValueRenderer
 		{
-			public FeatureClass FeatureCls; //Ob Punkt-, Linien-, oder Polygonfeature
-			public string LayerName; //Der Layername (ist nicht der Name, nach dem klassifiziert wird)
-			public string DatasetName; //Der Datasetname (Der Name, nach dem klassifiziert wird)
-			public int ValueCount; //Die Anzahl der Wertefelder bzw. Symbole des Layers basierend auf der aktuellen Klassifizierung
-			public ArrayList SymbolList; //Die Sammlung der einzelnen Attributauspr鋑ungen (Symbole) als Struct*Symbol...
-			public int FieldCount; //Die Anzahl der Tabellenfelder, nach denen klassifiziert wird (0: kein Feld; 1 Feld; 2 Felder; 3 Felder max.)
-			public ArrayList FieldNames; //Die Tabellenfelder, nach denen Klassifiziert wird (max. 3 Felder) als Strings
-			public string StylePath; //Der Pfad zur Stildefinition oder Stildatei (entspr. Layer Propertys->Symbology->Categorys->Match to Symbol in a Style in ArcMap!)
-			public StructAnnotation Annotation; //Annotation label based on feature
+			public FeatureClass FeatureCls; 
+			public string LayerName; 
+			public string DatasetName; 
+			public int ValueCount; 
+			public ArrayList SymbolList;
+			public int FieldCount; 
+			public ArrayList FieldNames; 
+			public string StylePath;
+			public StructAnnotation Annotation; 
 		}
-		//Die Datenstruktur f黵 den ClassBreaksRenderer
 		internal struct StructClassBreaksRenderer
 		{
-			public FeatureClass FeatureCls; //Ob Punkt-, Linien-, oder Polygonfeature
-			public string LayerName; //Der Layername (ist nicht der Name, nach dem klassifiziert wird)
-			public string DatasetName; //Der Datasetname (Der Name, nach dem klassifiziert wird)
-			public int BreakCount; //Die Anzahl der Wertefelder bzw. Symbole des Layers basierend auf der aktuellen Klassifizierung
-			public string FieldName; //Das Tabellenfeld, nach dem Klassifiziert wird
-			public string NormFieldName; //Das Tabellenfeld, nach dem normalisiert wird
-			public ArrayList SymbolList; //Die Sammlung der einzelnen Attributauspr鋑ungen (Symbole) als Struct*Symbol...
-			public StructAnnotation Annotation; //Annotation label based on feature
+			public FeatureClass FeatureCls; 
+			public string LayerName; 
+			public string DatasetName;
+			public int BreakCount; 
+			public string FieldName; 
+			public string NormFieldName;
+			public ArrayList SymbolList; 
+			public StructAnnotation Annotation; 
 		}
-		//Die Datenstruktur f黵 den SimpleRenderer
 		internal struct StructSimpleRenderer
 		{
-			public FeatureClass FeatureCls; //Ob Punkt-, Linien-, oder Polygonfeature
-			public string LayerName; //Der Layername (ist nicht der Name, nach dem klassifiziert wird)
-			public string DatasetName; //Der Datasetname (Der Name, nach dem klassifiziert wird)
-			public ArrayList SymbolList; //Die Sammlung der einzelnen Attributauspr鋑ungen (Symbole) als Struct*Symbol... In diesem Fall jew nur 1 Symbol
-			public StructAnnotation Annotation; //Annotation label based on feature
+			public FeatureClass FeatureCls; 
+			public string LayerName; 
+			public string DatasetName; 
+			public ArrayList SymbolList; 
+			public StructAnnotation Annotation; 
 		}
-		//********************************* Datenstrukturen auf Symbolebene **********************************
-		
-		//Die Datenstruktur f黵 SimpleMarkerSymbol
 		internal struct StructSimpleMarkerSymbol
 		{
-			public double Angle; //Der Winkel des Symbols
-			public bool Filled; //Whether fill color or not
-			public string Color; //Die Farbe des Symbols in der Webschreibweise als #ByteByteByte
-			public bool Outline; //Outline des Symbols
-			public string OutlineColor; //Die Farbe der Outline in der Webschreibweise als #ByteByteByte
-			public double OutlineSize; //die Dicke der Outline
-			public double Size; //Die Symbolgr鲞e
-			public string Style; //der esriSimpleMarkerStyle
-			public double XOffset; //der Offset zur Koordinate des Sy<mbols
-			public double YOffset; //der Offset zur Koordinate des Sy<mbols
-			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Daten ermittelt auf Rendererlevel:
-			public string Label; //Die Feldwertbezeichnung (Label)    [alle Renderer]
-			public ArrayList Fieldvalues; //Der Feldwert(e), nach dem Klassifiziert und dieses Symbol zugewiesen wird [Alle Renderer]. Die Reihenfolge der Werte entspricht auch der Reihenfolge der Felder (Spalten), wie sie im Renderereobjekt unter 'FieldNames as ArrayList' zu finden ist
-			public double UpperLimit; //Obergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
-			public double LowerLimit; //Untergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
+			public double Angle; 
+			public bool Filled; 
+			public string Color; 
+			public bool Outline; 
+			public string OutlineColor;
+			public double OutlineSize; 
+			public double Size; 
+			public string Style; 
+			public double XOffset; 
+			public double YOffset; 
+			public string Label; 
+			public ArrayList Fieldvalues; 
+			public double UpperLimit; 
+			public double LowerLimit;
 		}
-		//Die Datenstruktur f黵 CharacterMarkerSymbol
 		internal struct StructCharacterMarkerSymbol
 		{
-			public double Angle; //Winkel des "Buchstabens"
-			public int CharacterIndex; //Stelle des Buchstabens in der ASCII (ANSII)-Tabelle des zugeh鰎igen Fonts
-			public string Color; //Die Farbe
-			public string Font; //Der Font des Zeichens (Buchstabens)
-			public double Size; //Die Schriftgr鲞e
-			public double XOffset; //der Offset zur Koordinate des Sy<mbols
-			public double YOffset; //der Offset zur Koordinate des Sy<mbols
-			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Daten ermittelt auf Rendererlevel:
-			public string Label; //Die Feldwertbezeichnung (Label)    [alle Renderer]
-			public ArrayList Fieldvalues; //Der Feldwert(e), nach dem Klassifiziert und dieses Symbol zugewiesen wird [Alle Renderer]. Die Reihenfolge der Werte entspricht auch der Reihenfolge der Felder (Spalten), wie sie im Renderereobjekt unter 'FieldNames as ArrayList' zu finden ist
-			public double UpperLimit; //Obergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
-			public double LowerLimit; //Untergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
+			public double Angle; 
+			public int CharacterIndex; 
+			public string Color; 
+			public string Font; 
+			public double Size; 
+			public double XOffset; 
+			public double YOffset; 
+			public string Label; 
+			public ArrayList Fieldvalues; 
+			public double UpperLimit; 
+			public double LowerLimit;
 		}
-		//Die Datenstruktur f黵 PictureMarkerSymbol
 		internal struct StructPictureMarkerSymbol
 		{
-			public double Angle; //Winkel
-			public string BackgroundColor; //Die Farbe des BGColor in der Webschreibweise als #ByteByteByte
-			public string Color; //Keine Ahnung welche Farbe das ist
-			public IPicture Picture; //Das Bild
-			public double Size; //Die Bildgr鲞e
-			public double XOffset; //der Offset zur Koordinate des Sy<mbols
-			public double YOffset; //der Offset zur Koordinate des Sy<mbols
-			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Daten ermittelt auf Rendererlevel:
-			public string Label; //Die Feldwertbezeichnung (Label)    [alle Renderer]
-			public ArrayList Fieldvalues; //Der Feldwert(e), nach dem Klassifiziert und dieses Symbol zugewiesen wird [Alle Renderer]. Die Reihenfolge der Werte entspricht auch der Reihenfolge der Felder (Spalten), wie sie im Renderereobjekt unter 'FieldNames as ArrayList' zu finden ist
-			public double UpperLimit; //Obergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
-			public double LowerLimit; //Untergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
+			public double Angle;
+			public string BackgroundColor; 
+			public string Color; 
+			public IPicture Picture; 
+			public double Size; 
+			public double XOffset; 
+			public double YOffset; 
+			public string Label; 
+			public ArrayList Fieldvalues; 
+			public double UpperLimit; 
+			public double LowerLimit; 
 		}
-		//Die Datenstruktur f黵 PictureMarkerSymbol
 		internal struct StructArrowMarkerSymbol
 		{
-			public double Angle; //Der Winkel
-			public string Color; //Die Farbe
-			public double Length; //Die Pfeill鋘ge
-			public double Size; //Die Die Pfeilgr鲞e
-			public string Style; //Der Esrieigene Pfeilstyle
-			public double Width; //Die Pfeilbreite
-			public double XOffset; //der Offset zur Koordinate des Sy<mbols
-			public double YOffset; //der Offset zur Koordinate des Sy<mbols
-			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Daten ermittelt auf Rendererlevel:
-			public string Label; //Die Feldwertbezeichnung (Label)    [alle Renderer]
-			public ArrayList Fieldvalues; //Der Feldwert(e), nach dem Klassifiziert und dieses Symbol zugewiesen wird [Alle Renderer]. Die Reihenfolge der Werte entspricht auch der Reihenfolge der Felder (Spalten), wie sie im Renderereobjekt unter 'FieldNames as ArrayList' zu finden ist
-			public double UpperLimit; //Obergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
-			public double LowerLimit; //Untergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
+			public double Angle; 
+			public string Color; 
+			public double Length; 
+			public double Size; 
+			public string Style; 
+			public double Width;
+			public double XOffset; 
+			public double YOffset; 
+			public string Label;
+			public ArrayList Fieldvalues; 
+			public double UpperLimit; 
+			public double LowerLimit; 
 		}
-		//____________________________________________________________________________________________________
-		
-		//Die Datenstruktur f黵 SimpleLineSymbol
 		internal struct StructSimpleLineSymbol
 		{
-			public string Color; //Die Farbe des Symbols in der Webschreibweise als #ByteByteByte
-			public byte Transparency; //Transparancy of the color.
-			public string publicStyle; //der esriSimpleLineStyle
-			public double Width; //die Linienbreite
-			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Daten ermittelt auf Rendererlevel:
-			public string Label; //Die Feldwertbezeichnung (Label)    [alle Renderer]
-			public ArrayList Fieldvalues; //Der Feldwert(e), nach dem Klassifiziert und dieses Symbol zugewiesen wird [Alle Renderer]. Die Reihenfolge der Werte entspricht auch der Reihenfolge der Felder (Spalten), wie sie im Renderereobjekt unter 'FieldNames as ArrayList' zu finden ist
-			public double UpperLimit; //Obergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
-			public double LowerLimit; //Untergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
+			public string Color; 
+			public byte Transparency; 
+			public string publicStyle; 
+			public double Width;
+			public string Label; 
+			public ArrayList Fieldvalues; 
+			public double UpperLimit; 
+			public double LowerLimit; 
 		}
-		//Die Datenstruktur f黵 CartographicLineSymbol
 		internal struct StructCartographicLineSymbol
 		{
-			public string Color; //Die Farbe des Symbols in der Webschreibweise als #ByteByteByte
-			public byte Transparency; //Transparancy of the color.
-			public double Width; //Die Strichbreite
-			public string Join; //sagt aus, wie die Linien verbunden sind
-			public double MiterLimit; //Schwellenwert, ab welchem Abstand Zwickel angezeigt werden
-			public string Cap; //Die Form des Linienendes
-			public ArrayList DashArray; //The dasharray ("Template" in terms of ESRI) for dashed lines
-			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Daten ermittelt auf Rendererlevel:
-			public string Label; //Die Feldwertbezeichnung (Label)    [alle Renderer]
-			public ArrayList Fieldvalues; //Der Feldwert(e), nach dem Klassifiziert und dieses Symbol zugewiesen wird [Alle Renderer]. Die Reihenfolge der Werte entspricht auch der Reihenfolge der Felder (Spalten), wie sie im Renderereobjekt unter 'FieldNames as ArrayList' zu finden ist
-			public double UpperLimit; //Obergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
-			public double LowerLimit; //Untergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
+			public string Color; 
+			public byte Transparency; 
+			public double Width; 
+			public string Join; 
+			public double MiterLimit; 
+			public string Cap; 
+			public ArrayList DashArray;
+			public string Label; 
+			public ArrayList Fieldvalues;
+			public double UpperLimit; 
+			public double LowerLimit; 
 		}
-		// Die Datenstruktur f黵 HashLineSymbol
 		internal struct StructHashLineSymbol
 		{
-			public double Angle; //Der Winkel
-			public string Color; //Die Farbe der Linie
-			public byte Transparency; //Transparancy of the color.
-			public double Width; //der Abstand der einzelnen Striche
-			//____________________________________________________
-			public LineStructs kindOfLineStruct; //steht drin, welcher struct im jeweiligen Fall benutzt wurde
+			public double Angle; 
+			public string Color; 
+			public byte Transparency; 
+			public double Width; 
+			public LineStructs kindOfLineStruct; 
 			public StructSimpleLineSymbol HashSymbol_SimpleLine;
 			public StructCartographicLineSymbol HashSymbol_CartographicLine;
 			public StructMarkerLineSymbol HashSymbol_MarkerLine;
-			//Public HashSymbol_HashLine as StructHashLineSymbol        geht nicht,da eine Struktur sich nicht selbst enthalten kann (s. StructHashLineSymbol)
 			public StructPictureLineSymbol HashSymbol_PictureLine;
 			public StructMultilayerLineSymbol HashSymbol_MultiLayerLines;
-			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Daten ermittelt auf Rendererlevel:
-			public string Label; //Die Feldwertbezeichnung (Label)    [alle Renderer]
-			public ArrayList Fieldvalues; //Der Feldwert(e), nach dem Klassifiziert und dieses Symbol zugewiesen wird [Alle Renderer]. Die Reihenfolge der Werte entspricht auch der Reihenfolge der Felder (Spalten), wie sie im Renderereobjekt unter 'FieldNames as ArrayList' zu finden ist
-			public double UpperLimit; //Obergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
-			public double LowerLimit; //Untergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
+			public string Label; 
+			public ArrayList Fieldvalues; 
+			public double UpperLimit; 
+			public double LowerLimit; 
 		}
-		//Die Datenstruktur f黵 MarkerLineSymbol
 		internal struct StructMarkerLineSymbol
 		{
-			public string Color; //Die Farbe
-			public byte Transparency; //Transparancy of the color.
-			public double Width; //Der Abstand der einzelnen Marker
-			//____________________________________________________
-			public MarkerStructs kindOfMarkerStruct; //steht drin, welcher struct im jeweiligen Fall benutzt wurde
+			public string Color; 
+			public byte Transparency;
+			public double Width; 
+			public MarkerStructs kindOfMarkerStruct; 
 			public StructSimpleMarkerSymbol MarkerSymbol_SimpleMarker;
 			public StructCharacterMarkerSymbol MarkerSymbol_CharacterMarker;
 			public StructPictureMarkerSymbol MarkerSymbol_PictureMarker;
 			public StructArrowMarkerSymbol MarkerSymbol_ArrowMarker;
 			public StructMultilayerMarkerSymbol MarkerSymbol_MultilayerMarker;
-			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Daten ermittelt auf Rendererlevel:
-			public string Label; //Die Feldwertbezeichnung (Label)    [alle Renderer]
-			public ArrayList Fieldvalues; //Der Feldwert(e), nach dem Klassifiziert und dieses Symbol zugewiesen wird [Alle Renderer]. Die Reihenfolge der Werte entspricht auch der Reihenfolge der Felder (Spalten), wie sie im Renderereobjekt unter 'FieldNames as ArrayList' zu finden ist
-			public double UpperLimit; //Obergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
-			public double LowerLimit; //Untergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
+			public string Label; 
+			public ArrayList Fieldvalues;
+			public double UpperLimit; 
+			public double LowerLimit; 
 		}
-		//Die Datenstruktur f黵 PictureLineSymbol
 		internal struct StructPictureLineSymbol
 		{
-			public string BackgroundColor; //Hintergrundfarbe
-			public byte BackgroundTransparency; //Transparancy of the color.
-			public string Color; //?
-			public byte Transparency; //Transparancy of the color.
-			public double Offset; //?
-			public IPicture Picture; //Das Bild
-			public bool Rotate; //Bild rotieren
-			public double Width; //Gr鲞e
-			public double XScale; //Seitenverh鋖tnis X
-			public double YScale; //Seitenverh鋖tnis Y
-			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Daten ermittelt auf Rendererlevel:
-			public string Label; //Die Feldwertbezeichnung (Label)    [alle Renderer]
-			public ArrayList Fieldvalues; //Der Feldwert(e), nach dem Klassifiziert und dieses Symbol zugewiesen wird [Alle Renderer]. Die Reihenfolge der Werte entspricht auch der Reihenfolge der Felder (Spalten), wie sie im Renderereobjekt unter 'FieldNames as ArrayList' zu finden ist
-			public double UpperLimit; //Obergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
-			public double LowerLimit; //Untergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
+			public string BackgroundColor; 
+			public byte BackgroundTransparency; 
+			public string Color; 
+			public byte Transparency; 
+			public double Offset; 
+			public IPicture Picture; 
+			public bool Rotate; 
+			public double Width; 
+			public double XScale; 
+			public double YScale; 
+			public string Label; 
+			public ArrayList Fieldvalues; 
+			public double UpperLimit; 
+			public double LowerLimit;
 		}
-		//____________________________________________________________________________________________________
-		
-		//Die Datenstruktur f黵 SimpleFillSymbol
 		internal struct StructSimpleFillSymbol
 		{
-			public string Color; //Die Farbe des Fillsymbols
-			public string Style; //esriSimpleFillStyle
+			public string Color;
+			public string Style; 
 			public byte Transparency;
-			//____________________________________________________
-			public LineStructs kindOfOutlineStruct; //steht drin, welcher struct im jeweiligen Fall benutzt wurde
+			public LineStructs kindOfOutlineStruct; 
 			public StructSimpleLineSymbol Outline_SimpleLine;
 			public StructCartographicLineSymbol Outline_CartographicLine;
 			public StructMarkerLineSymbol Outline_MarkerLine;
 			public StructHashLineSymbol Outline_HashLine;
 			public StructPictureLineSymbol Outline_PictureLine;
 			public StructMultilayerLineSymbol Outline_MultiLayerLines;
-			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Daten ermittelt auf Rendererlevel:
-			public string Label; //Die Feldwertbezeichnung (Label)    [alle Renderer]
-			public ArrayList Fieldvalues; //Der Feldwert(e), nach dem Klassifiziert und dieses Symbol zugewiesen wird [Alle Renderer]. Die Reihenfolge der Werte entspricht auch der Reihenfolge der Felder (Spalten), wie sie im Renderereobjekt unter 'FieldNames as ArrayList' zu finden ist
-			public double UpperLimit; //Obergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
-			public double LowerLimit; //Untergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
+			public string Label; 
+			public ArrayList Fieldvalues; 
+			public double UpperLimit; 
+			public double LowerLimit; 
 		}
-		//Die Datenstruktur f黵 MarkerFillSymbol
 		internal struct StructMarkerFillSymbol
 		{
-			public string Color; //Die F黮lfarbe
+			public string Color; 
 			public byte Transparency;
-			public double GridAngle; //der Winkel des Grids
-			//____________________________________________________
-			public MarkerStructs kindOfMarkerStruct; //steht drin, welcher struct im jeweiligen Fall benutzt wurde
+			public double GridAngle;
+			public MarkerStructs kindOfMarkerStruct; 
 			public StructSimpleMarkerSymbol MarkerSymbol_SimpleMarker;
 			public StructCharacterMarkerSymbol MarkerSymbol_CharacterMarker;
 			public StructPictureMarkerSymbol MarkerSymbol_PictureMarker;
 			public StructArrowMarkerSymbol MarkerSymbol_ArrowMarker;
 			public StructMultilayerMarkerSymbol MarkerSymbol_MultilayerMarker;
-			//____________________________________________________
-			public LineStructs kindOfOutlineStruct; //steht drin, welcher struct im jeweiligen Fall benutzt wurde
+			public LineStructs kindOfOutlineStruct; 
 			public StructSimpleLineSymbol Outline_SimpleLine;
 			public StructCartographicLineSymbol Outline_CartographicLine;
 			public StructMarkerLineSymbol Outline_MarkerLine;
 			public StructHashLineSymbol Outline_HashLine;
 			public StructPictureLineSymbol Outline_PictureLine;
 			public StructMultilayerLineSymbol Outline_MultiLayerLines;
-			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Daten ermittelt auf Rendererlevel:
-			public string Label; //Die Feldwertbezeichnung (Label)    [alle Renderer]
-			public ArrayList Fieldvalues; //Der Feldwert(e), nach dem Klassifiziert und dieses Symbol zugewiesen wird [Alle Renderer]. Die Reihenfolge der Werte entspricht auch der Reihenfolge der Felder (Spalten), wie sie im Renderereobjekt unter 'FieldNames as ArrayList' zu finden ist
-			public double UpperLimit; //Obergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
-			public double LowerLimit; //Untergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
+			public string Label; 
+			public ArrayList Fieldvalues; 
+			public double UpperLimit; 
+			public double LowerLimit; 
 		}
-		//Die Datenstruktur f黵 LineFillSymbol
 		internal struct StructLineFillSymbol
 		{
-			public double Angle; //Der Linienwinkel
-			public string Color; //Die Hintergrundfarbe
+			public double Angle; 
+			public string Color; 
 			public byte Transparency;
-			public double Offset; //der Linienversatz bei z.B. versch.-farbigen gegeneinander verschobenen Linien
-			public double Separation; //Der Linienabstand
-			//____________________________________________________
-			public LineStructs kindOfLineStruct; //steht drin, welcher struct im jeweiligen Fall benutzt wurde
+			public double Offset; 
+			public double Separation; 
+			public LineStructs kindOfLineStruct; 
 			public StructSimpleLineSymbol LineSymbol_SimpleLine;
 			public StructCartographicLineSymbol LineSymbol_CartographicLine;
 			public StructMarkerLineSymbol LineSymbol_MarkerLine;
 			public StructHashLineSymbol LineSymbol_HashLine;
 			public StructPictureLineSymbol LineSymbol_PictureLine;
 			public StructMultilayerLineSymbol LineSymbol_MultiLayerLines;
-			//____________________________________________________
-			public LineStructs kindOfOutlineStruct; //steht drin, welcher struct im jeweiligen Fall benutzt wurde
+			public LineStructs kindOfOutlineStruct;
 			public StructSimpleLineSymbol Outline_SimpleLine;
 			public StructCartographicLineSymbol Outline_CartographicLine;
 			public StructMarkerLineSymbol Outline_MarkerLine;
 			public StructHashLineSymbol Outline_HashLine;
 			public StructPictureLineSymbol Outline_PictureLine;
 			public StructMultilayerLineSymbol Outline_MultiLayerLines;
-			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Daten ermittelt auf Rendererlevel:
-			public string Label; //Die Feldwertbezeichnung (Label)    [alle Renderer]
-			public ArrayList Fieldvalues; //Der Feldwert(e), nach dem Klassifiziert und dieses Symbol zugewiesen wird [Alle Renderer]. Die Reihenfolge der Werte entspricht auch der Reihenfolge der Felder (Spalten), wie sie im Renderereobjekt unter 'FieldNames as ArrayList' zu finden ist
-			public double UpperLimit; //Obergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
-			public double LowerLimit; //Untergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
+			public string Label; 
+			public ArrayList Fieldvalues; 
+			public double UpperLimit; 
+			public double LowerLimit;
 		}
-		//Die Datenstruktur f黵 DotDensityFillSymbol
 		internal struct StructDotDensityFillSymbol
 		{
-			public string BackgroundColor; //Die Hintergrundfarbe
-			public byte BackgroundTransparency; //Transparancy of the color.
-			public string Color; //
+			public string BackgroundColor; 
+			public byte BackgroundTransparency;
+			public string Color; 
 			public byte Transparency;
-			public int DotCount; //Anzahl der Punkte
-			public double DotSize; //Symbolgr鲞e
-			public double DotSpacing; //Distanz zwischen den Mittelpunkten der Symbole
-			public bool FixedPlacement; //Bei true, werdfen die Symbole immer an der gleichen Stelle plaziert, andernfalls random verteilt
-			public ArrayList SymbolList; //Das Array mit den einzelnen Marker-Symbolen des DotDensityFillSymbol
-			public int SymbolCount; //Die Anzahl der unterschiedlichen Symbole
-			//____________________________________________________
-			public LineStructs kindOfOutlineStruct; //steht drin, welcher struct im jeweiligen Fall benutzt wurde
+			public int DotCount;
+			public double DotSize; 
+			public double DotSpacing; 
+			public bool FixedPlacement; 
+			public ArrayList SymbolList; 
+			public int SymbolCount; 
+			public LineStructs kindOfOutlineStruct; 
 			public StructSimpleLineSymbol Outline_SimpleLine;
 			public StructCartographicLineSymbol Outline_CartographicLine;
 			public StructMarkerLineSymbol Outline_MarkerLine;
 			public StructHashLineSymbol Outline_HashLine;
 			public StructPictureLineSymbol Outline_PictureLine;
 			public StructMultilayerLineSymbol Outline_MultiLayerLines;
-			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Daten ermittelt auf Rendererlevel:
-			public string Label; //Die Feldwertbezeichnung (Label)    [alle Renderer]
-			public ArrayList Fieldvalues; //Der Feldwert(e), nach dem Klassifiziert und dieses Symbol zugewiesen wird [Alle Renderer]. Die Reihenfolge der Werte entspricht auch der Reihenfolge der Felder (Spalten), wie sie im Renderereobjekt unter 'FieldNames as ArrayList' zu finden ist
-			public double UpperLimit; //Obergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
-			public double LowerLimit; //Untergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
+			public string Label; 
+			public ArrayList Fieldvalues;
+			public double UpperLimit; 
+			public double LowerLimit; 
 		}
-		//Die Datenstruktur f黵 PictureFillSymbol
 		internal struct StructPictureFillSymbol
 		{
-			public double Angle; //Der Winkel der Bilddrehung
-			public string BackgroundColor; //die Hintergrundfarbe
-			public byte BackgroundTransparency; //Transparancy of the color.
-			public string Color; //
+			public double Angle; 
+			public string BackgroundColor; 
+			public byte BackgroundTransparency; 
+			public string Color; 
 			public byte Transparency;
-			public IPictureDisp Picture; //Das Bild
-			public double XScale; //Seitenverh鋖tnis X
-			public double YScale; //Seitenverh鋖tnis Y
-			//____________________________________________________
-			public LineStructs kindOfOutlineStruct; //steht drin, welcher struct im jeweiligen Fall benutzt wurde
+			public IPictureDisp Picture; 
+			public double XScale; 
+			public double YScale; 
+			public LineStructs kindOfOutlineStruct; 
 			public StructSimpleLineSymbol Outline_SimpleLine;
 			public StructCartographicLineSymbol Outline_CartographicLine;
 			public StructMarkerLineSymbol Outline_MarkerLine;
 			public StructHashLineSymbol Outline_HashLine;
 			public StructPictureLineSymbol Outline_PictureLine;
 			public StructMultilayerLineSymbol Outline_MultiLayerLines;
-			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Daten ermittelt auf Rendererlevel:
-			public string Label; //Die Feldwertbezeichnung (Label)    [alle Renderer]
-			public ArrayList Fieldvalues; //Der Feldwert(e), nach dem Klassifiziert und dieses Symbol zugewiesen wird [Alle Renderer]. Die Reihenfolge der Werte entspricht auch der Reihenfolge der Felder (Spalten), wie sie im Renderereobjekt unter 'FieldNames as ArrayList' zu finden ist
-			public double UpperLimit; //Obergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
-			public double LowerLimit; //Untergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
+			public string Label; 
+			public ArrayList Fieldvalues; 
+			public double UpperLimit; 
+			public double LowerLimit; 
 		}
-		//Die Datenstruktur f黵 GradientFillSymbol
 		internal struct StructGradientFillSymbol
 		{
-			public string Color; //
+			public string Color; 
 			public byte Transparency;
-			public ArrayList Colors; //die einzelnen Farben der ColorRamp as string
-			public double GradientAngle; //Neigungswinkel f黵 das F黮lmuster
-			public double GradientPercentage; //Zahl zw. 0 und 1. 1=Farbverlauf 黚er die gesamte Fl鋍he. 0.5=H鋖fte der Fl鋍he wird mit Farbverlauf dargestellt
-			public int IntervallCount; //Anzahl der Farben im Farbverlauf
-			public string Style; //der esriGradientFillStyle
-			//____________________________________________________
-			public LineStructs kindOfOutlineStruct; //steht drin, welcher struct im jeweiligen Fall benutzt wurde
+			public ArrayList Colors; 
+			public double GradientAngle; 
+			public double GradientPercentage; 
+			public int IntervallCount;
+			public string Style; 
+			public LineStructs kindOfOutlineStruct; 
 			public StructSimpleLineSymbol Outline_SimpleLine;
 			public StructCartographicLineSymbol Outline_CartographicLine;
 			public StructMarkerLineSymbol Outline_MarkerLine;
 			public StructHashLineSymbol Outline_HashLine;
 			public StructPictureLineSymbol Outline_PictureLine;
 			public StructMultilayerLineSymbol Outline_MultiLayerLines;
-			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Daten ermittelt auf Rendererlevel:
-			public string Label; //Die Feldwertbezeichnung (Label)    [alle Renderer]
-			public ArrayList Fieldvalues; //Der Feldwert(e), nach dem Klassifiziert und dieses Symbol zugewiesen wird [Alle Renderer]. Die Reihenfolge der Werte entspricht auch der Reihenfolge der Felder (Spalten), wie sie im Renderereobjekt unter 'FieldNames as ArrayList' zu finden ist
-			public double UpperLimit; //Obergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
-			public double LowerLimit; //Untergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
+			public string Label; 
+			public ArrayList Fieldvalues;
+			public double UpperLimit; 
+			public double LowerLimit; 
 		}
-		//____________________________________________________________________________________________________
-		
-		
-		//Die Datenstruktur f黵 BarChartSymbol
 		internal struct StructBarChartSymbol
 		{
-			public bool ShowAxes; //...
-			public double Spacing; //Der Platz zwischen den Balken
-			public bool VerticalBars; //...
-			public double Width; //...
-			//____________________________________________________
-			public LineStructs kindOfAxeslineStruct; //steht drin, welcher struct im jeweiligen Fall benutzt wurde
+			public bool ShowAxes; 
+			public double Spacing; 
+			public bool VerticalBars; 
+			public double Width;
+			public LineStructs kindOfAxeslineStruct; 
 			public StructSimpleLineSymbol Axes_SimpleLine;
 			public StructCartographicLineSymbol Axes_CartographicLine;
 			public StructMarkerLineSymbol Axes_MarkerLine;
 			public StructHashLineSymbol Axes_HashLine;
 			public StructPictureLineSymbol Axes_PictureLine;
 			public StructMultilayerLineSymbol Axes_MultiLayerLines;
-			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Daten ermittelt auf Rendererlevel:
-			public string Label; //Die Feldwertbezeichnung (Label)    [alle Renderer]
-			public ArrayList Fieldvalues; //Der Feldwert(e), nach dem Klassifiziert und dieses Symbol zugewiesen wird [Alle Renderer]. Die Reihenfolge der Werte entspricht auch der Reihenfolge der Felder (Spalten), wie sie im Renderereobjekt unter 'FieldNames as ArrayList' zu finden ist
-			public double UpperLimit; //Obergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
-			public double LowerLimit; //Untergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
+			public string Label;
+			public ArrayList Fieldvalues; 
+			public double UpperLimit; 
+			public double LowerLimit; 
 		}
-		//Die Datenstruktur f黵 PieChartSymbol
 		internal struct StructPieChartSymbol
 		{
-			public bool Clockwise; //Uhrzeigersinn oder nicht
-			public bool UseOutline; //...
-			//____________________________________________________
-			public LineStructs kindOfOutlineStruct; //steht drin, welcher struct im jeweiligen Fall benutzt wurde
+			public bool Clockwise; 
+			public bool UseOutline; 
+			public LineStructs kindOfOutlineStruct; 
 			public StructSimpleLineSymbol Outline_SimpleLine;
 			public StructCartographicLineSymbol Outline_CartographicLine;
 			public StructMarkerLineSymbol Outline_MarkerLine;
 			public StructHashLineSymbol Outline_HashLine;
 			public StructPictureLineSymbol Outline_PictureLine;
 			public StructMultilayerLineSymbol Outline_MultiLayerLines;
-			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Daten ermittelt auf Rendererlevel:
-			public string Label; //Die Feldwertbezeichnung (Label)    [alle Renderer]
-			public ArrayList Fieldvalues; //Der Feldwert(e), nach dem Klassifiziert und dieses Symbol zugewiesen wird [Alle Renderer]. Die Reihenfolge der Werte entspricht auch der Reihenfolge der Felder (Spalten), wie sie im Renderereobjekt unter 'FieldNames as ArrayList' zu finden ist
-			public double UpperLimit; //Obergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
-			public double LowerLimit; //Untergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
+			public string Label; 
+			public ArrayList Fieldvalues; 
+			public double UpperLimit;
+			public double LowerLimit; 
 		}
-		//Die Datenstruktur f黵 StackedChartSymbol
 		internal struct StructStackedChartSymbol
 		{
-			public bool Fixed; //...
-			public bool UseOutline; //...
+			public bool Fixed; 
+			public bool UseOutline; 
 			public bool VerticalBar;
-			public double Width; //...
-			//____________________________________________________
-			public LineStructs kindOfOutlineStruct; //steht drin, welcher struct im jeweiligen Fall benutzt wurde
+			public double Width; 
+			public LineStructs kindOfOutlineStruct; 
 			public StructSimpleLineSymbol Outline_SimpleLine;
 			public StructCartographicLineSymbol Outline_CartographicLine;
 			public StructMarkerLineSymbol Outline_MarkerLine;
 			public StructHashLineSymbol Outline_HashLine;
 			public StructPictureLineSymbol Outline_PictureLine;
 			public StructMultilayerLineSymbol Outline_MultiLayerLines;
-			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Daten ermittelt auf Rendererlevel:
-			public string Label; //Die Feldwertbezeichnung (Label)    [alle Renderer]
-			public ArrayList Fieldvalues; //Der Feldwert(e), nach dem Klassifiziert und dieses Symbol zugewiesen wird [Alle Renderer]. Die Reihenfolge der Werte entspricht auch der Reihenfolge der Felder (Spalten), wie sie im Renderereobjekt unter 'FieldNames as ArrayList' zu finden ist
-			public double UpperLimit; //Obergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
-			public double LowerLimit; //Untergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
+			public string Label; 
+			public ArrayList Fieldvalues; 
+			public double UpperLimit; 
+			public double LowerLimit; 
 		}
-		//____________________________________________________________________________________________________
-		
-		//Die Datenstruktur f黵 TextSymbol
 		internal struct StructTextSymbol
 		{
-			public double Angle; //Der Textwinkel
-			public string Color; //...
-			public string Font; //...
-			public string Style; //Font style in CSS notation, e.g. italic or normal
-			public string Weight; //Font weight in CSS notation, e.g. bold or normal
-			public string HorizontalAlignment; // die Horizontale Textausrichtung als esriTextHorizontalAlignment
-			public bool RightToLeft; //
-			public double Size; //...
-			public string Text; //...
-			public string VerticalAlignment; //die Verticale Textausrichtung als esriTextVerticalAlignment
-			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Daten ermittelt auf Rendererlevel:
-			public string Label; //Die Feldwertbezeichnung (Label)    [alle Renderer]
-			public ArrayList Fieldvalues; //Der Feldwert(e), nach dem Klassifiziert und dieses Symbol zugewiesen wird [Alle Renderer]. Die Reihenfolge der Werte entspricht auch der Reihenfolge der Felder (Spalten), wie sie im Renderereobjekt unter 'FieldNames as ArrayList' zu finden ist
-			public double UpperLimit; //Obergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
-			public double LowerLimit; //Untergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
+			public double Angle; 
+			public string Color; 
+			public string Font; 
+			public string Style; 
+			public string Weight; 
+			public string HorizontalAlignment; 
+			public bool RightToLeft; 
+			public double Size; 
+			public string Text;
+			public string VerticalAlignment; 
+			public string Label; 
+			public ArrayList Fieldvalues; 
+			public double UpperLimit; 
+			public double LowerLimit;
 		}
-		//*************************** Die Strukturen f黵 dieMultilayer-Symbole ******************************
-		
-		//Das Marker-Multilayersymbol
 		internal struct StructMultilayerMarkerSymbol
 		{
-			public ArrayList MultiMarkerLayers; //Das Symbol kann aus mehreren Markersymbollayern zusammengestzt sein
-			public int LayerCount; //Anzahl der Layer
-			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Daten ermittelt auf Rendererlevel:
-			public string Label; //Die Feldwertbezeichnung (Label)    [alle Renderer]
-			public ArrayList Fieldvalues; //Der Feldwert(e), nach dem Klassifiziert und dieses Symbol zugewiesen wird [Alle Renderer]. Die Reihenfolge der Werte entspricht auch der Reihenfolge der Felder (Spalten), wie sie im Renderereobjekt unter 'FieldNames as ArrayList' zu finden ist
-			public double UpperLimit; //Obergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
-			public double LowerLimit; //Untergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
+			public ArrayList MultiMarkerLayers;
+			public int LayerCount; 
+			public string Label; 
+			public ArrayList Fieldvalues; 
+			public double UpperLimit; 
+			public double LowerLimit; 
 		}
-		//Das Line-Multilayersymbol
 		internal struct StructMultilayerLineSymbol
 		{
-			public ArrayList MultiLineLayers; //Das Symbol kann aus mehreren Linesymbollayern zusammengestzt sein
-			public int LayerCount; //Anzahl der Layer
-			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Daten ermittelt auf Rendererlevel:
-			public string Label; //Die Feldwertbezeichnung (Label)    [alle Renderer]
-			public ArrayList Fieldvalues; //Der Feldwert(e), nach dem Klassifiziert und dieses Symbol zugewiesen wird [Alle Renderer]. Die Reihenfolge der Werte entspricht auch der Reihenfolge der Felder (Spalten), wie sie im Renderereobjekt unter 'FieldNames as ArrayList' zu finden ist
-			public double UpperLimit; //Obergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
-			public double LowerLimit; //Untergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
+			public ArrayList MultiLineLayers; 
+			public int LayerCount; 
+			public string Label; 
+			public ArrayList Fieldvalues;
+			public double UpperLimit; 
+			public double LowerLimit; 
 		}
-		//Das Fill-Multilayersymbol
 		internal struct StructMultilayerFillSymbol
 		{
-			public ArrayList MultiFillLayers; //Das Symbol kann aus mehreren Fillsymbollayern zusammengestzt sein
-			public int LayerCount; //Anzahl der Layer
-			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Daten ermittelt auf Rendererlevel:
-			public string Label; //Die Feldwertbezeichnung (Label)    [alle Renderer]
-			public ArrayList Fieldvalues; //Der Feldwert(e), nach dem Klassifiziert und dieses Symbol zugewiesen wird [Alle Renderer]. Die Reihenfolge der Werte entspricht auch der Reihenfolge der Felder (Spalten), wie sie im Renderereobjekt unter 'FieldNames as ArrayList' zu finden ist
-			public double UpperLimit; //Obergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
-			public double LowerLimit; //Untergrenze der das aktuelle Symbol betr. Range beim ClassBreaksRenderer
+			public ArrayList MultiFillLayers; 
+			public int LayerCount; 
+			public string Label; 
+			public ArrayList Fieldvalues; 
+			public double UpperLimit;
+			public double LowerLimit;
 		}
 		internal struct StructAnnotation
 		{
@@ -639,59 +495,40 @@ namespace ArcGIS_SLD_Converter
 			public string PropertyName;
 			public StructTextSymbol TextSymbol;
 		}
-#endregion //Die Deklaration der Datenstrukturen, in denen alle analysierten Daten erfasst werden
-		
-		//##################################################################################################
-		//########################################### ROUTINEN #############################################
-		//##################################################################################################
-		
-#region Routinen //u.a. die public Sub New()
-		
+#endregion 
+#region 主要处理函数 
+		/// <summary>
+        /// 初始化函数
+        /// </summary>
+        /// <param name="value">主窗体</param>
+        /// <param name="Filename">保存文件路径</param>
 		public Analize_ArcMap_Symbols(Motherform value, string Filename)
 		{
-			m_cFilename = Filename; //1.)
-			frmMotherform = value; //2.)
-			
-			m_ObjApp = null; //Um sicherzustellen, da?kein Unsinn initialisiert ist
+			m_cFilename = Filename;
+			frmMotherform = value; 
+			m_ObjApp = null;
 			CentralProcessingFunc();
 		}
-		
-		//************************************************************************************************
-		//Every time when a layer is added to the List the function adds one to the layer number
-		//************************************************************************************************
 		private void AddOneToLayerNumber()
 		{
 			m_StrProject.LayerCount++;
 		}
 		
 #endregion
+#region 属性信息
 		
-		//##################################################################################################
-		//######################################### PROPERTIES #############################################
-		//##################################################################################################
-		
-#region Properties
-		
-		//Gibt die Datenstruktur mit den gespeicherten Projektdaten weiter
-public object GetProjectData
-		{
-			get
-			{
-				return m_StrProject;
-			}
-		}
-		
+		/// <summary>
+        /// 获取项目信息
+        /// </summary>
+        public object GetProjectData
+		        {
+			        get
+			        {
+				        return m_StrProject;
+			        }
+		        }
 #endregion
-		
-		//##################################################################################################
-		//######################################### FUNKTIONEN #############################################
-		//##################################################################################################
-		
-#region Speicherfuntionen der Datenstrukturen
-		
-		//************************************************************************************************
-		//Speichert die Daten in einer SimpleRenderer-Datenstruktur
-		//************************************************************************************************
+#region Speicherfuntionen der Datenstrukturen		
 		private StructSimpleRenderer StoreStructSimpleRenderer(ISimpleRenderer Renderer, IFeatureLayer Layer)
 		{
 			StructSimpleRenderer strRenderer = new StructSimpleRenderer();
@@ -699,28 +536,22 @@ public object GetProjectData
 			IDataset objDataset = default(IDataset);
 			objDataset = Layer.FeatureClass as IDataset;
 			strRenderer.SymbolList = new ArrayList();
-			
 			try
 			{
-				
 				strRenderer.LayerName = Layer.Name;
 				strRenderer.DatasetName = objDataset.Name;
 				strRenderer.Annotation = GetAnnotation(Layer);
-				//AB HIER BEGINNEN DIE FALLUNTERSCHEIDUNGEN DER SYMBOLE
-				objFstOrderSymbol = Renderer.Symbol; //Die Zuweisung der jeweiligen einzelnen Symbole
-				//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+				objFstOrderSymbol = Renderer.Symbol; 
 				if (objFstOrderSymbol is ITextSymbol)
 				{
 					StructTextSymbol strTS = new StructTextSymbol();
 					ITextSymbol objSymbol = default(ITextSymbol);
 					objSymbol = objFstOrderSymbol as ITextSymbol;
 					strTS = StoreText(objSymbol);
-					//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 					strTS.Label = Renderer.Label;
 					strRenderer.SymbolList.Add(strTS);
 					
 				}
-				//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx()
 				if (objFstOrderSymbol is IMarkerSymbol)
 				{
 					strRenderer.FeatureCls = FeatureClass.PointFeature;
@@ -733,7 +564,6 @@ public object GetProjectData
                             SMS = objSymbol as ISimpleMarkerSymbol;
 							StructSimpleMarkerSymbol strSMS = new StructSimpleMarkerSymbol();
 							strSMS = StoreSimpleMarker(SMS);
-							//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 							strSMS.Label = Renderer.Label;
 							strRenderer.SymbolList.Add(strSMS);
 							break;
@@ -743,7 +573,6 @@ public object GetProjectData
 							CMS = objSymbol as ICharacterMarkerSymbol ;
 							StructCharacterMarkerSymbol strCMS = new StructCharacterMarkerSymbol();
 							strCMS = StoreCharacterMarker(CMS);
-							//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 							strCMS.Label = Renderer.Label;
 							strRenderer.SymbolList.Add(strCMS);
 							break;
@@ -753,37 +582,30 @@ public object GetProjectData
                             PMS = objSymbol as IPictureMarkerSymbol;
 							StructPictureMarkerSymbol strPMS = new StructPictureMarkerSymbol();
 							strPMS = StorePictureMarker(PMS);
-							//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 							strPMS.Label = Renderer.Label;
 							strRenderer.SymbolList.Add(strPMS);
 							break;
-							
 						case "IArrowMarkerSymbol":
 							IArrowMarkerSymbol AMS = default(IArrowMarkerSymbol);
                             AMS = objSymbol as IArrowMarkerSymbol;
 							StructArrowMarkerSymbol strAMS = new StructArrowMarkerSymbol();
 							strAMS = StoreArrowMarker(AMS);
-							//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 							strAMS.Label = Renderer.Label;
 							strRenderer.SymbolList.Add(strAMS);
 							break;
-							
 						case "IMultiLayerMarkerSymbol":
 							IMultiLayerMarkerSymbol MLMS = default(IMultiLayerMarkerSymbol);
                             MLMS = objSymbol as IMultiLayerMarkerSymbol;
 							StructMultilayerMarkerSymbol strMLMS = new StructMultilayerMarkerSymbol();
 							strMLMS = StoreMultiLayerMarker(MLMS);
-							//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 							strMLMS.Label = Renderer.Label;
 							strRenderer.SymbolList.Add(strMLMS);
 							break;
-							
 						case "false":
 							InfoMsg("Seit Erstellen der Programmversion ist eine neue Symbolvariante zu den esri-Symbolen hinzugekommen", "StoreStructLayer");
 							break;
 					}
 				}
-				//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 				if (objFstOrderSymbol is ILineSymbol)
 				{
 					strRenderer.FeatureCls = FeatureClass.LineFeature;
@@ -796,68 +618,55 @@ public object GetProjectData
                             CLS = objSymbol as ICartographicLineSymbol;
 							StructCartographicLineSymbol strCLS = new StructCartographicLineSymbol();
 							strCLS = StoreCartographicLine(CLS);
-							//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 							strCLS.Label = Renderer.Label;
 							strRenderer.SymbolList.Add(strCLS);
 							break;
-							
 						case "IHashLineSymbol":
 							IHashLineSymbol HLS = default(IHashLineSymbol);
                             HLS = objSymbol as IHashLineSymbol;
 							StructHashLineSymbol strHLS = new StructHashLineSymbol();
 							strHLS = StoreHashLine(HLS);
-							//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 							strHLS.Label = Renderer.Label;
 							strRenderer.SymbolList.Add(strHLS);
 							break;
-							
 						case "IMarkerLineSymbol":
 							IMarkerLineSymbol MLS = default(IMarkerLineSymbol);
                             MLS = objSymbol as IMarkerLineSymbol;
 							StructMarkerLineSymbol strMLS = new StructMarkerLineSymbol();
 							strMLS = StoreMarkerLine(MLS);
-							//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 							strMLS.Label = Renderer.Label;
 							strRenderer.SymbolList.Add(strMLS);
 							break;
-							
 						case "ISimpleLineSymbol":
 							ISimpleLineSymbol SLS = default(ISimpleLineSymbol);
                             SLS = objSymbol as ISimpleLineSymbol;
 							StructSimpleLineSymbol strSLS = new StructSimpleLineSymbol();
 							strSLS = StoreSimpleLine(SLS);
-							//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 							strSLS.Label = Renderer.Label;
 							strRenderer.SymbolList.Add(strSLS);
 							break;
-							
 						case "IPictureLineSymbol":
 							IPictureLineSymbol PLS = default(IPictureLineSymbol);
                             PLS = objSymbol as IPictureLineSymbol;
 							StructPictureLineSymbol strPLS = new StructPictureLineSymbol();
 							strPLS = StorePictureLine(PLS);
-							//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 							strPLS.Label = Renderer.Label;
 							strRenderer.SymbolList.Add(strPLS);
 							break;
-							
 						case "IMultiLayerLineSymbol":
 							IMultiLayerLineSymbol MLLS = default(IMultiLayerLineSymbol);
                             MLLS = objSymbol as IMultiLayerLineSymbol;
 							StructMultilayerLineSymbol strMLLS = new StructMultilayerLineSymbol();
 							strMLLS = StoreMultilayerLines(MLLS);
-							//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 							strMLLS.Label = Renderer.Label;
 							strRenderer.SymbolList.Add(strMLLS);
 							break;
-							
 						case "false":
 							InfoMsg("Seit Erstellen der Programmversion ist eine neue Symbolvariante zu den esri-Symbolen hinzugekommen", "StoreStructLayer");
 							break;
 					}
 					
 				}
-				//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 				if (objFstOrderSymbol is IFillSymbol)
 				{
 					strRenderer.FeatureCls = FeatureClass.PolygonFeature;
@@ -870,77 +679,62 @@ public object GetProjectData
                             SFS = objSymbol as ISimpleFillSymbol;
 							StructSimpleFillSymbol strSFS = new StructSimpleFillSymbol();
 							strSFS = StoreSimpleFill(SFS);
-							//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 							strSFS.Label = Renderer.Label;
 							strRenderer.SymbolList.Add(strSFS);
 							break;
-							
 						case "IMarkerFillSymbol":
 							IMarkerFillSymbol MFS = default(IMarkerFillSymbol);
                             MFS = objSymbol as IMarkerFillSymbol;
 							StructMarkerFillSymbol strMFS = new StructMarkerFillSymbol();
 							strMFS = StoreMarkerFill(MFS);
-							//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 							strMFS.Label = Renderer.Label;
 							strRenderer.SymbolList.Add(strMFS);
 							break;
-							
 						case "ILineFillSymbol":
 							ILineFillSymbol LFS = default(ILineFillSymbol);
                             LFS = objSymbol as ILineFillSymbol;
 							StructLineFillSymbol strLFS = new StructLineFillSymbol();
 							strLFS = StoreLineFill(LFS);
-							//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 							strLFS.Label = Renderer.Label;
 							strRenderer.SymbolList.Add(strLFS);
 							break;
-							
 						case "IDotDensityFillSymbol":
 							IDotDensityFillSymbol DFS = default(IDotDensityFillSymbol);
                             DFS = objSymbol as IDotDensityFillSymbol;
 							StructDotDensityFillSymbol strDFS = new StructDotDensityFillSymbol();
 							strDFS = StoreDotDensityFill(DFS);
-							//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 							strDFS.Label = Renderer.Label;
 							strRenderer.SymbolList.Add(strDFS);
 							break;
-							
 						case "IPictureFillSymbol":
 							IPictureFillSymbol PFS = default(IPictureFillSymbol);
                             PFS = objSymbol as IPictureFillSymbol;
 							StructPictureFillSymbol strPFS = new StructPictureFillSymbol();
 							strPFS = StorePictureFill(PFS);
-							//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 							strPFS.Label = Renderer.Label;
 							strRenderer.SymbolList.Add(strPFS);
 							break;
-							
 						case "IGradientFillSymbol":
 							IGradientFillSymbol GFS = default(IGradientFillSymbol);
                             GFS = objSymbol as IGradientFillSymbol;
 							StructGradientFillSymbol strGFS = new StructGradientFillSymbol();
 							strGFS = StoreGradientFill(GFS);
-							//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 							strGFS.Label = Renderer.Label;
 							strRenderer.SymbolList.Add(strGFS);
 							break;
-							
 						case "IMultiLayerFillSymbol":
 							IMultiLayerFillSymbol MLFS = default(IMultiLayerFillSymbol);
                             MLFS = objSymbol as IMultiLayerFillSymbol;
 							StructMultilayerFillSymbol strMLFS = new StructMultilayerFillSymbol();
 							strMLFS = StoreMultiLayerFill(MLFS);
-							//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 							strMLFS.Label = Renderer.Label;
 							strRenderer.SymbolList.Add(strMLFS);
 							break;
-							
 						case "false":
 							InfoMsg("Seit Erstellen der Programmversion ist eine neue Symbolvariante zu den esri-Symbolen hinzugekommen", "StoreStructLayer");
 							break;
 					}
 				}
-				//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 				if (objFstOrderSymbol is I3DChartSymbol)
 				{
 					I3DChartSymbol objSymbol = default(I3DChartSymbol);
@@ -952,37 +746,30 @@ public object GetProjectData
                             BCS = objSymbol as IBarChartSymbol;
 							StructBarChartSymbol strBCS = new StructBarChartSymbol();
 							strBCS = StoreBarChart(BCS);
-							//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 							strBCS.Label = Renderer.Label;
 							strRenderer.SymbolList.Add(strBCS);
 							break;
-							
 						case "IPieChartSymbol":
 							IPieChartSymbol PCS = default(IPieChartSymbol);
                             PCS = objSymbol as IPieChartSymbol;
 							StructPieChartSymbol strPCS = new StructPieChartSymbol();
 							strPCS = StorePieChart(PCS);
-							//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 							strPCS.Label = Renderer.Label;
 							strRenderer.SymbolList.Add(strPCS);
 							break;
-							
 						case "IStackedChartSymbol":
 							IStackedChartSymbol SCS = default(IStackedChartSymbol);
                             SCS = objSymbol as IStackedChartSymbol;
 							StructStackedChartSymbol strSCS = new StructStackedChartSymbol();
 							strSCS = StoreStackedChart(SCS);
-							//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 							strSCS.Label = Renderer.Label;
 							strRenderer.SymbolList.Add(strSCS);
 							break;
-							
 						case "false":
 							InfoMsg("Seit Erstellen der Programmversion ist eine neue Symbolvariante zu den esri-Symbolen hinzugekommen", "StoreStructLayer");
 							break;
 					}
 				}
-				//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 				return strRenderer;
 			}
 			catch (Exception ex)
@@ -992,17 +779,6 @@ public object GetProjectData
                 return strRenderer;
 			}
 		}
-		
-		
-		//************************************************************************************************
-		//Speichert die Daten in einer ClassBreaksRenderer-Datenstruktur. Gespeichert wird auf 2 Ebenen:
-		//1. Daten auf Symbolebene: Symbole werden abgefragt und in Fallunterscheidung auf Untersymbole verteilt
-		//dort werden die symboleigenen Daten in den Symboldatenstrukturen gespeichert
-		//2. Daten auf Rendererebene: Daten, die nur auf Rendererebene verf黦bar sind, werden hier ebenfalls auf
-		//Symbolebene gespeichert, damit sie direkt im Zusammenhang mit dem Symbol verf黦bar sind.
-		//Parameter: Renderer:   das Rendererobjekt des aktuellen Layers
-		//           Layer:      das Layerobjekt des aktuellen Layers
-		//************************************************************************************************
 		private StructClassBreaksRenderer StoreStructCBRenderer(IClassBreaksRenderer Renderer, IFeatureLayer Layer)
 		{
 			StructClassBreaksRenderer strRenderer = new StructClassBreaksRenderer(); //Hierin wird das eine Rendererobjekt gespeichert plus zus鋞zliche Layerinformationen
@@ -1390,15 +1166,6 @@ public object GetProjectData
                 return strRenderer;
 			}
 		}
-		
-		//************************************************************************************************
-		//Die Funktion durchl鋟ft die die diversen Symbolarten, verteilt sie auf die jeweiligen Unter-
-		//symbolarten, und speichert diese dann in der Datenstruktur StructUniqueValueRenderer ab.
-		//In der Funktion werden Daten auf 2 Ebenen gespeichert: Auf Rendererebene (die ersten Speicherungen);
-		//und auf Symbolebene (die Fallunterscheidungen der einzelnen Symbolarten)
-		//Parameter: Renderer: das aktuelle Rendererobjekt. Pro Layer eines
-		//           Layer: das aktuelle Layerobjekt
-		//************************************************************************************************
 		private StructUniqueValueRenderer StoreStructUVRenderer(IUniqueValueRenderer Renderer, IFeatureLayer Layer)
 		{
 			StructUniqueValueRenderer strRenderer = new StructUniqueValueRenderer(); //Hierin wird das eine Rendererobjekt gespeichert plus zus鋞zliche Layerinformationen
@@ -1834,14 +1601,6 @@ public object GetProjectData
                 return strRenderer;
 			}
 		}
-		
-		//************************************************************************************************
-		//For Unique Value renderers get the field value or values for the given value index.
-		//With multiple fields, the result is a list of the values for each of the fields.
-		//With a single field, the result is a list with either the single value, or a
-		//list with multiple values if several of the next value indices belong to the
-		//same group.
-		//************************************************************************************************
 		private ArrayList getUVFieldValues(IUniqueValueRenderer Renderer, int Index)
 		{
 			//Es macht nur Sinn hier Fieldvalues einzuf黦en, wenn 黚erhaupt nach einem Feld klassifiziert wurde
@@ -1894,10 +1653,6 @@ public object GetProjectData
 			}
 			return Fieldvalues;
 		}
-		
-		//************************************************************************************************
-		//Die Funktion speichert die SimpleMarker in seiner Datenstruktur
-		//************************************************************************************************
 		private StructSimpleMarkerSymbol StoreSimpleMarker(ISimpleMarkerSymbol symbol)
 		{
 			StructSimpleMarkerSymbol StructStorage = new StructSimpleMarkerSymbol();
@@ -1913,11 +1668,6 @@ public object GetProjectData
 			StructStorage.YOffset = symbol.YOffset;
 			return StructStorage;
 		}
-		
-		
-		//************************************************************************************************
-		//Die Funktion speichert die CharacterMarker in seiner Datenstruktur
-		//************************************************************************************************
 		private StructCharacterMarkerSymbol StoreCharacterMarker(ICharacterMarkerSymbol symbol)
 		{
 			StructCharacterMarkerSymbol StructStorage = new StructCharacterMarkerSymbol();
@@ -1930,10 +1680,6 @@ public object GetProjectData
 			StructStorage.YOffset = symbol.YOffset;
 			return StructStorage;
 		}
-		
-		//************************************************************************************************
-		//Die Funktion speichert die PictureMarker in seiner Datenstruktur
-		//************************************************************************************************
 		private StructPictureMarkerSymbol StorePictureMarker(IPictureMarkerSymbol symbol)
 		{
 			StructPictureMarkerSymbol StructStorage = new StructPictureMarkerSymbol();
@@ -1946,10 +1692,6 @@ public object GetProjectData
 			StructStorage.YOffset = symbol.YOffset;
 			return StructStorage;
 		}
-		
-		//************************************************************************************************
-		//Die Funktion speichert die ArrowMarker in seiner Datenstruktur
-		//************************************************************************************************
 		private StructArrowMarkerSymbol StoreArrowMarker(IArrowMarkerSymbol symbol)
 		{
 			StructArrowMarkerSymbol StructStorage = new StructArrowMarkerSymbol();
@@ -1963,11 +1705,6 @@ public object GetProjectData
 			StructStorage.YOffset = symbol.YOffset;
 			return StructStorage;
 		}
-		
-		//************************************************************************************************
-		//Die Funktion speichert die MultiLayerMarker in ArrayList. Wieviel Layer wird in LayerCount gesp.
-		//Das MultilayerMarker-Symbol kann nicht selbst nocheinmal aus einem MultilayerMarker bestehen
-		//************************************************************************************************
 		private StructMultilayerMarkerSymbol StoreMultiLayerMarker(IMultiLayerMarkerSymbol symbol)
 		{
 			StructMultilayerMarkerSymbol StructStorage = new StructMultilayerMarkerSymbol();
@@ -2005,11 +1742,6 @@ public object GetProjectData
 			}
 			return StructStorage;
 		}
-		//_______________________________________________________________________________________________________________________
-		
-		//************************************************************************************************
-		//Die Funktion speichert die SimpleLines in seiner Datenstruktur
-		//************************************************************************************************
 		private StructSimpleLineSymbol StoreSimpleLine(ISimpleLineSymbol symbol)
 		{
 			StructSimpleLineSymbol StructStorage = new StructSimpleLineSymbol();
@@ -2026,10 +1758,6 @@ public object GetProjectData
 			StructStorage.Width = symbol.Width;
 			return StructStorage;
 		}
-		
-		//************************************************************************************************
-		//Die Funktion speichert die SimpleLines in seiner Datenstruktur
-		//************************************************************************************************
 		private StructCartographicLineSymbol StoreCartographicLine(ICartographicLineSymbol symbol)
 		{
 			StructCartographicLineSymbol StructStorage = new StructCartographicLineSymbol();
@@ -2063,10 +1791,6 @@ public object GetProjectData
 			}
 			return StructStorage;
 		}
-		
-		//************************************************************************************************
-		//Die Funktion speichert die HashLines in seiner Datenstruktur
-		//************************************************************************************************
 		private StructHashLineSymbol StoreHashLine(IHashLineSymbol symbol)
 		{
 			StructHashLineSymbol StructStorage = new StructHashLineSymbol();
@@ -2111,10 +1835,6 @@ public object GetProjectData
 			}
 			return StructStorage;
 		}
-		
-		//************************************************************************************************
-		//Die Funktion speichert die MarkerLines in seiner Datenstruktur
-		//************************************************************************************************
 		private StructMarkerLineSymbol StoreMarkerLine(IMarkerLineSymbol symbol)
 		{
 			StructMarkerLineSymbol StructStorage = new StructMarkerLineSymbol();
@@ -2159,10 +1879,6 @@ public object GetProjectData
 			}
 			return StructStorage;
 		}
-		
-		//************************************************************************************************
-		//Die Funktion speichert die PictureLines in seiner Datenstruktur
-		//************************************************************************************************
 		private StructPictureLineSymbol StorePictureLine(IPictureLineSymbol symbol)
 		{
 			StructPictureLineSymbol StructStorage = new StructPictureLineSymbol();
@@ -2178,10 +1894,6 @@ public object GetProjectData
 			StructStorage.YScale = symbol.YScale;
 			return StructStorage;
 		}
-		
-		//************************************************************************************************
-		//Die Funktion speichert die MultilayerLines in seiner Datenstruktur
-		//************************************************************************************************
 		private StructMultilayerLineSymbol StoreMultilayerLines(IMultiLayerLineSymbol symbol)
 		{
 			StructMultilayerLineSymbol StructStorage = new StructMultilayerLineSymbol();
@@ -2229,13 +1941,6 @@ public object GetProjectData
 			}
 			return StructStorage;
 		}
-		
-		//_______________________________________________________________________________________________________________________
-		
-		
-		//************************************************************************************************
-		//Die Funktion speichert die SimpleFills in seiner Datenstruktur
-		//************************************************************************************************
 		private StructSimpleFillSymbol StoreSimpleFill(ISimpleFillSymbol symbol)
 		{
 			StructSimpleFillSymbol StructStorage = new StructSimpleFillSymbol();
@@ -2293,11 +1998,6 @@ public object GetProjectData
 			}
 			return StructStorage;
 		}
-		
-		
-		//************************************************************************************************
-		//Die Funktion speichert die MarkerFillSymbols in seiner Datenstruktur
-		//************************************************************************************************
 		private StructMarkerFillSymbol StoreMarkerFill(IMarkerFillSymbol symbol)
 		{
 			StructMarkerFillSymbol StructStorage = new StructMarkerFillSymbol();
@@ -2384,10 +2084,6 @@ public object GetProjectData
 			}
 			return StructStorage;
 		}
-		
-		//************************************************************************************************
-		//Die Funktion speichert die LineFillSymbols in seiner Datenstruktur
-		//************************************************************************************************
 		private StructLineFillSymbol StoreLineFill(ILineFillSymbol symbol)
 		{
 			StructLineFillSymbol StructStorage = new StructLineFillSymbol();
@@ -2482,10 +2178,6 @@ public object GetProjectData
 			}
 			return StructStorage;
 		}
-		
-		//************************************************************************************************
-		//Die Funktion speichert die DotDensityFillSymbols in seiner Datenstruktur
-		//************************************************************************************************
 		private StructDotDensityFillSymbol StoreDotDensityFill(IDotDensityFillSymbol symbol)
 		{
 			StructDotDensityFillSymbol StructStorage = new StructDotDensityFillSymbol();
@@ -2594,10 +2286,6 @@ public object GetProjectData
 			
 			return StructStorage;
 		}
-		
-		//************************************************************************************************
-		//Die Funktion speichert die PictureFillSymbols in seiner Datenstruktur
-		//************************************************************************************************
 		private StructPictureFillSymbol StorePictureFill(IPictureFillSymbol symbol)
 		{
 			StructPictureFillSymbol StructStorage = new StructPictureFillSymbol();
@@ -2654,10 +2342,6 @@ public object GetProjectData
 			}
 			return StructStorage;
 		}
-		
-		//************************************************************************************************
-		//Die Funktion speichert die GradientFillSymbols in seiner Datenstruktur
-		//************************************************************************************************
 		private StructGradientFillSymbol StoreGradientFill(IGradientFillSymbol symbol)
 		{
 			StructGradientFillSymbol StructStorage = new StructGradientFillSymbol();
@@ -2711,10 +2395,6 @@ public object GetProjectData
 			}
 			return StructStorage;
 		}
-		
-		//************************************************************************************************
-		//Die Funktion speichert die MultiLayerFillSymbols in seiner Datenstruktur
-		//************************************************************************************************
 		private StructMultilayerFillSymbol StoreMultiLayerFill(IMultiLayerFillSymbol symbol)
 		{
 			StructMultilayerFillSymbol StructStorage = new StructMultilayerFillSymbol();
@@ -2767,12 +2447,6 @@ public object GetProjectData
 			}
 			return StructStorage;
 		}
-		
-		//_______________________________________________________________________________________________________________________
-		
-		//************************************************************************************************
-		//Die Funktion speichert die BarChartSymbols in seiner Datenstruktur
-		//************************************************************************************************
 		private StructBarChartSymbol StoreBarChart(IBarChartSymbol symbol)
 		{
 			StructBarChartSymbol StructStorage = new StructBarChartSymbol();
@@ -2824,10 +2498,6 @@ public object GetProjectData
 			}
 			return StructStorage;
 		}
-		
-		//************************************************************************************************
-		//Die Funktion speichert die PieChartSymbols in seiner Datenstruktur
-		//************************************************************************************************
 		private StructPieChartSymbol StorePieChart(IPieChartSymbol symbol)
 		{
 			StructPieChartSymbol StructStorage = new StructPieChartSymbol();
@@ -2877,10 +2547,6 @@ public object GetProjectData
 			}
 			return StructStorage;
 		}
-		
-		//************************************************************************************************
-		//Die Funktion speichert die StackedChartSymbols in seiner Datenstruktur
-		//************************************************************************************************
 		private StructStackedChartSymbol StoreStackedChart(IStackedChartSymbol symbol)
 		{
 			StructStackedChartSymbol StructStorage = new StructStackedChartSymbol();
@@ -2932,12 +2598,6 @@ public object GetProjectData
 			}
 			return StructStorage;
 		}
-		
-		//_______________________________________________________________________________________________________________________
-		
-		//************************************************************************************************
-		//Die Funktion speichert TextSymbol in seiner Datenstruktur
-		//************************************************************************************************
 		private StructTextSymbol StoreText(ITextSymbol symbol)
 		{
 			StructTextSymbol StructStorage = new StructTextSymbol();
@@ -2962,28 +2622,12 @@ public object GetProjectData
 			return StructStorage;
 		}
 		
-#endregion //Speicherungen auf Symbolebene und auf Rendererebene
-		
-		//************************************************************************************************
-		//Die Funktion steuert die Prozesse zentral. Sie ist somit die erste Funktion in dieser Klasse
-		//Wird von public Sub New() aufgerufen
-		//************************************************************************************************
-		//ARIS: Compacted the code blocks for english and german to 1 block
-		//************************************************************************************************
+#endregion 
 		private bool CentralProcessingFunc()
 		{
-			if (frmMotherform.m_enumLang == Motherform.Language.Deutsch)
-			{
-				frmMotherform.CHLabelTop("Die Analyse des ArcMap-Projekts l鋟ft");
-			}
-			else if (frmMotherform.m_enumLang == Motherform.Language.English)
-			{
-				frmMotherform.CHLabelTop("Analysis of the ArcMap-Project is running");
-			}
-			
-			bool blnAnswer = default(bool);
+            frmMotherform.CHLabelTop("正在分析ArcMap符号...");
+            bool blnAnswer = false;
 			Output_SLD objOutputSLD;
-			
 			if (GetProcesses() == false)
 			{
 				MyTermination();
@@ -3004,31 +2648,11 @@ public object GetProjectData
 				MyTermination();
 				return false;
 			}
-			
-			//Sicherheitsabfrage, falls noch kein Filename f黵 das SLD angegeben wurde. Dann Aufruf der Ausgabeklasse
 			if (m_cFilename == null || m_cFilename == "")
 			{
-				if (frmMotherform.m_enumLang == Motherform.Language.Deutsch)
-				{
-					frmMotherform.CHLabelTop("Die Analyse des ArcMap-Projekts ist beendet");
-				}
-				else if (frmMotherform.m_enumLang == Motherform.Language.English)
-				{
-					frmMotherform.CHLabelTop("Analysis of the ArcMap-Project has finished");
-				}
-				if (frmMotherform.m_enumLang == Motherform.Language.Deutsch)
-				{
-					blnAnswer = MessageBox.Show("Sie haben noch keinen Dateinamen/Speicherort angegeben. Wenn Sie jetzt keinen Dateinamen angeben" + 
-						",wird die Anwendung beendet." + "\r\n" + "Wollen Sie jetzt einen Dateinamen angeben?", "ArcGIS_SLD_Converter | " + 
-						"Analize_ArcMap_Symbols | CentralProcessingFunc", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes;
-				}
-				else if (frmMotherform.m_enumLang == Motherform.Language.English)
-				{
-					blnAnswer = MessageBox.Show("You haven\'t specified an SLD store location until now. If you don\'t specify a location" + 
-						",the application will be terminated." + "\r\n" + "Do you want to specify a location now?", "ArcGIS_SLD_Converter | " + 
-						"Analize_ArcMap_Symbols | CentralProcessingFunc", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes;
-				}
-				if (blnAnswer)
+                frmMotherform.CHLabelTop(string.Format("ArcMap符号分析完成"));
+                blnAnswer = MessageBox.Show("请先选择SLD文件保存路径","提示", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes;
+                if (blnAnswer)
 				{
 					if (File.Exists(frmMotherform.GetSLDFileFromConfigXML))
 					{
@@ -3049,7 +2673,7 @@ public object GetProjectData
 							m_cFilename = frmMotherform.dlgSave.FileName;
 							frmMotherform.txtFileName.Text = m_cFilename;
 						}
-						objOutputSLD = new Output_SLD(frmMotherform, this, m_cFilename); //Aufruf der Ausgabeklasse
+						objOutputSLD = new Output_SLD(frmMotherform, this, m_cFilename); 
 					}
 					else
 					{
@@ -3063,34 +2687,25 @@ public object GetProjectData
 			}
 			else
 			{
-				objOutputSLD = new Output_SLD(frmMotherform, this, m_cFilename); //Aufruf der Ausgabeklasse
+				objOutputSLD = new Output_SLD(frmMotherform, this, m_cFilename);
 			}
 			frmMotherform.CHLabelBottom("");
 			frmMotherform.CHLabelSmall("");
-			frmMotherform.ReadBackValues(); //Liest die Benutzerdefinierten Einstellungen in die XML-Datei zur點k
-			return default(bool);
+			frmMotherform.ReadBackValues(); 
+			return false;
 		}
 		
-#region Zentrale Verwaltungsfunktionen
-		//************************************************************************************************
-		//Hier werden alle laufenden Prozesse auf dem System durchgesehen, um zu sehen, ob ArcMap
-		//gestartet ist.
-		//************************************************************************************************
+#region 
+        /// <summary>
+        /// 查找系统线程中是否运行ArcMap
+        /// </summary>
+        /// <returns></returns>
 		private bool GetProcesses()
 		{
 			Process objArcGISProcess = new Process();
-			
-			bool bSwitch = false; //der Schalter ist notwendig, weil eine ganze Anzahl Prozesse durchlaufen wird
-			
-			if (frmMotherform.m_enumLang == Motherform.Language.Deutsch)
-			{
-				frmMotherform.CHLabelBottom("Suche ArcMap-Prozess");
-			}
-			else if (frmMotherform.m_enumLang == Motherform.Language.English)
-			{
-				frmMotherform.CHLabelTop("Searching an ArcMap process");
-			}
-			try
+			bool bSwitch = false; 
+            frmMotherform.CHLabelTop("查找运行的ArcGIS应用程序...");
+            try
 			{
 				foreach (Process objProcess in Process.GetProcesses())
 				{
@@ -3106,69 +2721,38 @@ public object GetProjectData
 				}
 				else
 				{
-					if (frmMotherform.m_enumLang == Motherform.Language.Deutsch)
-					{
-						MessageBox.Show("Sie m黶sen erst ArcMap 鰂fnen!");
-					}
-					else if (frmMotherform.m_enumLang == Motherform.Language.English)
-					{
-						frmMotherform.CHLabelTop("You must open ArcMap first");
-					}
-					return false;
+                    frmMotherform.CHLabelTop("必须先运行ArcMap程序！");
+                    return false;
 				}
 			}
 			catch (Exception ex)
 			{
-				ErrorMsg("Fehler beim Durchsehen der laufenden Prozesse auf dem System", ex.Message, ex.StackTrace, "GetProcesses");
+				ErrorMsg("获取应用程序失败", ex.Message, ex.StackTrace, "GetProcesses");
 				return false;
 			}
 		}
-		
-		
-		//************************************************************************************************
-		//Der erste zentrale Punkt in der Anwendung: hier wird die Referenz auf die laufende ArcMap-Instanz
-		//geholt (f黵 exe-Anwendung sehr wichtig!!!)
-		//************************************************************************************************
+        /// <summary>
+        /// 获取线程中的ArcMap线程
+        /// </summary>
+        /// <returns></returns>
 		private bool GetApplication()
 		{
 			long Zahl = 0;
 			m_ObjApp = null;
-			
-			if (frmMotherform.m_enumLang == Motherform.Language.Deutsch)
-			{
-				frmMotherform.CHLabelBottom("Hole Verweis auf laufende ArcMap-Sitzung");
-			}
-			else if (frmMotherform.m_enumLang == Motherform.Language.English)
-			{
-				frmMotherform.CHLabelTop("get reference on running ArcMap-session");
-			}
-			
-			try
+            frmMotherform.CHLabelTop(string.Format("获取ArcMap线程..."));
+            try
 			{
 				m_ObjAppROT = new AppROT();
 				Zahl = m_ObjAppROT.Count;
 				
 				if (Zahl > 1)
 				{
-					if (frmMotherform.m_enumLang == Motherform.Language.Deutsch)
-					{
-						MessageBox.Show("Sie haben mehrere ArcMap Sessions gleichzeitig ge鰂fnet." + 
-							"Bitte schlie遝n Sie alle ArcMap-Anwendungen bis auf jene, von der Sie das" + 
-							" SLD-Dokument generieren m鯿hten und starten Sie die Anwendung erneut!", "Bitte Beachten!", MessageBoxButtons.OK, MessageBoxIcon.Information);
-						return false;
-					}
-					else if (frmMotherform.m_enumLang == Motherform.Language.English)
-					{
-						MessageBox.Show("You started several ArcMap-sessions at one time." + 
-							"Please close all sessions except of that, you want to analyse and" + 
-							" start the application again!", "Please notice!", MessageBoxButtons.OK, MessageBoxIcon.Information);
-						return false;
-					}
-					
-				}
+                    MessageBox.Show(string.Format("只能运行一个ArcMap应用程序"), "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return false;
+                }
 				else
 				{
-					if (m_ObjAppROT.Item[0] is IMxApplication) //躡erpr黤ung, ob das richtige Objekt erhalten wurde
+					if (m_ObjAppROT.Item[0] is IMxApplication) 
 					{
 						m_ObjApp = m_ObjAppROT.Item[0];
 						m_ObjDoc = m_ObjApp.Document as IMxDocument;
@@ -3185,57 +2769,27 @@ public object GetProjectData
 				return false;
 			}
 		}
-		
-		
-		//************************************************************************************************
-		//Das Kartenobjekt: Hier wird auf das Kartenobjekt referenziert. Wenn es mehrere Karten gibt, erfolg
-		//eine Abfrage, ob die aktive Karte die Karte ist, die umgewandelt werden soll
-		//************************************************************************************************
+        /// <summary>
+        /// 获取地图文档信息
+        /// </summary>
+        /// <returns></returns>
 		private bool GetMap()
 		{
-			
-			if (frmMotherform.m_enumLang == Motherform.Language.Deutsch)
+            frmMotherform.CHLabelTop(string.Format("获取当前的地图信息..."));
+            try
 			{
-				frmMotherform.CHLabelBottom("Verweis auf das aktuelle Kartenfenster");
-			}
-			else if (frmMotherform.m_enumLang == Motherform.Language.English)
-			{
-				frmMotherform.CHLabelTop("Reference on the current Session");
-			}
-			
-			try
-			{
-				if (m_ObjDoc.Maps.Count> 1) //Wenn mehr es mehr als eine Karte in dem Dokument gibt
+				if (m_ObjDoc.Maps.Count> 1) 
 				{
-					if (frmMotherform.m_enumLang == Motherform.Language.Deutsch)
-					{
-						if (MessageBox.Show("Ist die von Ihnen zum Umwandeln in SLD gew黱schte Karte gerade die aktive Karte? " + 
-							"Wenn ja, dr點ken Sie \'Ja\' wenn nicht, dr點ken Sie \'Nein\', w鋒len in ArcMap die richtige Karte aus, " + 
-							"und bet鋞igen den Befehl noch einmal", "Auswahl der gew黱schten Karte", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
-						{
-							m_ObjMap = m_ObjDoc.FocusMap;
-							return true;
-						}
-						else
-						{
-							return false;
-						}
-					}
-					else if (frmMotherform.m_enumLang == Motherform.Language.English)
-					{
-						if (MessageBox.Show("Is that current map this one you want to turn into SLD? " + 
-							"if yes push \'yes\' if no push \'no\' and choose the right map in ArcMap " + 
-							"and use that procedure again", "Choice of the right map", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
-						{
-							m_ObjMap = m_ObjDoc.FocusMap;
-							return true;
-						}
-						else
-						{
-							return false;
-						}
-					}
-				}
+                    if (MessageBox.Show(string.Format("当前地图文档中的地图过多"), "选择一个地图", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
+                    {
+                        m_ObjMap = m_ObjDoc.FocusMap;
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
 				else
 				{
 					m_ObjMap = m_ObjDoc.FocusMap;
@@ -3244,59 +2798,39 @@ public object GetProjectData
 			}
 			catch (Exception ex)
 			{
-				ErrorMsg("Fehler beim Erhalten des aktuellen Kartenobjekts ", ex.Message, ex.StackTrace, "GetMap");
+				ErrorMsg(string.Format("获取地图文档失败!"), ex.Message, ex.StackTrace, "GetMap");
 				return false;
 			}
-			return default(bool);
+			return false;
 		}
-		
-		//************************************************************************************************
-		//Hier ist der zweite zentrale Punkt der Anwendung zu finden:
-		//Die Layer der aktiven Karte werden durchlaufen und alle Layerobjekte in der Collection zusammen-
-		// gefasst. Au遝rdem: Collection von jedem Rendererobjekt jedes FeatureLayers.
-		//Haupts鋍hlich: die Symbolwerte der einzelnen Layer werden durchlaufen und die Einzelsymbole in
-		//einer Datenstruktur gespeichert
-		//************************************************************************************************
+        /// <summary>
+        /// 地图符号分析
+        /// </summary>
+        /// <returns></returns>
 		private bool AnalyseLayerSymbology()
 		{
-			ILayer objLayer = default(ILayer); //Die Schnittstelle zum aktuellen Layer
-			int iNumberLayers = 0; //Die Anzahl aller Layer
-			string cLayerName = ""; //Der Name des aktuellen Layers
-			ISymbol objFstOrderSymbol; //Das ISymbol des entsprechenden Renderers
-			m_StrProject = new StructProject(); //Projektstruct wird hier initialisiert
+			ILayer objLayer = default(ILayer); 
+			int iNumberLayers = 0; 
+			string cLayerName = ""; 
+			ISymbol objFstOrderSymbol; 
+			m_StrProject = new StructProject(); 
 			iNumberLayers = m_ObjMap.LayerCount;
 			m_StrProject.LayerList = new ArrayList();
-			
 			try
 			{
 				int i = 0;
-				//Steps through all layers of the first level
 				for (i = 0; i <= iNumberLayers - 1; i++)
 				{
 					objLayer = m_ObjMap.Layer[i];
 					cLayerName = objLayer.Name;
 					if (frmMotherform.m_bAllLayers == false && objLayer.Visible == false)
 					{
-						if (frmMotherform.m_enumLang == Motherform.Language.Deutsch)
-						{
-							frmMotherform.CHLabelBottom("Layer " + cLayerName + " wird wird 黚ersprungen, weil sie nicht sichtbar ist.");
-						}
-						else if (frmMotherform.m_enumLang == Motherform.Language.English)
-						{
-							frmMotherform.CHLabelBottom("Layer " + cLayerName + " is skipped, because it is not visible");
-						}
-					}
+                        frmMotherform.CHLabelBottom(string.Format("图层【{0}】不可见，不进行分析", cLayerName));
+                    }
 					else
 					{
-						if (frmMotherform.m_enumLang == Motherform.Language.Deutsch)
-						{
-							frmMotherform.CHLabelBottom("Layer " + cLayerName + " wird gerade analysiert");
-						}
-						else if (frmMotherform.m_enumLang == Motherform.Language.English)
-						{
-							frmMotherform.CHLabelBottom("Layer " + cLayerName + " is beeing analysed");
-						}
-						SpreadLayerStructure(objLayer);
+                        frmMotherform.CHLabelBottom(string.Format("正在分析图层【{0}】...", cLayerName));
+                        SpreadLayerStructure(objLayer);
 					}
 					frmMotherform.CHLabelSmall("");
 				}
@@ -3304,30 +2838,20 @@ public object GetProjectData
 			}
 			catch (Exception ex)
 			{
-				ErrorMsg("Fehler bei der Analyse des esri-Projekts", ex.Message, ex.StackTrace, "AnalyseLayerSymbology");
-				if (frmMotherform.m_enumLang == Motherform.Language.Deutsch)
-				{
-					ErrorMsg("Fehler bei der Analyse des esri-Projekts", ex.Message, ex.StackTrace, "AnalyseLayerSymbology");
-				}
-				else if (frmMotherform.m_enumLang == Motherform.Language.English)
-				{
-					ErrorMsg("Exception in ArcMap project analysis", ex.Message, ex.StackTrace, "AnalyseLayerSymbology");
-				}
-				return false;
+                ErrorMsg("解析图层符号失败", ex.Message, ex.StackTrace, "AnalyseLayerSymbology");
+                return false;
 			}
 		}
-		
-		//************************************************************************************************
-		//Analizes the Layer structure of the passed first Level-Layer. If the passed Layer is a GeoFeature
-		//Layer (or an object beyond that) it will be analized and stored in the Layerstructs and the project
-		//struct. If the passed Layer is a group layer, it will be ignored
-		//************************************************************************************************
+		/// <summary>
+        /// 图层转换
+        /// </summary>
+        /// <param name="objLayer"></param>
 		private void SpreadLayerStructure(ILayer objLayer)
 		{
 			
 			try
 			{
-				//recursive call if the current layer is a group layer. Solution is that Group Layers will be ignored
+                //如果是图层组，则需要嵌套调用
 				if (objLayer is IGroupLayer)
 				{
 					int j = 0;
@@ -3337,12 +2861,7 @@ public object GetProjectData
                     objCompLayer = objGRL as ICompositeLayer;
 					for (j = 0; j <= objCompLayer.Count- 1; j++)
 					{
-						//'Because of this if clause group Layer will be ignored
-						//If TypeOf objCompLayer.Layer(j) Is IFeatureLayer Then
-						
-						//End If
-						SpreadLayerStructure(objCompLayer.Layer[j]); //recursive call
-						
+						SpreadLayerStructure(objCompLayer.Layer[j]); 
 					}
 				}
 				else if (objLayer is IFeatureLayer)
@@ -3351,7 +2870,6 @@ public object GetProjectData
 					{
 						IGeoFeatureLayer objGFL = default(IGeoFeatureLayer);
                         objGFL = objLayer as IGeoFeatureLayer;
-						//Hier die Unterscheidung der Renderertypen
 						if (objGFL.Renderer is IUniqueValueRenderer)
 						{
 							IUniqueValueRenderer objRenderer = default(IUniqueValueRenderer);
@@ -3400,128 +2918,25 @@ public object GetProjectData
 				}
 				else
 				{
-					if (frmMotherform.m_enumLang == Motherform.Language.Deutsch)
-					{
-						InfoMsg("Die Layerart ihres ArcMap-Projekts wird derzeit noch nicht unterst黷zt.", "SpreadLayerStructure");
-					}
-					else if (frmMotherform.m_enumLang == Motherform.Language.English)
-					{
-						InfoMsg("The kind of Layer you use in your ArcMap project is currently not beeing supported.", "SpreadLayerStructure");
-					}
-					MyTermination();
+                    InfoMsg(string.Format("图层符号类型不支持"), "SpreadLayerStructure");
+                    //关闭程序
+                    MyTermination();
 				}
 			}
 			catch (Exception)
 			{
-				if (frmMotherform.m_enumLang == Motherform.Language.Deutsch)
-				{
-					InfoMsg("Unerwarteter Fehler beim Speichern in den Layerstrukturen", "SpreadLayerStructure");
-				}
-				else if (frmMotherform.m_enumLang == Motherform.Language.English)
-				{
-					InfoMsg("Unexpected Error during storing in layerstructs", "SpreadLayerStructure");
-				}
-			}
+                InfoMsg(string.Format("图层转换出错"), "SpreadLayerStructure");
+            }
 		}
-		
-		
-		
-		//'************************************************************************************************
-		//'Hier ist der zweite zentrale Punkt der Anwendung zu finden:
-		//'Die Layer der aktiven Karte werden durchlaufen und alle Layerobjekte in der Collection zusammen-
-		//' gefasst. Au遝rdem: Collection von jedem Rendererobjekt jedes FeatureLayers.
-		//'Haupts鋍hlich: die Symbolwerte der einzelnen Layer werden durchlaufen und die Einzelsymbole in
-		//'einer Datenstruktur gespeichert
-		//'************************************************************************************************
-		//Private Function AnalyseLayerSymbology() As Boolean
-		//    Dim objLayer As ILayer  'Die Schnittstelle zum aktuellen Layer
-		//    Dim iNumberLayers As Integer    'Die Anzahl aller Layer
-		//    Dim cLayerName As String     'Der Name des aktuellen Layers
-		//    Dim objFstOrderSymbol As ISymbol    'Das ISymbol des entsprechenden Renderers
-		//    m_StrProject = New StructProject    'Projektstruct wird hier initialisiert
-		//    iNumberLayers = m_ObjMap.LayerCount()
-		//    m_StrProject.LayerCount = iNumberLayers 'Anzahl der Layer in Projektstruct gespeichert
-		//    m_StrProject.LayerList = New ArrayList
-		
-		//    Try
-		//        Dim i As Integer
-		//        For i = 0 To iNumberLayers - 1
-		//            objLayer = m_ObjMap.Layer(i)
-		//            cLayerName = objLayer.Name
-		//            If frmMotherform.m_enumLang = Motherform.Language.Deutsch Then
-		//                frmMotherform.CHLabelBottom("Layer " & cLayerName & " wird gerade analysiert")
-		//            ElseIf frmMotherform.m_enumLang = Motherform.Language.English Then
-		//                frmMotherform.CHLabelBottom("Layer " & cLayerName & " is beeing analysed")
-		//            End If
-		
-		//            'Hier die erste Unterscheidung der Layer: ob IFeatureLayer (sind wohl die meisten Layer)
-		//            'evtl testen, ob es noch weitere relevante 黚ergeordnete Layertypen gibt!!
-		//            If TypeOf objLayer Is IFeatureLayer Then
-		//                'Hier die zweite Unterscheidung der Layer: ob IGeoFeatureLayer (hier kann es andere
-		//                'M鰃lichkeiten geben - z.B. Layer mit Text...) untergeordnete Layertypen
-		
-		
-		
-		//                If TypeOf objLayer Is IGeoFeatureLayer Then
-		//                    Dim objGFL As IGeoFeatureLayer
-		//                    objGFL = objLayer
-		//                    'Hier die Unterscheidung der Renderertypen
-		//                    If TypeOf objGFL.Renderer Is IUniqueValueRenderer Then
-		//                        Dim objRenderer As IUniqueValueRenderer
-		//                        objRenderer = objGFL.Renderer
-		//                        m_StrProject.LayerList.Add(StoreStructUVRenderer(objRenderer, objLayer))
-		//                    End If
-		//                    If TypeOf objGFL.Renderer Is ISimpleRenderer Then
-		//                        Dim objRenderer As ISimpleRenderer
-		//                        objRenderer = objGFL.Renderer
-		//                        m_StrProject.LayerList.Add(StoreStructSimpleRenderer(objRenderer, objLayer))
-		//                    End If
-		//                    If TypeOf objGFL.Renderer Is IClassBreaksRenderer Then
-		//                        Dim objRenderer As IClassBreaksRenderer
-		//                        objRenderer = objGFL.Renderer
-		//                        m_StrProject.LayerList.Add(StoreStructCBRenderer(objRenderer, objLayer))
-		//                    End If
-		//                    'andere Renderer werden evtl. sp鋞er abgedeckt
-		//                    'If TypeOf objGFL.Renderer Is IChartRenderer Then
-		//                    '    Dim objRenderer As IChartRenderer
-		//                    '    objRenderer = objGFL.Renderer
-		//                    '    objFstOrderSymbol = objRenderer.Symbol
-		//                    '    'TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-		//                    'End If
-		//                    'If TypeOf objGFL.Renderer Is IDotDensityRenderer Then
-		//                    '    Dim objRenderer As IDotDensityRenderer
-		//                    '    objRenderer = objGFL.Renderer
-		//                    '    'TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-		//                    'End If
-		//                    'If TypeOf objGFL.Renderer Is IProportionalSymbolRenderer Then
-		//                    '    Dim objRenderer As IProportionalSymbolRenderer
-		//                    '    objRenderer = objGFL.Renderer
-		//                    '    'TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-		//                    'End If
-		//                    'If TypeOf objGFL.Renderer Is IScaleDependentRenderer Then
-		//                    '    Dim objRenderer As IScaleDependentRenderer
-		//                    '    objRenderer = objGFL.Renderer
-		//                    '    'TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-		//                    'End If
-		//                End If
-		//            End If
-		//            frmMotherform.CHLabelSmall("")
-		//        Next
-		//        Return True
-		//    Catch ex As Exception
-		//        MessageBox.Show(ex.StackTrace & " " & ex.Source)
-		//        ErrorMsg("Fehler bei der Analyse des esri-Projekts", ex.Message, ex.StackTrace, "AnalyseLayerSymbology")
-		//        Return False
-		//    End Try
-		//End Function
-#endregion //Verweis auf die n鰐igen ArcMap-Instanzen;
+#endregion 
 		
 		
 #region Hilfsfunktionen
-		//************************************************************************************************
-		//Wenn das aktuelle Symbol ein MarkerSymbol ist, wird das MarkerSymbol, und alle darunter liegenden
-		//Objekte (Symbolobjekte) durchgesucht
-		//************************************************************************************************
+        /// <summary>
+        /// 获取标记符号名称
+        /// </summary>
+        /// <param name="Symbol"></param>
+        /// <returns></returns>
 		private string MarkerSymbolScan(IMarkerSymbol Symbol)
 		{
 			string cValue = "";
@@ -3562,12 +2977,11 @@ public object GetProjectData
 			}
             return cValue;
 		}
-		
-		
-		//************************************************************************************************
-		//Wenn das aktuelle Symbol ein LineSymbol ist, wird das LineSymbol, und alle darunter liegenden
-		//Objekte (Symbolobjekte) durchgesucht
-		//************************************************************************************************
+        /// <summary>
+        /// 获取线符号接口名称
+        /// </summary>
+        /// <param name="Symbol"></param>
+        /// <returns></returns>
 		private string LineSymbolScan(ILineSymbol Symbol)
 		{
 			string cValue = "";
@@ -3618,12 +3032,11 @@ public object GetProjectData
 			}
             return cValue;
 		}
-		
-		
-		//************************************************************************************************
-		//Wenn das aktuelle Symbol ein FillSymbol ist, wird das FillSymbol, und alle darunter liegenden
-		//Objekte (Symbolobjekte) durchgesucht
-		//************************************************************************************************
+        /// <summary>
+        /// 获取填充符号接口名称
+        /// </summary>
+        /// <param name="Symbol"></param>
+        /// <returns></returns>
 		private string FillSymbolScan(IFillSymbol Symbol)
 		{
 			string cValue = "";
@@ -3668,12 +3081,11 @@ public object GetProjectData
 				return cValue;
 			}
 		}
-		
-		
-		//************************************************************************************************
-		//Wenn das aktuelle Symbol ein 3DChartSymbol ist, wird das 3DChartSymbol, und alle darunter liegenden
-		//Objekte (Symbolobjekte) durchgesucht
-		//************************************************************************************************
+		/// <summary>
+        /// 获取3D图标符号接口名称
+        /// </summary>
+        /// <param name="Symbol"></param>
+        /// <returns></returns>
 		private string IIIDChartSymbolScan(I3DChartSymbol Symbol)
 		{
 			string cValue = "";
@@ -3698,14 +3110,6 @@ public object GetProjectData
 				return cValue;
 			}
 		}
-		
-		
-		//************************************************************************************************
-		//Die Funktion gibt eine Liste mit UniqeValues zu dem angegebenen Feld aus
-		//Parameter:
-		//       Table: Das FeatureTable-Objekt
-		//       FieldName: Der Spaltenname der betroffenen Spalte, nach der klassifiziert wurde
-		//************************************************************************************************
 		private bool GimmeUniqeValuesForFieldname(ITable Table, string FieldName)
 		{
 			IQueryDef pQueryDef = default(IQueryDef);
@@ -3715,8 +3119,6 @@ public object GetProjectData
 			IFeatureWorkspace pFeatureWorkspace = default(IFeatureWorkspace);
 			IDataset pDataset = default(IDataset);
 			ArrayList alUniqueVal = new ArrayList();
-			
-			
 			try
 			{
 				pDataset = Table as IDataset;
@@ -3743,15 +3145,6 @@ public object GetProjectData
                 return false;
 			}
 		}
-		
-		
-		//************************************************************************************************
-		//Die Funktion gibt eine Liste mit UniqeValues zu dem angegebenen Feld aus
-		//Parameter:
-		//           Table: Das FeatureTable-Objekt
-		//           FieldName: Der Spaltenname der betroffenen Spalte, nach der klassifiziert wurde
-		//           JoinedTables: Eine Arraylist mit den Namen aller an die Haupttabelle drangejointen Tabellen
-		//************************************************************************************************
 		private bool GimmeUniqeValuesForFieldname(ITable Table, string FieldName, ArrayList JoinedTables)
 		{
 			IQueryDef pQueryDef = default(IQueryDef);
@@ -3760,8 +3153,6 @@ public object GetProjectData
 			IFeatureWorkspace pFeatureWorkspace = default(IFeatureWorkspace);
 			IDataset pDataset = default(IDataset);
 			ArrayList alUniqueVal = new ArrayList();
-			
-			
 			try
 			{
 				string cMember = "";
@@ -3777,7 +3168,6 @@ public object GetProjectData
 				pQueryDef.Tables = pDataset.Name + cMember;
 				pQueryDef.SubFields = "DISTINCT(" + FieldName + ")";
 				pCursor = pQueryDef.Evaluate();
-				//Hier wird die erhaltene Spalte durchlaufen und in der Arraylist abgespeichert
 				pRow = pCursor.NextRow();
 				while (!(pRow == null))
 				{
@@ -3794,13 +3184,6 @@ public object GetProjectData
 			}
 			
 		}
-		
-		//************************************************************************************************
-		//Die Funktion gibt eine Liste mit UniqeValues zu dem angegebenen Feld aus f黵 Shape-based Projekte
-		//Parameter:
-		//           Table: Das FeatureTable-Objekt
-		//           FieldName: Der Spaltenname der betroffenen Spalte, nach der klassifiziert wurde
-		//************************************************************************************************
 		private void GimmeUniqueValuesFromShape(ITable Table, ArrayList FieldNames)
 		{
 			IQueryFilter pQueryFilter = default(IQueryFilter);
@@ -3889,73 +3272,6 @@ public object GetProjectData
 				MyTermination();
 			}
 		}
-		
-		//躡erladen:
-		//Private Function GimmeUniqueValuesFromShape(ByVal FLayer As IFeatureLayer, ByVal alFields As ArrayList) As Boolean
-		//    Dim al As ArrayList
-		//    Dim cFieldName As String
-		//    Dim pFCur As IFeatureCursor
-		//    Dim pFeat As IFeature
-		//    Dim pFSel As IFeatureSelection
-		//    'Dim i, j As Integer
-		//    pFSel = FLayer
-		//    al = New ArrayList
-		
-		//    Select Case alFields.Count
-		//        Case 2
-		//            m_al1 = New ArrayList
-		//            m_al2 = New ArrayList
-		//        Case 3
-		//            m_al1 = New ArrayList
-		//            m_al2 = New ArrayList
-		//            m_al3 = New ArrayList
-		//    End Select
-		//    Try
-		//        For Each cFieldName In alFields
-		//            If FLayer.FeatureClass.FindField(cFieldName) = -1 Then
-		//                ErrorMsg("Fehler beim Erstellen der UniqueValues", "ein 黚ergebenes Feld wurde nicht in dem Layer gefunden", "GimmeUniqueValuesFromShape")
-		//                MyTermination()
-		//            End If
-		//        Next
-		//        If pFSel.SelectionSet.Count = 0 Then
-		//            pFCur = FLayer.FeatureClass.Search(Nothing, False)
-		//        Else
-		//            pFSel.SelectionSet.Search(Nothing, False, pFCur)
-		//        End If
-		
-		//        frmMotherform.ShowWorld()
-		//        pFeat = pFCur.NextFeature
-		//        Do Until pFeat Is Nothing
-		//            al.Clear()
-		//            For Each cFieldName In alFields
-		//                al.Add(pFeat.Value(pFCur.FindField(cFieldName)))
-		//            Next
-		//            SortCursorRowValues(al)
-		//            pFeat = pFCur.NextFeature
-		//        Loop
-		
-		//        Select Case alFields.Count
-		//            Case 2
-		//                m_alClassifiedFields.Add(m_al1)
-		//                m_alClassifiedFields.Add(m_al2)
-		//            Case 3
-		//                m_alClassifiedFields.Add(m_al1)
-		//                m_alClassifiedFields.Add(m_al2)
-		//                m_al3 = New ArrayList
-		//        End Select
-		//        frmMotherform.HideWorld()
-		//        Return True
-		//    Catch ex As Exception
-		//        ErrorMsg("Fehler beim Erstellen der UniqueValues", ex.Message, "GimmeUniqueValuesFromShape")
-		//        MessageBox.Show(ex.StackTrace)
-		//        MyTermination()
-		//    End Try
-		//End Function
-		
-		//************************************************************************************************
-		//kleine Hilfsfunktion von GimmeUniqueValuesFromShape, die Werte aus einer Cursorzeile auf
-		//Arraylists verteilt
-		//************************************************************************************************
 		private bool SortCursorRowValues(ArrayList al)
 		{
 			switch (al.Count)
@@ -3973,15 +3289,6 @@ public object GetProjectData
 			return default(bool);
 		}
 		
-		//************************************************************************************************
-		//Die Funktion gibt die separaten Inhalte der einzelnen Tabellenfelder in einer Arraylist zur點k
-		//dazu benutzt sie den Value aus UniqueValues, many Fields zum Vergleich mit den Ergebnissen, die
-		//von der Query zur點kgegeben wird
-		//Parameter:     value (der zusammengesetzte Value einer Klassifikation, der beim Klassensymbol steht)
-		//               FieldNames (Die Feldnamen [Spaltennamen] der Tabelle)
-		//               FieldDelimiter (das Trennungszeichen i.a.R. ein komma)
-		//               Layer (Der aktuelle, gerade durchlaufene Layer)
-		//************************************************************************************************
 		private ArrayList GimmeSeperateFieldValues(string value, string FieldDelimiter)
 		{
 			ArrayList alSepValues = new ArrayList();
@@ -4011,8 +3318,8 @@ public object GetProjectData
 								{
 									alSepValues.Add(al1_1[i_1]);
 									alSepValues.Add(al2_1[j_1]);
-									goto endOfSelect;
-								}
+                                    return alSepValues;
+                                }
 							}
 						}
 						break;
@@ -4037,14 +3344,13 @@ public object GetProjectData
 										alSepValues.Add(al1[i]);
 										alSepValues.Add(al2[j]);
 										alSepValues.Add(al3[k]);
-										goto endOfSelect;
-									}
+                                        return alSepValues;
+                                    }
 								}
 							}
 						}
 						break;
 				}
-endOfSelect:
 				return alSepValues;
 			}
 			catch (Exception ex)
@@ -4053,11 +3359,11 @@ endOfSelect:
                 return alSepValues;
 			}
 		}
-		
-		
-		//************************************************************************************************
-		//Die Funktion gibt die Colors einer ColorRamp als Arraylist zur點k
-		//************************************************************************************************
+        /// <summary>
+        /// 获取符号颜色数组
+        /// </summary>
+        /// <param name="ColorRamp"></param>
+        /// <returns></returns>
 		private ArrayList GimmeArrayListForColorRamp(IColorRamp ColorRamp)
 		{
 			IEnumColors EColors = default(IEnumColors);
@@ -4070,13 +3376,11 @@ endOfSelect:
 			}
 			return AL;
 		}
-		
-		
-		//************************************************************************************************
-		//Die Funktion nimmt ein esri-IColor-Objekt entgegen, wandelt die Farbe in Web-Schreibweise um, und
-		//gibt sie als string zur點k
-		//If color is fully transparent, an empty string is returned.
-		//************************************************************************************************
+        /// <summary>
+        /// 获取颜色字符串
+        /// </summary>
+        /// <param name="color"></param>
+        /// <returns></returns>
 		private string GimmeStringForColor(IColor color)
 		{
 			string cCol = "";
@@ -4084,7 +3388,6 @@ endOfSelect:
 			string cGreen = "";
 			string cBlue = "";
 			IRgbColor objRGB = default(IRgbColor);
-			
 			if (color.Transparency == 0)
 			{
 				cCol = "";
@@ -4102,52 +3405,42 @@ endOfSelect:
 			
 			return cCol;
 		}
-		
-		//************************************************************************************************
-		//Die Funktion kontrolliert, ob der den Hexadezimalwert repr鋝entierende String alle 2 Stellen hat
-		//(wenn der hexadez nur einstellig ist , wird auch nur eine Stelle zur點kgegeben. Ich brauche auch
-		// die vorangestellte Null!
-		//************************************************************************************************
+        /// <summary>
+        /// 获取十进制数据
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
 		private string CheckDigits(string value)
 		{
-			string cReturn = "";
-			cReturn = value;
+			string cReturn = value;
 			if (cReturn.Length == 1)
 			{
 				cReturn = cReturn.Insert(0, "0");
 			}
 			return cReturn;
 		}
-		
-		//************************************************************************************************
-		//Extract annotation style and property name from a layer.
-		//This initial implementation only handles the most basic annotation: simple expression of a
-		//single property, applicable to all features/symbols.
-		//Return a StructAnnotation. The PropertyName is an empty string if there is no annotation.
-		//************************************************************************************************
+        /// <summary>
+        /// 根据图层获取注记符号
+        /// </summary>
+        /// <param name="objLayer"></param>
+        /// <returns></returns>
 		private StructAnnotation GetAnnotation(IFeatureLayer objLayer)
 		{
 			StructAnnotation annotation = new StructAnnotation();
-			
 			annotation.PropertyName = "";
 			if (objLayer is IGeoFeatureLayer)
 			{
-				IGeoFeatureLayer objGFL = default(IGeoFeatureLayer);
-                objGFL = objLayer as IGeoFeatureLayer;
-				
-				IAnnotateLayerPropertiesCollection annoPropsColl = default(IAnnotateLayerPropertiesCollection);
-				annoPropsColl = objGFL.AnnotationProperties;
+				IGeoFeatureLayer objGFL = objLayer as IGeoFeatureLayer;
+				IAnnotateLayerPropertiesCollection annoPropsColl = objGFL.AnnotationProperties;
 				if (objGFL.DisplayAnnotation && annoPropsColl.Count > 0)
 				{
-					IAnnotateLayerProperties annoLayerProps = default(IAnnotateLayerProperties);
+					IAnnotateLayerProperties annoLayerProps = null;
 					ESRI.ArcGIS.Carto.IElementCollection null_ESRIArcGISCartoIElementCollection = null;
 					ESRI.ArcGIS.Carto.IElementCollection null_ESRIArcGISCartoIElementCollection2 = null;
                     annoPropsColl.QueryItem(0, out  annoLayerProps, out null_ESRIArcGISCartoIElementCollection, out null_ESRIArcGISCartoIElementCollection2);
 					if (annoLayerProps is ILabelEngineLayerProperties&& annoLayerProps.DisplayAnnotation)
 					{
-						ILabelEngineLayerProperties labelProps = default(ILabelEngineLayerProperties);
-                        labelProps = annoLayerProps as ILabelEngineLayerProperties;
-						// For the moment only implement the simplest case
+						ILabelEngineLayerProperties labelProps = annoLayerProps as ILabelEngineLayerProperties;
 						if (annoLayerProps.WhereClause == "" && labelProps.IsExpressionSimple)
 						{
 							annotation.IsSingleProperty = true;
@@ -4159,38 +3452,40 @@ endOfSelect:
 			}
 			return annotation;
 		}
-		
-		//************************************************************************************************
-		//Die zentrale Fehlermeldung
-		//************************************************************************************************
+        /// <summary>
+        /// 错误消息处理
+        /// </summary>
+        /// <param name="Message"></param>
+        /// <param name="ExMessage"></param>
+        /// <param name="Stack"></param>
+        /// <param name="FunctionName"></param>
+        /// <returns></returns>
 		private object ErrorMsg(string Message, string ExMessage, string Stack, string FunctionName)
 		{
 			MessageBox.Show(Message + "\r\n" + ExMessage + "\r\n" + Stack, "ArcGIS_SLD_Converter | Analize_ArcMap_Symbols | " + FunctionName, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			MyTermination();
 			return null;
 		}
-		
-		//************************************************************************************************
-		//Die zentrale Infomeldung
-		//************************************************************************************************
+        /// <summary>
+        /// 消息处理
+        /// </summary>
+        /// <param name="Message"></param>
+        /// <param name="FunctionName"></param>
+        /// <returns></returns>
 		private object InfoMsg(string Message, string FunctionName)
 		{
 			MessageBox.Show(Message, "ArcGIS_SLD_Converter | Analize_ArcMap_Symbols | " + FunctionName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 			return null;
 		}
-		
-		//************************************************************************************************
-		//Beim (vorzeitigen) Beenden werden hier alle Objekte zur點kgesetzt
-		//
-		//************************************************************************************************
+        /// <summary>
+        /// 退出程序
+        /// </summary>
+        /// <returns></returns>
 		public bool MyTermination()
 		{
-			ProjectData.EndApp();
-			//oder: application.exit
+            Application.Exit();
 			return default(bool);
 		}
 #endregion
-		
 	}
-	
 }

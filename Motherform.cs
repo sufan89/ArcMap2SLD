@@ -1,4 +1,3 @@
-// VBConversions Note: VB project level imports
 using System;
 using System.Drawing;
 using System.Diagnostics;
@@ -6,54 +5,11 @@ using System.Data;
 using Microsoft.VisualBasic;
 using System.Collections;
 using System.Windows.Forms;
-// End of VB project level imports
-
 using System.Xml;
 using System.Text;
 using System.IO;
 using Microsoft.VisualBasic.CompilerServices;
 using ESRI.ArcGIS;
-
-//####################################################################################################################
-//*******************ArcGIS_SLD_Converter*****************************************************************************
-//*******************Class: Motherform********************************************************************************
-//*******************AUTHOR: Albrecht Weiser, University of applied Sciences in Mainz, Germany 2005*******************
-//The Application was part of my Diploma thesis:**********************************************************************
-//"Transforming map-properties of maps in esri-data to an OGC-conformous SLD-document, for publishing the ArcGIS-map *
-//with an OGC- conformous map-server"*********************************************************************************
-//ABSTRACT:
-//The program so called "ArcGIS-map to SLD Converter" analyses an
-//ArcMap-Project with respect to its symbolisation and assembles an SLD
-//for the OGC-Web Map Service (WMS) from the gathered data. The program
-//is started parallel to a running ArcMap 9.X-session. Subsequently the
-//application deposits an SLD-file which complies the symbolisation of
-//the available ArcMap-project. With the SLD a WMS-project may be
-//classified and styled according to the preceding ArcMap-project. The
-//application is written in VisualBasic.NET and uses the .NET 1.1
-//Framework (plus XML files for configuration). For more informtion
-//refer to:
-//http://arcmap2sld.geoinform.fh-mainz.de/ArcMap2SLDConverter_Eng.htm.
-//LICENSE:
-//This program is free software under the license of the GNU Lesser General Public License (LGPL) As published by the Free Software Foundation.
-//With the use and further development of this code you accept the terms of LGPL. For questions of the License refer to:
-//http://www.gnu.org/licenses/lgpl.html
-//DISCLAIMER:
-//THE USE OF THE SOFTWARE ArcGIS-map to SLD Converter HAPPENS AT OWN RISK.
-//I CANNOT ISSUE A GUARANTEE FOR ANY DISADVANTAGES (INCLUDING LOSS OF DATA; ETC.) THAT
-//MAY ARISE FROM USING THIS SOFTWARE.
-//DESCRIPTION:
-//The Button1 triggers the analysis of the ArcMap symbols of the class "Analize_ArcMap_Symbols"
-//CHANGES:
-//04.02.2006: Language-customizing english/german
-//04.02.2006: Tooltips
-//28.02.2007: Small code cleanup in using constants.
-//25.04.2007: Added option to menu to enable or disable checking all layers (or just selected layers).
-//04.09.2008: Added option to menu to enable users to save layers in separate files if necessary
-//10.09.2008: Separation of SLD-filename and path. Storing in separate variables (reacheable through properties)
-//07.06.2011: (ARIS) Upgraded code to be compatible with ArcGIS 10.
-//08.06.2011: (ARIS) Added new flavor of SLD that does not refernce layer names (to be used with WorldMap).
-//####################################################################################################################
-
 
 namespace ArcGIS_SLD_Converter
 {
@@ -74,30 +30,30 @@ namespace ArcGIS_SLD_Converter
 		}
 		
 		
-#region  Vom Windows Form Designer generierter Code
+#region  窗体设计代码
 		
 		public Motherform()
 		{
-			
-
-			
-			// Dieser Aufruf ist f黵 den Windows Form-Designer erforderlich.
 			InitializeComponent();
-			
-			// Initialisierungen nach dem Aufruf InitializeComponent() hinzuf黦en
 			m_bLabel = false;
-			m_bTooltip = false;
+			m_bTooltip = false;//默认不显示提示信息
 			m_bAllLayers = true;
-			m_enumLang = Language.English; //' ARIS: Default language is english
+			m_enumLang = Language.English; //设置默认显示语言
 			m_bIncludeLayerNames = true; //' ARIS: Default output is SLD with layer names
 			SetSizeOpen();
+
 			InitCommonXML();
+
 			InitControlNameVariables();
+
 			Preconfigure();
 			
 		}
-		
-		// Die Form 黚erschreibt den L鰏chvorgang der Basisklasse, um Komponenten zu bereinigen.
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing)
@@ -109,13 +65,7 @@ namespace ArcGIS_SLD_Converter
 			}
 			base.Dispose(disposing);
 		}
-		
-		// F黵 Windows Form-Designer erforderlich
-		private System.ComponentModel.Container components = null;
-		
-		//HINWEIS: Die folgende Prozedur ist f黵 den Windows Form-Designer erforderlich
-		//Sie kann mit dem Windows Form-Designer modifiziert werden.
-		//Verwenden Sie nicht den Code-Editor zur Bearbeitung.
+        private System.ComponentModel.IContainer components;
 		internal System.Windows.Forms.Button Button1;
 		internal System.Windows.Forms.Button Button2;
 		internal System.Windows.Forms.SaveFileDialog dlgSave;
@@ -156,426 +106,439 @@ namespace ArcGIS_SLD_Converter
 		internal System.Windows.Forms.MenuItem MenuItem10;
 		internal System.Windows.Forms.MenuItem mnuIncludeLayerNames;
 		internal System.Windows.Forms.MenuItem MenuItem11;
-		[System.Diagnostics.DebuggerStepThrough()]private void InitializeComponent()
+		[System.Diagnostics.DebuggerStepThrough()]
+        private void InitializeComponent()
 		{
-			this.components = new System.ComponentModel.Container();
-			base.Closing += new System.ComponentModel.CancelEventHandler(Motherform_Closing);
-			base.Load += new System.EventHandler(Motherform_Load);
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Motherform));
-			this.Button1 = new System.Windows.Forms.Button();
-			this.Button1.Click += new System.EventHandler(this.Button1_Click);
-			this.Button2 = new System.Windows.Forms.Button();
-			this.Button2.Click += new System.EventHandler(this.Button2_Click);
-			this.txtFileName = new System.Windows.Forms.TextBox();
-			this.dlgSave = new System.Windows.Forms.SaveFileDialog();
-			this.Label3 = new System.Windows.Forms.Label();
-			this.OpenXSD = new System.Windows.Forms.OpenFileDialog();
-			this.GroupBox1 = new System.Windows.Forms.GroupBox();
-			this.chkUMN = new System.Windows.Forms.RadioButton();
-			this.chkArcIMS = new System.Windows.Forms.RadioButton();
-			this.GroupBox2 = new System.Windows.Forms.GroupBox();
-			this.lblSmall = new System.Windows.Forms.Label();
-			this.lblBottom = new System.Windows.Forms.Label();
-			this.lblTop = new System.Windows.Forms.Label();
-			this.chkValidate = new System.Windows.Forms.CheckBox();
-			this.chkValidate.CheckedChanged += new System.EventHandler(this.chkValidate_CheckedChanged);
-			this.GroupBox3 = new System.Windows.Forms.GroupBox();
-			this.Label6 = new System.Windows.Forms.Label();
-			this.chkScale = new System.Windows.Forms.CheckBox();
-			this.Label5 = new System.Windows.Forms.Label();
-			this.Label4 = new System.Windows.Forms.Label();
-			this.Label2 = new System.Windows.Forms.Label();
-			this.cboHighScale = new System.Windows.Forms.ComboBox();
-			this.cboHighScale.Leave += new System.EventHandler(this.cboHighScale_Leave);
-			this.cboHighScale.Enter += new System.EventHandler(this.cboHighScale_Enter);
-			this.cboHighScale.DropDown += new System.EventHandler(this.cboHighScale_DropDown);
-			this.Label1 = new System.Windows.Forms.Label();
-			this.cboLowScale = new System.Windows.Forms.ComboBox();
-			this.cboLowScale.Leave += new System.EventHandler(this.cboLowScale_Leave);
-			this.cboLowScale.Enter += new System.EventHandler(this.cboLowScale_Enter);
-			this.cboLowScale.DropDown += new System.EventHandler(this.cboLowScale_DropDown);
-			this.txtSLDxsd = new System.Windows.Forms.TextBox();
-			this.PictureBox1 = new System.Windows.Forms.PictureBox();
-			this.ImageList1 = new System.Windows.Forms.ImageList(this.components);
-			this.MainMenu1 = new System.Windows.Forms.MainMenu(this.components);
-			this.MenuItem1 = new System.Windows.Forms.MenuItem();
-			this.MenuItem2 = new System.Windows.Forms.MenuItem();
-			this.MenuItem3 = new System.Windows.Forms.MenuItem();
-			this.MenuItem3.Click += new System.EventHandler(this.MenuItem3_Click);
-			this.MenuItem4 = new System.Windows.Forms.MenuItem();
-			this.MenuItem4.Click += new System.EventHandler(this.MenuItem4_Click);
-			this.MenuItem5 = new System.Windows.Forms.MenuItem();
-			this.MenuItem6 = new System.Windows.Forms.MenuItem();
-			this.MenuItem6.Click += new System.EventHandler(this.MenuItem6_Click);
-			this.MenuItem7 = new System.Windows.Forms.MenuItem();
-			this.MenuItem8 = new System.Windows.Forms.MenuItem();
-			this.MenuItem8.Click += new System.EventHandler(this.MenuItem8_Click);
-			this.MenuItem9 = new System.Windows.Forms.MenuItem();
-			this.MenuItem9.Click += new System.EventHandler(this.MenuItem9_Click);
-			this.MenuItem11 = new System.Windows.Forms.MenuItem();
-			this.MenuItem11.Click += new System.EventHandler(this.MenuItem11_Click);
-			this.mnuIncludeLayerNames = new System.Windows.Forms.MenuItem();
-			this.mnuIncludeLayerNames.Click += new System.EventHandler(this.mnuIncludeLayerNames_Click);
-			this.MenuItem10 = new System.Windows.Forms.MenuItem();
-			this.MenuItem10.Click += new System.EventHandler(this.MenuItem10_Click);
-			this.ToolTip1 = new System.Windows.Forms.ToolTip(this.components);
-			this.GroupBox1.SuspendLayout();
-			this.GroupBox2.SuspendLayout();
-			this.GroupBox3.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize) this.PictureBox1).BeginInit();
-			this.SuspendLayout();
-			//
-			//Button1
-			//
-			this.Button1.BackColor = System.Drawing.Color.MidnightBlue;
-			this.Button1.Font = new System.Drawing.Font("Microsoft Sans Serif", (float) (10.0F), System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, System.Convert.ToByte(0));
-			this.Button1.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-			this.Button1.Location = new System.Drawing.Point(8, 168);
-			this.Button1.Name = "Button1";
-			this.Button1.Size = new System.Drawing.Size(96, 24);
-			this.Button1.TabIndex = 0;
-			this.Button1.Text = "SLD";
-			this.Button1.UseVisualStyleBackColor = false;
-			//
-			//Button2
-			//
-			this.Button2.BackColor = System.Drawing.Color.MidnightBlue;
-			this.Button2.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-			this.Button2.Location = new System.Drawing.Point(96, 18);
-			this.Button2.Name = "Button2";
-			this.Button2.Size = new System.Drawing.Size(18, 18);
-			this.Button2.TabIndex = 1;
-			this.Button2.Text = "..";
-			this.Button2.UseVisualStyleBackColor = false;
-			//
-			//txtFileName
-			//
-			this.txtFileName.Location = new System.Drawing.Point(120, 16);
-			this.txtFileName.Name = "txtFileName";
-			this.txtFileName.Size = new System.Drawing.Size(288, 20);
-			this.txtFileName.TabIndex = 2;
-			//
-			//Label3
-			//
-			this.Label3.BackColor = System.Drawing.Color.Transparent;
-			this.Label3.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-			this.Label3.Location = new System.Drawing.Point(8, 20);
-			this.Label3.Name = "Label3";
-			this.Label3.Size = new System.Drawing.Size(88, 16);
-			this.Label3.TabIndex = 5;
-			this.Label3.Text = "SLD Speicherort";
-			this.Label3.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
-			//
-			//GroupBox1
-			//
-			this.GroupBox1.BackColor = System.Drawing.Color.Transparent;
-			this.GroupBox1.Controls.Add(this.chkUMN);
-			this.GroupBox1.Controls.Add(this.chkArcIMS);
-			this.GroupBox1.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-			this.GroupBox1.Location = new System.Drawing.Point(8, 48);
-			this.GroupBox1.Name = "GroupBox1";
-			this.GroupBox1.Size = new System.Drawing.Size(96, 80);
-			this.GroupBox1.TabIndex = 9;
-			this.GroupBox1.TabStop = false;
-			this.GroupBox1.Text = "Serverdaten";
-			//
-			//chkUMN
-			//
-			this.chkUMN.Checked = true;
-			this.chkUMN.Location = new System.Drawing.Point(8, 48);
-			this.chkUMN.Name = "chkUMN";
-			this.chkUMN.Size = new System.Drawing.Size(72, 16);
-			this.chkUMN.TabIndex = 1;
-			this.chkUMN.TabStop = true;
-			this.chkUMN.Text = "Shapefile";
-			//
-			//chkArcIMS
-			//
-			this.chkArcIMS.Location = new System.Drawing.Point(8, 24);
-			this.chkArcIMS.Name = "chkArcIMS";
-			this.chkArcIMS.Size = new System.Drawing.Size(72, 16);
-			this.chkArcIMS.TabIndex = 0;
-			this.chkArcIMS.Text = "ArcSDE";
-			//
-			//GroupBox2
-			//
-			this.GroupBox2.BackColor = System.Drawing.Color.Transparent;
-			this.GroupBox2.Controls.Add(this.lblSmall);
-			this.GroupBox2.Controls.Add(this.lblBottom);
-			this.GroupBox2.Controls.Add(this.lblTop);
-			this.GroupBox2.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-			this.GroupBox2.Location = new System.Drawing.Point(120, 168);
-			this.GroupBox2.Name = "GroupBox2";
-			this.GroupBox2.Size = new System.Drawing.Size(288, 96);
-			this.GroupBox2.TabIndex = 10;
-			this.GroupBox2.TabStop = false;
-			this.GroupBox2.Text = "Infofeld";
-			//
-			//lblSmall
-			//
-			this.lblSmall.BackColor = System.Drawing.Color.Transparent;
-			this.lblSmall.Location = new System.Drawing.Point(8, 72);
-			this.lblSmall.Name = "lblSmall";
-			this.lblSmall.Size = new System.Drawing.Size(272, 16);
-			this.lblSmall.TabIndex = 2;
-			//
-			//lblBottom
-			//
-			this.lblBottom.BackColor = System.Drawing.Color.Transparent;
-			this.lblBottom.Location = new System.Drawing.Point(8, 40);
-			this.lblBottom.Name = "lblBottom";
-			this.lblBottom.Size = new System.Drawing.Size(272, 32);
-			this.lblBottom.TabIndex = 1;
-			//
-			//lblTop
-			//
-			this.lblTop.BackColor = System.Drawing.Color.Transparent;
-			this.lblTop.Font = new System.Drawing.Font("Microsoft Sans Serif", (float) (8.25F), System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, System.Convert.ToByte(0));
-			this.lblTop.Location = new System.Drawing.Point(8, 16);
-			this.lblTop.Name = "lblTop";
-			this.lblTop.Size = new System.Drawing.Size(272, 24);
-			this.lblTop.TabIndex = 0;
-			//
-			//chkValidate
-			//
-			this.chkValidate.BackColor = System.Drawing.Color.Transparent;
-			this.chkValidate.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-			this.chkValidate.Location = new System.Drawing.Point(8, 136);
-			this.chkValidate.Name = "chkValidate";
-			this.chkValidate.Size = new System.Drawing.Size(120, 24);
-			this.chkValidate.TabIndex = 11;
-			this.chkValidate.Text = "SLD-Validierung";
-			this.chkValidate.UseVisualStyleBackColor = false;
-			//
-			//GroupBox3
-			//
-			this.GroupBox3.BackColor = System.Drawing.Color.Transparent;
-			this.GroupBox3.Controls.Add(this.Label6);
-			this.GroupBox3.Controls.Add(this.chkScale);
-			this.GroupBox3.Controls.Add(this.Label5);
-			this.GroupBox3.Controls.Add(this.Label4);
-			this.GroupBox3.Controls.Add(this.Label2);
-			this.GroupBox3.Controls.Add(this.cboHighScale);
-			this.GroupBox3.Controls.Add(this.Label1);
-			this.GroupBox3.Controls.Add(this.cboLowScale);
-			this.GroupBox3.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-			this.GroupBox3.Location = new System.Drawing.Point(120, 48);
-			this.GroupBox3.Name = "GroupBox3";
-			this.GroupBox3.Size = new System.Drawing.Size(288, 80);
-			this.GroupBox3.TabIndex = 12;
-			this.GroupBox3.TabStop = false;
-			this.GroupBox3.Text = "Darstellungsbereich";
-			//
-			//Label6
-			//
-			this.Label6.Location = new System.Drawing.Point(16, 24);
-			this.Label6.Name = "Label6";
-			this.Label6.Size = new System.Drawing.Size(48, 16);
-			this.Label6.TabIndex = 7;
-			this.Label6.Text = "in SLD?";
-			//
-			//chkScale
-			//
-			this.chkScale.Location = new System.Drawing.Point(16, 48);
-			this.chkScale.Name = "chkScale";
-			this.chkScale.Size = new System.Drawing.Size(48, 24);
-			this.chkScale.TabIndex = 6;
-			this.chkScale.Text = "O.K.";
-			//
-			//Label5
-			//
-			this.Label5.Location = new System.Drawing.Point(192, 24);
-			this.Label5.Name = "Label5";
-			this.Label5.Size = new System.Drawing.Size(88, 16);
-			this.Label5.TabIndex = 5;
-			this.Label5.Text = "Kleiner Ma遱tab";
-			//
-			//Label4
-			//
-			this.Label4.Location = new System.Drawing.Point(80, 24);
-			this.Label4.Name = "Label4";
-			this.Label4.Size = new System.Drawing.Size(88, 16);
-			this.Label4.TabIndex = 4;
-			this.Label4.Text = "Gro遝r Ma遱tab";
-			//
-			//Label2
-			//
-			this.Label2.Font = new System.Drawing.Font("Microsoft Sans Serif", (float) (8.25F), System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, System.Convert.ToByte(0));
-			this.Label2.Location = new System.Drawing.Point(176, 52);
-			this.Label2.Name = "Label2";
-			this.Label2.Size = new System.Drawing.Size(16, 16);
-			this.Label2.TabIndex = 3;
-			this.Label2.Text = "1:";
-			//
-			//cboHighScale
-			//
-			this.cboHighScale.Location = new System.Drawing.Point(192, 48);
-			this.cboHighScale.Name = "cboHighScale";
-			this.cboHighScale.Size = new System.Drawing.Size(80, 21);
-			this.cboHighScale.TabIndex = 2;
-			//
-			//Label1
-			//
-			this.Label1.Font = new System.Drawing.Font("Microsoft Sans Serif", (float) (8.25F), System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, System.Convert.ToByte(0));
-			this.Label1.Location = new System.Drawing.Point(64, 52);
-			this.Label1.Name = "Label1";
-			this.Label1.Size = new System.Drawing.Size(16, 16);
-			this.Label1.TabIndex = 1;
-			this.Label1.Text = "1:";
-			//
-			//cboLowScale
-			//
-			this.cboLowScale.Location = new System.Drawing.Point(80, 48);
-			this.cboLowScale.Name = "cboLowScale";
-			this.cboLowScale.Size = new System.Drawing.Size(80, 21);
-			this.cboLowScale.TabIndex = 0;
-			//
-			//txtSLDxsd
-			//
-			this.txtSLDxsd.Location = new System.Drawing.Point(120, 136);
-			this.txtSLDxsd.Name = "txtSLDxsd";
-			this.txtSLDxsd.Size = new System.Drawing.Size(288, 20);
-			this.txtSLDxsd.TabIndex = 13;
-			this.txtSLDxsd.Visible = false;
-			//
-			//PictureBox1
-			//
-			this.PictureBox1.BackColor = System.Drawing.Color.Transparent;
-			this.PictureBox1.Image = (System.Drawing.Image) (resources.GetObject("PictureBox1.Image"));
-			this.PictureBox1.Location = new System.Drawing.Point(40, 216);
-			this.PictureBox1.Name = "PictureBox1";
-			this.PictureBox1.Size = new System.Drawing.Size(32, 32);
-			this.PictureBox1.TabIndex = 15;
-			this.PictureBox1.TabStop = false;
-			//
-			//ImageList1
-			//
-			this.ImageList1.ImageStream = (System.Windows.Forms.ImageListStreamer) (resources.GetObject("ImageList1.ImageStream"));
-			this.ImageList1.TransparentColor = System.Drawing.Color.Transparent;
-			this.ImageList1.Images.SetKeyName(0, "");
-			//
-			//MainMenu1
-			//
-			this.MainMenu1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {this.MenuItem1, this.MenuItem10});
-			//
-			//MenuItem1
-			//
-			this.MenuItem1.Index = 0;
-			this.MenuItem1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {this.MenuItem2, this.MenuItem5, this.MenuItem7, this.mnuIncludeLayerNames});
-			this.MenuItem1.Text = "Extras";
-			//
-			//MenuItem2
-			//
-			this.MenuItem2.Index = 0;
-			this.MenuItem2.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {this.MenuItem3, this.MenuItem4});
-			this.MenuItem2.RadioCheck = true;
-			this.MenuItem2.Text = "Sprache/Language";
-			//
-			//MenuItem3
-			//
-			this.MenuItem3.Index = 0;
-			this.MenuItem3.RadioCheck = true;
-			this.MenuItem3.Text = "Deutsch";
-			//
-			//MenuItem4
-			//
-			this.MenuItem4.Checked = true;
-			this.MenuItem4.Index = 1;
-			this.MenuItem4.RadioCheck = true;
-			this.MenuItem4.Text = "English";
-			//
-			//MenuItem5
-			//
-			this.MenuItem5.Index = 1;
-			this.MenuItem5.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {this.MenuItem6});
-			this.MenuItem5.Text = "Tooltips";
-			//
-			//MenuItem6
-			//
-			this.MenuItem6.Index = 0;
-			this.MenuItem6.Text = "ein/on";
-			//
-			//MenuItem7
-			//
-			this.MenuItem7.Index = 2;
-			this.MenuItem7.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {this.MenuItem8, this.MenuItem9, this.MenuItem11});
-			this.MenuItem7.Text = "Layers";
-			//
-			//MenuItem8
-			//
-			this.MenuItem8.Checked = true;
-			this.MenuItem8.Index = 0;
-			this.MenuItem8.RadioCheck = true;
-			this.MenuItem8.Text = "Alle/All Layers";
-			//
-			//MenuItem9
-			//
-			this.MenuItem9.Index = 1;
-			this.MenuItem9.RadioCheck = true;
-			this.MenuItem9.Text = "Ausgew鋒lte/Selected Layers";
-			//
-			//MenuItem11
-			//
-			this.MenuItem11.Index = 2;
-			this.MenuItem11.Text = "In Separate Dateien/In separate Files";
-			//
-			//mnuIncludeLayerNames
-			//
-			this.mnuIncludeLayerNames.Checked = true;
-			this.mnuIncludeLayerNames.Index = 3;
-			this.mnuIncludeLayerNames.Text = "mnuIncludeLayerNames";
-			//
-			//MenuItem10
-			//
-			this.MenuItem10.Index = 1;
-			this.MenuItem10.Text = "躡er";
-			//
-			//ToolTip1
-			//
-			this.ToolTip1.Active = false;
-			//
-			//Motherform
-			//
-			this.BackColor = System.Drawing.Color.SteelBlue;
-			this.ClientSize = new System.Drawing.Size(423, 275);
-			this.Controls.Add(this.PictureBox1);
-			this.Controls.Add(this.txtSLDxsd);
-			this.Controls.Add(this.GroupBox3);
-			this.Controls.Add(this.chkValidate);
-			this.Controls.Add(this.GroupBox2);
-			this.Controls.Add(this.GroupBox1);
-			this.Controls.Add(this.Label3);
-			this.Controls.Add(this.txtFileName);
-			this.Controls.Add(this.Button2);
-			this.Controls.Add(this.Button1);
-			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
-			this.Icon = (System.Drawing.Icon) (resources.GetObject("$this.Icon"));
-			this.MaximizeBox = false;
-			this.Menu = this.MainMenu1;
-			this.Name = "Motherform";
-			this.Text = "  ArcGIS-map to SLD Converter";
-			this.TopMost = true;
-			this.TransparencyKey = System.Drawing.Color.Brown;
-			this.GroupBox1.ResumeLayout(false);
-			this.GroupBox2.ResumeLayout(false);
-			this.GroupBox3.ResumeLayout(false);
-			((System.ComponentModel.ISupportInitialize) this.PictureBox1).EndInit();
-			this.ResumeLayout(false);
-			this.PerformLayout();
-			
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Motherform));
+            this.Button1 = new System.Windows.Forms.Button();
+            this.Button2 = new System.Windows.Forms.Button();
+            this.txtFileName = new System.Windows.Forms.TextBox();
+            this.dlgSave = new System.Windows.Forms.SaveFileDialog();
+            this.Label3 = new System.Windows.Forms.Label();
+            this.OpenXSD = new System.Windows.Forms.OpenFileDialog();
+            this.GroupBox1 = new System.Windows.Forms.GroupBox();
+            this.chkUMN = new System.Windows.Forms.RadioButton();
+            this.chkArcIMS = new System.Windows.Forms.RadioButton();
+            this.GroupBox2 = new System.Windows.Forms.GroupBox();
+            this.lblSmall = new System.Windows.Forms.Label();
+            this.lblBottom = new System.Windows.Forms.Label();
+            this.lblTop = new System.Windows.Forms.Label();
+            this.chkValidate = new System.Windows.Forms.CheckBox();
+            this.GroupBox3 = new System.Windows.Forms.GroupBox();
+            this.Label6 = new System.Windows.Forms.Label();
+            this.chkScale = new System.Windows.Forms.CheckBox();
+            this.Label5 = new System.Windows.Forms.Label();
+            this.Label4 = new System.Windows.Forms.Label();
+            this.Label2 = new System.Windows.Forms.Label();
+            this.cboHighScale = new System.Windows.Forms.ComboBox();
+            this.Label1 = new System.Windows.Forms.Label();
+            this.cboLowScale = new System.Windows.Forms.ComboBox();
+            this.txtSLDxsd = new System.Windows.Forms.TextBox();
+            this.PictureBox1 = new System.Windows.Forms.PictureBox();
+            this.ImageList1 = new System.Windows.Forms.ImageList(this.components);
+            this.MainMenu1 = new System.Windows.Forms.MainMenu(this.components);
+            this.MenuItem1 = new System.Windows.Forms.MenuItem();
+            this.MenuItem2 = new System.Windows.Forms.MenuItem();
+            this.MenuItem3 = new System.Windows.Forms.MenuItem();
+            this.MenuItem4 = new System.Windows.Forms.MenuItem();
+            this.MenuItem5 = new System.Windows.Forms.MenuItem();
+            this.MenuItem6 = new System.Windows.Forms.MenuItem();
+            this.MenuItem7 = new System.Windows.Forms.MenuItem();
+            this.MenuItem8 = new System.Windows.Forms.MenuItem();
+            this.MenuItem9 = new System.Windows.Forms.MenuItem();
+            this.MenuItem11 = new System.Windows.Forms.MenuItem();
+            this.mnuIncludeLayerNames = new System.Windows.Forms.MenuItem();
+            this.MenuItem10 = new System.Windows.Forms.MenuItem();
+            this.ToolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.GroupBox1.SuspendLayout();
+            this.GroupBox2.SuspendLayout();
+            this.GroupBox3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.PictureBox1)).BeginInit();
+            this.SuspendLayout();
+            // 
+            // Button1
+            // 
+            this.Button1.BackColor = System.Drawing.Color.MidnightBlue;
+            this.Button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Button1.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.Button1.Location = new System.Drawing.Point(8, 168);
+            this.Button1.Name = "Button1";
+            this.Button1.Size = new System.Drawing.Size(96, 24);
+            this.Button1.TabIndex = 0;
+            this.Button1.Text = "开始转换";
+            this.Button1.UseVisualStyleBackColor = false;
+            this.Button1.Click += new System.EventHandler(this.Button1_Click);
+            // 
+            // Button2
+            // 
+            this.Button2.BackColor = System.Drawing.Color.MidnightBlue;
+            this.Button2.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.Button2.Location = new System.Drawing.Point(96, 18);
+            this.Button2.Name = "Button2";
+            this.Button2.Size = new System.Drawing.Size(18, 18);
+            this.Button2.TabIndex = 1;
+            this.Button2.Text = "..";
+            this.Button2.UseVisualStyleBackColor = false;
+            this.Button2.Click += new System.EventHandler(this.Button2_Click);
+            // 
+            // txtFileName
+            // 
+            this.txtFileName.Location = new System.Drawing.Point(120, 16);
+            this.txtFileName.Name = "txtFileName";
+            this.txtFileName.Size = new System.Drawing.Size(288, 21);
+            this.txtFileName.TabIndex = 2;
+            // 
+            // Label3
+            // 
+            this.Label3.BackColor = System.Drawing.Color.Transparent;
+            this.Label3.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.Label3.Location = new System.Drawing.Point(8, 20);
+            this.Label3.Name = "Label3";
+            this.Label3.Size = new System.Drawing.Size(88, 16);
+            this.Label3.TabIndex = 5;
+            this.Label3.Text = "SLD Speicherort";
+            this.Label3.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+            // 
+            // GroupBox1
+            // 
+            this.GroupBox1.BackColor = System.Drawing.Color.Transparent;
+            this.GroupBox1.Controls.Add(this.chkUMN);
+            this.GroupBox1.Controls.Add(this.chkArcIMS);
+            this.GroupBox1.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.GroupBox1.Location = new System.Drawing.Point(8, 48);
+            this.GroupBox1.Name = "GroupBox1";
+            this.GroupBox1.Size = new System.Drawing.Size(96, 80);
+            this.GroupBox1.TabIndex = 9;
+            this.GroupBox1.TabStop = false;
+            this.GroupBox1.Text = "Serverdaten";
+            // 
+            // chkUMN
+            // 
+            this.chkUMN.Checked = true;
+            this.chkUMN.Location = new System.Drawing.Point(8, 48);
+            this.chkUMN.Name = "chkUMN";
+            this.chkUMN.Size = new System.Drawing.Size(72, 16);
+            this.chkUMN.TabIndex = 1;
+            this.chkUMN.TabStop = true;
+            this.chkUMN.Text = "Shapefile";
+            // 
+            // chkArcIMS
+            // 
+            this.chkArcIMS.Location = new System.Drawing.Point(8, 24);
+            this.chkArcIMS.Name = "chkArcIMS";
+            this.chkArcIMS.Size = new System.Drawing.Size(72, 16);
+            this.chkArcIMS.TabIndex = 0;
+            this.chkArcIMS.Text = "ArcSDE";
+            // 
+            // GroupBox2
+            // 
+            this.GroupBox2.BackColor = System.Drawing.Color.Transparent;
+            this.GroupBox2.Controls.Add(this.lblSmall);
+            this.GroupBox2.Controls.Add(this.lblBottom);
+            this.GroupBox2.Controls.Add(this.lblTop);
+            this.GroupBox2.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.GroupBox2.Location = new System.Drawing.Point(120, 168);
+            this.GroupBox2.Name = "GroupBox2";
+            this.GroupBox2.Size = new System.Drawing.Size(288, 96);
+            this.GroupBox2.TabIndex = 10;
+            this.GroupBox2.TabStop = false;
+            this.GroupBox2.Text = "Infofeld";
+            // 
+            // lblSmall
+            // 
+            this.lblSmall.BackColor = System.Drawing.Color.Transparent;
+            this.lblSmall.Location = new System.Drawing.Point(8, 72);
+            this.lblSmall.Name = "lblSmall";
+            this.lblSmall.Size = new System.Drawing.Size(272, 16);
+            this.lblSmall.TabIndex = 2;
+            // 
+            // lblBottom
+            // 
+            this.lblBottom.BackColor = System.Drawing.Color.Transparent;
+            this.lblBottom.Location = new System.Drawing.Point(8, 40);
+            this.lblBottom.Name = "lblBottom";
+            this.lblBottom.Size = new System.Drawing.Size(272, 32);
+            this.lblBottom.TabIndex = 1;
+            // 
+            // lblTop
+            // 
+            this.lblTop.BackColor = System.Drawing.Color.Transparent;
+            this.lblTop.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTop.Location = new System.Drawing.Point(8, 16);
+            this.lblTop.Name = "lblTop";
+            this.lblTop.Size = new System.Drawing.Size(272, 24);
+            this.lblTop.TabIndex = 0;
+            // 
+            // chkValidate
+            // 
+            this.chkValidate.BackColor = System.Drawing.Color.Transparent;
+            this.chkValidate.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.chkValidate.Location = new System.Drawing.Point(8, 136);
+            this.chkValidate.Name = "chkValidate";
+            this.chkValidate.Size = new System.Drawing.Size(120, 24);
+            this.chkValidate.TabIndex = 11;
+            this.chkValidate.Text = "SLD定义文件";
+            this.chkValidate.UseVisualStyleBackColor = false;
+            this.chkValidate.CheckedChanged += new System.EventHandler(this.chkValidate_CheckedChanged);
+            // 
+            // GroupBox3
+            // 
+            this.GroupBox3.BackColor = System.Drawing.Color.Transparent;
+            this.GroupBox3.Controls.Add(this.Label6);
+            this.GroupBox3.Controls.Add(this.chkScale);
+            this.GroupBox3.Controls.Add(this.Label5);
+            this.GroupBox3.Controls.Add(this.Label4);
+            this.GroupBox3.Controls.Add(this.Label2);
+            this.GroupBox3.Controls.Add(this.cboHighScale);
+            this.GroupBox3.Controls.Add(this.Label1);
+            this.GroupBox3.Controls.Add(this.cboLowScale);
+            this.GroupBox3.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.GroupBox3.Location = new System.Drawing.Point(120, 48);
+            this.GroupBox3.Name = "GroupBox3";
+            this.GroupBox3.Size = new System.Drawing.Size(288, 80);
+            this.GroupBox3.TabIndex = 12;
+            this.GroupBox3.TabStop = false;
+            this.GroupBox3.Text = "Darstellungsbereich";
+            // 
+            // Label6
+            // 
+            this.Label6.Location = new System.Drawing.Point(16, 24);
+            this.Label6.Name = "Label6";
+            this.Label6.Size = new System.Drawing.Size(48, 16);
+            this.Label6.TabIndex = 7;
+            this.Label6.Text = "in SLD?";
+            // 
+            // chkScale
+            // 
+            this.chkScale.Location = new System.Drawing.Point(16, 48);
+            this.chkScale.Name = "chkScale";
+            this.chkScale.Size = new System.Drawing.Size(48, 24);
+            this.chkScale.TabIndex = 6;
+            this.chkScale.Text = "O.K.";
+            // 
+            // Label5
+            // 
+            this.Label5.Location = new System.Drawing.Point(192, 24);
+            this.Label5.Name = "Label5";
+            this.Label5.Size = new System.Drawing.Size(88, 16);
+            this.Label5.TabIndex = 5;
+            this.Label5.Text = "Kleiner Ma遱tab";
+            // 
+            // Label4
+            // 
+            this.Label4.Location = new System.Drawing.Point(80, 24);
+            this.Label4.Name = "Label4";
+            this.Label4.Size = new System.Drawing.Size(88, 16);
+            this.Label4.TabIndex = 4;
+            this.Label4.Text = "Gro遝r Ma遱tab";
+            // 
+            // Label2
+            // 
+            this.Label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Label2.Location = new System.Drawing.Point(176, 52);
+            this.Label2.Name = "Label2";
+            this.Label2.Size = new System.Drawing.Size(16, 16);
+            this.Label2.TabIndex = 3;
+            this.Label2.Text = "1:";
+            // 
+            // cboHighScale
+            // 
+            this.cboHighScale.Location = new System.Drawing.Point(192, 48);
+            this.cboHighScale.Name = "cboHighScale";
+            this.cboHighScale.Size = new System.Drawing.Size(80, 20);
+            this.cboHighScale.TabIndex = 2;
+            this.cboHighScale.DropDown += new System.EventHandler(this.cboHighScale_DropDown);
+            this.cboHighScale.Enter += new System.EventHandler(this.cboHighScale_Enter);
+            this.cboHighScale.Leave += new System.EventHandler(this.cboHighScale_Leave);
+            // 
+            // Label1
+            // 
+            this.Label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Label1.Location = new System.Drawing.Point(64, 52);
+            this.Label1.Name = "Label1";
+            this.Label1.Size = new System.Drawing.Size(16, 16);
+            this.Label1.TabIndex = 1;
+            this.Label1.Text = "1:";
+            // 
+            // cboLowScale
+            // 
+            this.cboLowScale.Location = new System.Drawing.Point(80, 48);
+            this.cboLowScale.Name = "cboLowScale";
+            this.cboLowScale.Size = new System.Drawing.Size(80, 20);
+            this.cboLowScale.TabIndex = 0;
+            this.cboLowScale.DropDown += new System.EventHandler(this.cboLowScale_DropDown);
+            this.cboLowScale.Enter += new System.EventHandler(this.cboLowScale_Enter);
+            this.cboLowScale.Leave += new System.EventHandler(this.cboLowScale_Leave);
+            // 
+            // txtSLDxsd
+            // 
+            this.txtSLDxsd.Location = new System.Drawing.Point(120, 136);
+            this.txtSLDxsd.Name = "txtSLDxsd";
+            this.txtSLDxsd.Size = new System.Drawing.Size(288, 21);
+            this.txtSLDxsd.TabIndex = 13;
+            this.txtSLDxsd.Visible = false;
+            // 
+            // PictureBox1
+            // 
+            this.PictureBox1.BackColor = System.Drawing.Color.Transparent;
+            this.PictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("PictureBox1.Image")));
+            this.PictureBox1.Location = new System.Drawing.Point(40, 216);
+            this.PictureBox1.Name = "PictureBox1";
+            this.PictureBox1.Size = new System.Drawing.Size(32, 32);
+            this.PictureBox1.TabIndex = 15;
+            this.PictureBox1.TabStop = false;
+            // 
+            // ImageList1
+            // 
+            this.ImageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("ImageList1.ImageStream")));
+            this.ImageList1.TransparentColor = System.Drawing.Color.Transparent;
+            this.ImageList1.Images.SetKeyName(0, "");
+            // 
+            // MainMenu1
+            // 
+            this.MainMenu1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.MenuItem1,
+            this.MenuItem10});
+            // 
+            // MenuItem1
+            // 
+            this.MenuItem1.Index = 0;
+            this.MenuItem1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.MenuItem2,
+            this.MenuItem5,
+            this.MenuItem7,
+            this.mnuIncludeLayerNames});
+            this.MenuItem1.Text = "Extras";
+            // 
+            // MenuItem2
+            // 
+            this.MenuItem2.Index = 0;
+            this.MenuItem2.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.MenuItem3,
+            this.MenuItem4});
+            this.MenuItem2.RadioCheck = true;
+            this.MenuItem2.Text = "Sprache/Language";
+            // 
+            // MenuItem3
+            // 
+            this.MenuItem3.Index = 0;
+            this.MenuItem3.RadioCheck = true;
+            this.MenuItem3.Text = "Deutsch";
+            this.MenuItem3.Click += new System.EventHandler(this.MenuItem3_Click);
+            // 
+            // MenuItem4
+            // 
+            this.MenuItem4.Checked = true;
+            this.MenuItem4.Index = 1;
+            this.MenuItem4.RadioCheck = true;
+            this.MenuItem4.Text = "English";
+            this.MenuItem4.Click += new System.EventHandler(this.MenuItem4_Click);
+            // 
+            // MenuItem5
+            // 
+            this.MenuItem5.Index = 1;
+            this.MenuItem5.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.MenuItem6});
+            this.MenuItem5.Text = "Tooltips";
+            // 
+            // MenuItem6
+            // 
+            this.MenuItem6.Index = 0;
+            this.MenuItem6.Text = "ein/on";
+            this.MenuItem6.Click += new System.EventHandler(this.MenuItem6_Click);
+            // 
+            // MenuItem7
+            // 
+            this.MenuItem7.Index = 2;
+            this.MenuItem7.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.MenuItem8,
+            this.MenuItem9,
+            this.MenuItem11});
+            this.MenuItem7.Text = "Layers";
+            // 
+            // MenuItem8
+            // 
+            this.MenuItem8.Checked = true;
+            this.MenuItem8.Index = 0;
+            this.MenuItem8.RadioCheck = true;
+            this.MenuItem8.Text = "转换所有图层";
+            this.MenuItem8.Click += new System.EventHandler(this.MenuItem8_Click);
+            // 
+            // MenuItem9
+            // 
+            this.MenuItem9.Index = 1;
+            this.MenuItem9.RadioCheck = true;
+            this.MenuItem9.Text = "转换选择图层";
+            this.MenuItem9.Click += new System.EventHandler(this.MenuItem9_Click);
+            // 
+            // MenuItem11
+            // 
+            this.MenuItem11.Index = 2;
+            this.MenuItem11.Text = "In Separate Dateien/In separate Files";
+            this.MenuItem11.Click += new System.EventHandler(this.MenuItem11_Click);
+            // 
+            // mnuIncludeLayerNames
+            // 
+            this.mnuIncludeLayerNames.Checked = true;
+            this.mnuIncludeLayerNames.Index = 3;
+            this.mnuIncludeLayerNames.Text = "mnuIncludeLayerNames";
+            this.mnuIncludeLayerNames.Click += new System.EventHandler(this.mnuIncludeLayerNames_Click);
+            // 
+            // MenuItem10
+            // 
+            this.MenuItem10.Index = 1;
+            this.MenuItem10.Text = "关于";
+            this.MenuItem10.Click += new System.EventHandler(this.MenuItem10_Click);
+            // 
+            // ToolTip1
+            // 
+            this.ToolTip1.Active = false;
+            // 
+            // Motherform
+            // 
+            this.AutoSize = true;
+            this.BackColor = System.Drawing.Color.SteelBlue;
+            this.ClientSize = new System.Drawing.Size(423, 275);
+            this.Controls.Add(this.PictureBox1);
+            this.Controls.Add(this.txtSLDxsd);
+            this.Controls.Add(this.GroupBox3);
+            this.Controls.Add(this.chkValidate);
+            this.Controls.Add(this.GroupBox2);
+            this.Controls.Add(this.GroupBox1);
+            this.Controls.Add(this.Label3);
+            this.Controls.Add(this.txtFileName);
+            this.Controls.Add(this.Button2);
+            this.Controls.Add(this.Button1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
+            this.Menu = this.MainMenu1;
+            this.Name = "Motherform";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "ArcGIS符号转换成SLD";
+            this.TopMost = true;
+            this.TransparencyKey = System.Drawing.Color.Brown;
+            this.Closing += new System.ComponentModel.CancelEventHandler(this.Motherform_Closing);
+            this.Load += new System.EventHandler(this.Motherform_Load);
+            this.GroupBox1.ResumeLayout(false);
+            this.GroupBox2.ResumeLayout(false);
+            this.GroupBox3.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.PictureBox1)).EndInit();
+            this.ResumeLayout(false);
+            this.PerformLayout();
+
 		}
 		
 #endregion
 		
-		//##################################################################################################
-		//######################################## DEKLARATIONEN ###########################################
-		//##################################################################################################
+
 #region Membervariablen
 		private Analize_ArcMap_Symbols AnalizeArcMap; //Die Instanz der Analysefunktion
 		private string m_cSLDFilename; //The path plus Filename of the SLD
 		private string m_cSLDPath; //The path to the SLD
 		private string m_cSLDFile; //Solely the filename of the SLD
-		private string m_cSLDTempFilename; //Der vorl鋟fige Dateiname aus der Config.-XML
+		private string m_cSLDTempFilename; // Config.-XML
 		private string m_cXSDFilename; //der Dateiname der Schemadatei
 		private CommonXMLHandle m_objCommonXML = new CommonXMLHandle(); //Instanz des "einfachen" XML-Handle
 		private ArrayList m_ScaleAl; //Die Arraylist mit den Ma遱tabseintr鋑en
@@ -583,14 +546,14 @@ namespace ArcGIS_SLD_Converter
 		private string m_cLowScale; //Der aktuelle Text der linken Combobox
 		
 		private bool m_bLabel; //???
-		private bool m_bTooltip; //Tooltips an/aus
+		private bool m_bTooltip; //是否显示提示信息
 		internal bool m_bAllLayers; //All layers processed or not
 		internal Language m_enumLang; //die Sprache
 		private bool m_bSeparateFiles; //Put each Layer in a separate file yes/no
 		private bool m_bIncludeLayerNames; //Use standard sld format (when false: format for WorldMap users)
 		private string m_cLUTFilename;
 		
-		//Die Variablen f黵 die Steuerelementnamen
+	
 		private string m_text_eng_Label3;
 		private string m_text_eng_Label4;
 		private string m_text_eng_Label5;
@@ -690,23 +653,25 @@ namespace ArcGIS_SLD_Converter
 		
 		
 		
-		//##################################################################################################
-		//######################################## ENUMERATIONEN ###########################################
-		//##################################################################################################
+
 		
 #region Enums
 		
-		//Die Sprache
+		/// <summary>
+        /// 
+        /// </summary>
 		internal enum Language
 		{
 			Deutsch = 0,
 			English = 1
 		}
-		
+		/// <summary>
+        /// 保存文件类型
+        /// </summary>
 		internal enum Fileinfo
 		{
-			Name = 0, //The pure name of the file
-			Path = 1 //the pure path to the file
+			Name = 0, //保存类型为文件
+			Path = 1 //保存类型为文件路径
 		}
 		
 #endregion
@@ -716,18 +681,19 @@ namespace ArcGIS_SLD_Converter
 		
 #endregion
 		
-		//##################################################################################################
-		//######################################### FUNKTIONEN #############################################
-		//##################################################################################################
+
 #region Funktionen
-		//Einfacher Sortieralgorithmus f黵 stringinhalte
+		/// <summary>
+        /// 数组排序
+        /// </summary>
+        /// <param name="al"></param>
+        /// <returns></returns>
 		private ArrayList SortMe(ArrayList al)
 		{
 			ArrayList al2 = new ArrayList();
 			string cStoreString = "";
 			short i = 0;
 			short iTmpDigit = 0;
-			
 			try
 			{
 				while (!(al.Count == 1))
@@ -750,22 +716,23 @@ namespace ArcGIS_SLD_Converter
 			}
 			catch (Exception ex)
 			{
-				MessageBox.Show("Uuuhps " + ex.Message);
+				MessageBox.Show("排序失败: " + ex.Message);
                 return al2;
 			}
 			
 		}
 		
-		//************************************************************************************************
-		//Passes back either the pure filename or the path to the SLD without filename. Used for splitting
-		//the SLD in separate files
-		//************************************************************************************************
+        /// <summary>
+        /// 获取保存文件信息
+        /// </summary>
+        /// <param name="FileName"></param>
+        /// <param name="WhatDoIWant"></param>
+        /// <returns></returns>
 		private string GetFileInfo(string FileName, Fileinfo WhatDoIWant)
 		{
 			int iLastIndex = 0;
 			string cWantedSubstring = "";
 			cWantedSubstring = "";
-			
 			iLastIndex = FileName.LastIndexOf("\\");
 			if (WhatDoIWant == Fileinfo.Name)
 			{
@@ -777,15 +744,10 @@ namespace ArcGIS_SLD_Converter
 			}
 			return cWantedSubstring;
 		}
-		
-		
-		
 #endregion
 		
-		//##################################################################################################
-		//########################################### ROUTINEN #############################################
-		//##################################################################################################
-#region Routinen
+
+#region 界面信息修改
 		public void CHLabelBottom(string value)
 		{
 			this.lblBottom.Text = value;
@@ -803,7 +765,9 @@ namespace ArcGIS_SLD_Converter
 			this.lblSmall.Text = value;
 			this.Refresh();
 		}
-		
+		/// <summary>
+        /// 窗体最小化
+        /// </summary>
 		internal void MinimizeWindow()
 		{
 			DateTime dCurrentTime = default(DateTime);
@@ -840,60 +804,52 @@ namespace ArcGIS_SLD_Converter
 			this.Height = 252;
 			GroupBox2.Height = 24;
 		}
-		
+		/// <summary>
+		/// 关闭应用程序
+		/// </summary>
 		public void MyTermination()
 		{
 			this.Close();
 			this.Dispose();
 			ProjectData.EndApp();
-			//oder: application.exit
 		}
-		
+		/// <summary>
+        /// 处理所有的当前在消息队列中的Windows消息
+		/// </summary>
 		public void DoEvents()
 		{
 			Application.DoEvents();
 		}
 		
-		//************************************************************************************************
-		//Initialisiert das Commmon XML-Handle                                                           *
-		//************************************************************************************************
+        /// <summary>
+        /// 初始化配置
+        /// </summary>
 		private void InitCommonXML()
 		{
 			
 			try
 			{
-				m_objCommonXML.XMLfilename = AppDomain.CurrentDomain.BaseDirectory + "Preconfigure_Converter.xml";
-				if (m_objCommonXML.OpenDoc() == true)
+                string configFileName= AppDomain.CurrentDomain.BaseDirectory + "TempXmlDoc\\Preconfigure_Converter.xml";
+                m_objCommonXML.XMLfilename = configFileName;
+                if (m_objCommonXML.OpenDoc() == true)
 				{
 					
 				}
 				else
 				{
-					if (m_enumLang == Language.Deutsch)
-					{
-						InfoMsg("Die Konfigurationsdatei Preconfigure_Converter.xml wurde nicht im Anwendungsverzeichnis gefunden." + 
-							" Bitte stellen Sie eine aktuelle Preconfigure_Converter.xml in das Anwendungsverzeichnis und starten SIe die Anwendung erneut." + "\r\n", "Preconfigure");
-						MyTermination();
-					}
-					else if (m_enumLang == Language.English)
-					{
-						InfoMsg("The Configuration-file Preconfigure_Converter.xml wasn\'t found at the application home-directory." + 
-							" please copy a Preconfigure_Converter.xml to the application home-directory and restart the application." + "\r\n", "Preconfigure");
-						MyTermination();
-					}
-					
-				}
+                    InfoMsg(string.Format("未找到配置文件,默认配置文件路径为【{0}】", configFileName), "配置错误");
+                    MyTermination();
+                }
 			}
 			catch (Exception ex)
 			{
-				ErrorMsg("Fehler beim Einlesen der Vorkonfigurations-XML-Datei" + "\r\n", ex.Message, "InitCommonXML");
-				MyTermination();
+                ErrorMsg(string.Format("初始化配置文件失败!"), ex.Message, "配置错误");
+                MyTermination();
 			}
 		}
-		
-		//************************************************************************************************
-		//Initialisiert die Steuerelementnamens-Variablen*
-		//************************************************************************************************
+        /// <summary>
+        /// 加载配置文件显示信息
+        /// </summary>
 		private void InitControlNameVariables()
 		{
 			
@@ -1191,10 +1147,9 @@ namespace ArcGIS_SLD_Converter
 				
 			}
 		}
-		
-		//************************************************************************************************
-		//Die Initialisierung der Steuerelemente mit labels
-		//************************************************************************************************
+		/// <summary>
+		/// 初始化显示信息
+		/// </summary>
 		private void InitControls()
 		{
 			switch (this.m_enumLang)
@@ -1231,10 +1186,9 @@ namespace ArcGIS_SLD_Converter
 					break;
 			}
 		}
-		
-		//************************************************************************************************
-		//Die Initialisierung der Steuerelemente mit Tooltips*
-		//************************************************************************************************
+        /// <summary>
+        /// 初始化提示信息
+        /// </summary>
 		private void InitTooltips()
 		{
 			switch (this.m_enumLang)
@@ -1268,10 +1222,9 @@ namespace ArcGIS_SLD_Converter
 			}
 			
 		}
-		
-		//************************************************************************************************
-		//Liest die Daten f黵 die Vorkonfiguration des Formulars aus der XML (i.A. Die Scales-Comboboxen)*
-		//************************************************************************************************
+        /// <summary>
+        /// 加载比例尺设置信息
+        /// </summary>
 		private void Preconfigure()
 		{
 			short i = 0;
@@ -1326,10 +1279,6 @@ namespace ArcGIS_SLD_Converter
 						}
 					}
 				}
-				
-				//ab hier werden die Labelnamen auf Englisch/Deutsch ausgelesen
-				
-				
 			}
 			catch (Exception ex)
 			{
@@ -1337,10 +1286,9 @@ namespace ArcGIS_SLD_Converter
 				MyTermination();
 			}
 		}
-		
-		//************************************************************************************************
-		//Schreibt die letzten Benutzereinstellungen zur點k in die Preconfigure_Converter.xml
-		//************************************************************************************************
+		/// <summary>
+		/// 记录比例尺配置信息
+		/// </summary>
 		internal void ReadBackValues()
 		{
 			
@@ -1373,10 +1321,9 @@ namespace ArcGIS_SLD_Converter
 				MyTermination();
 			}
 		}
-		
-		//************************************************************************************************
-		//**********************Liest die Scales-Daten aus der XML erneut in die Comboboxen***************
-		//************************************************************************************************
+		/// <summary>
+		/// 重新加载比例尺信息
+		/// </summary>
 		private void LoadCboScalesNew()
 		{
 			string cHighScale = "";
@@ -1413,109 +1360,117 @@ namespace ArcGIS_SLD_Converter
 				ErrorMsg("Fehler beim Einlesen der Vorkonfigurations-XML-Datei", ex.Message, "Preconfiguration");
 			}
 		}
-		
-		
-		
-		//************************************************************************************************
-		//********************************* Die zentrale Fehlermeldung ***********************************
-		//************************************************************************************************
+        /// <summary>
+        /// 显示错误信息
+        /// </summary>
+        /// <param name="Message"></param>
+        /// <param name="ExMessage"></param>
+        /// <param name="FunctionName"></param>
 		private void ErrorMsg(string Message, string ExMessage, string FunctionName)
 		{
 			MessageBox.Show(Message + "\r\n" + ExMessage, "ArcGIS_SLD_Converter | Analize_ArcMap_Symbols | " + FunctionName, MessageBoxButtons.OK, MessageBoxIcon.Error);
 		}
-		
-		//************************************************************************************************
-		//********************************* Die zentrale Infomeldung ***********************************
-		//************************************************************************************************
+        /// <summary>
+        /// 显示提示信息
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="functionname"></param>
 		private void InfoMsg(string message, string functionname)
 		{
 			MessageBox.Show(message, "Analize_ArcMap_Symbols | Output_SLD | " + functionname, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 		}
-		
-		//************************************************************************************************
-		//zeigt das Wartesymbol an
-		//************************************************************************************************
+		/// <summary>
+		/// 显示图片
+		/// </summary>
 		internal void ShowWorld()
 		{
 			PictureBox1.Visible = true;
 			PictureBox1.Refresh();
 			this.Refresh();
 		}
-		
-		//************************************************************************************************
-		//zeigt das Wartesymbol an
-		//************************************************************************************************
+		/// <summary>
+		/// 隐藏图片
+		/// </summary>
 		internal void HideWorld()
 		{
 			PictureBox1.Visible = false;
 		}
 #endregion
-		
-		//##################################################################################################
-		//######################################### PROPERTIES #############################################
-		//##################################################################################################
-#region Properties
-		//returns the whole path and filename
-public string GetSLDFilename
-		{
-			get
-			{
-				return m_cSLDFilename;
-			}
-		}
-		
-public string GetInfoIncludeLayerNames
-		{
-			get
-			{
-				return System.Convert.ToString( m_bIncludeLayerNames);
-			}
-		}
-		
-public bool GetInfoSeparateLayers
+        #region 属性
+        /// <summary>
+        /// SLD文件名称
+        /// </summary>
+        public string GetSLDFilename
+        {
+            get
+            {
+                return m_cSLDFilename;
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string GetInfoIncludeLayerNames
+        {
+            get
+            {
+                return System.Convert.ToString(m_bIncludeLayerNames);
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool GetInfoSeparateLayers
 		{
 			get
 			{
 				return m_bSeparateFiles;
 			}
 		}
-		
-		//returns only the path of the SLD
-public string GetSLDPath
+        /// <summary>
+        /// SLD文件路径
+        /// </summary>
+        public string GetSLDPath
 		{
 			get
 			{
 				return m_cSLDPath;
 			}
 		}
-		
-		//returns only the Name of the file
-public string GetSLDFile
+        /// <summary>
+        /// 获取SLD文件路径
+        /// </summary>
+        public string GetSLDFile
 		{
 			get
 			{
 				return m_cSLDFile;
 			}
 		}
-		
-		
-public string GetXSDFilename
+        /// <summary>
+        /// 获取XSD文件路径
+        /// </summary>
+        public string GetXSDFilename
 		{
 			get
 			{
 				return m_cXSDFilename;
 			}
 		}
-		
-public string GetSLDFileFromConfigXML
+        /// <summary>
+        /// 获取SLD配置文件路径
+        /// </summary>
+        public string GetSLDFileFromConfigXML
 		{
 			get
 			{
 				return m_cSLDTempFilename;
 			}
 		}
-		
-public string GetCurrentLanguage
+        /// <summary>
+        /// 获取语言系统
+        /// </summary>
+        public string GetCurrentLanguage
 		{
 			get
 			{
@@ -1531,19 +1486,19 @@ public string GetCurrentLanguage
 				return "";
 			}
 		}
-#endregion
+
+        #endregion
 		
-		//##################################################################################################
-		//############################################# EVENTS #############################################
-		//##################################################################################################
-#region Events
-		//Der SLD-Button st鲞t die Analyse an
+        #region Events
+		/// <summary>
+		/// 进行转换
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void Button1_Click(System.Object sender, System.EventArgs e)
 		{
-			//Die Gr鲞e von Formular und Infofeld wird ge鋘dert
 			this.Height = 324;
 			this.GroupBox2.Height = 96;
-			//Hier noch die 躡erpr黤ung, ob Ober und Untergrenze des Ma遱tabs korrekt gew鋒lt wurden
 			if (this.chkScale.Checked == true)
 			{
 				if (int.Parse(this.cboHighScale.Text) < int.Parse(this.cboLowScale.Text))
@@ -1554,24 +1509,27 @@ public string GetCurrentLanguage
 					cboLowScale.Text = cTmp;
 				}
 			}
-			//Die Analyse wird gestartet
 			AnalizeArcMap = new Analize_ArcMap_Symbols(this, m_cSLDFilename);
+
 			if (this.chkValidate.Checked == false)
 			{
 				MinimizeWindow();
 			}
+
 			if (this.lblSmall.Text == "Die SLD ist g黮tig")
 			{
 				MinimizeWindow();
 			}
 		}
 		
-		//Der SLD speichern unter Button
+		/// <summary>
+		/// 选择SLD保存路径
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void Button2_Click(System.Object sender, System.EventArgs e)
 		{
 			System.IO.StreamWriter swOutput;
-			// File oFile = default(File); VBConversions Warning: Cannot declare a variable of a static type in C#
-			
 			if (System.IO.File.Exists(this.GetSLDFileFromConfigXML))
 			{
 				this.dlgSave.InitialDirectory = this.GetSLDFileFromConfigXML;
@@ -1579,20 +1537,24 @@ public string GetCurrentLanguage
 			dlgSave.CheckFileExists = false;
 			dlgSave.CheckPathExists = true;
 			dlgSave.DefaultExt = "sld";
-			dlgSave.Filter = "SLD-Dateien (*.sld)|*.sld";
+			dlgSave.Filter = "SLD (*.sld)|*.sld";
 			dlgSave.AddExtension = true;
 			dlgSave.OverwritePrompt = true;
 			dlgSave.CreatePrompt = false;
 			if (dlgSave.ShowDialog() == DialogResult.OK)
 			{
-				m_cSLDFilename = dlgSave.FileName; //The Path plus Filename
+				m_cSLDFilename = dlgSave.FileName; 
 				m_cSLDPath = GetFileInfo(m_cSLDFilename, Fileinfo.Path);
 				m_cSLDFile = GetFileInfo(m_cSLDFilename, Fileinfo.Name);
 				txtFileName.Text = m_cSLDFilename;
 			}
 		}
 		
-		//das Validierungsoptionsfeld
+		/// <summary>
+        /// 加载XSD文件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
 		private void chkValidate_CheckedChanged(object sender, System.EventArgs e)
 		{
 			if (chkValidate.Checked == true)
@@ -1620,15 +1582,11 @@ public string GetCurrentLanguage
 				txtSLDxsd.Visible = false;
 			}
 		}
-		
-		
-		
-		//############################################################################################################
-		//Die folgenden Ereignisse beziehen sich alle auf die Ma遱tabscomboboxen
-		//############################################################################################################
-		
-		//Die 躡erpr黤ung, da?auch nur Zahlen in Comboboxfeld eingegeben werden. Wenn Zahl noch nicht in XML-
-		//datei enthalten, wird sie 黚ernommen in XML-Datei
+        /// <summary>
+        /// 设置最小比例尺
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
 		private void cboHighScale_Leave(object sender, System.EventArgs e)
 		{
 			short i;
@@ -1636,31 +1594,25 @@ public string GetCurrentLanguage
 			bool bIsNumber = true;
 			string cComboText = "";
 			cComboText = cboHighScale.Text;
-			
 			try
 			{
 				for (j = 0; j <= cComboText.Length - 1; j++)
 				{
 					if (!(cComboText[j] == '0' || cComboText[j] == '1' || cComboText[j] == '2' || cComboText[j] == '3' || cComboText[j] == '4' || cComboText[j] == '5' || cComboText[j] == '6' || cComboText[j] == '7' || cComboText[j] == '8' || cComboText[j] == '9'))
 					{
-						if (m_enumLang == Language.Deutsch)
-						{
-							MessageBox.Show("Bitte geben Sie nur ZAHLEN ohne Komma zwischen 10 und 100000000 in das Textfeld ein!", null, MessageBoxButtons.OK, MessageBoxIcon.Information);
-						}
-						else if (m_enumLang == Language.English)
-						{
-							MessageBox.Show("Please insert only NUMBERS between 10 und 100000000 into the text field!", null, MessageBoxButtons.OK, MessageBoxIcon.Information);
-						}
+						MessageBox.Show(string.Format("插入值必须是数字，且介于{0}到{1}之间",10, 100000000)
+                            , string.Format("错误"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+					
 						cboHighScale.Text = m_cHighScale;
 						bIsNumber = false;
 						return;
 					}
 				}
+                //如果输入的值是数字，则写入配置文件
 				if (bIsNumber == true)
 				{
 					if (!m_ScaleAl.Contains(cboHighScale.Text))
 					{
-						//Hier die Aufnahme in die Datei Preconfigure_Converter.xml
 						m_objCommonXML.FindSection("scales");
 						m_objCommonXML.CreateEntry("scale");
 						m_objCommonXML.SetEntryValue(cboHighScale.Text);
@@ -1669,13 +1621,14 @@ public string GetCurrentLanguage
 			}
 			catch (Exception ex)
 			{
-				MessageBox.Show("Unbekannter Fehler." + "\r\n" + ex.Message + "\r\n" + ex.StackTrace);
+				MessageBox.Show(string.Format("比例尺设置错误:{0}", ex.Message));
 			}
 		}
-		
-		
-		//Die 躡erpr黤ung, da?auch nur Zahlen in Comboboxfeld eingegeben werden. Wenn Zahl noch nicht in XML-
-		//datei enthalten, wird sie 黚ernommen in XML-Datei
+        /// <summary>
+        /// 设置最大比例尺
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
 		private void cboLowScale_Leave(object sender, System.EventArgs e)
 		{
 			short i;
@@ -1683,22 +1636,15 @@ public string GetCurrentLanguage
 			bool bIsNumber = true;
 			string cComboText = "";
 			cComboText = cboLowScale.Text;
-			
 			try
 			{
 				for (j = 0; j <= cComboText.Length - 1; j++)
 				{
 					if (!(cComboText[j] == '0' || cComboText[j] == '1' || cComboText[j] == '2' || cComboText[j] == '3' || cComboText[j] == '4' || cComboText[j] == '5' || cComboText[j] == '6' || cComboText[j] == '7' || cComboText[j] == '8' || cComboText[j] == '9'))
 					{
-						if (m_enumLang == Language.Deutsch)
-						{
-							MessageBox.Show("Bitte geben Sie nur ZAHLEN ohne Komma zwischen 10 und 100000000 in das Textfeld ein!", null, MessageBoxButtons.OK, MessageBoxIcon.Information);
-						}
-						else if (m_enumLang == Language.English)
-						{
-							MessageBox.Show("Please insert only NUMBERS between 10 und 100000000 into the text field!", null, MessageBoxButtons.OK, MessageBoxIcon.Information);
-						}
-						cboLowScale.Text = m_cLowScale;
+                        MessageBox.Show(string.Format("插入值必须是数字，且介于{0}到{1}之间", 10, 100000000)
+                                        , string.Format("错误"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        cboLowScale.Text = m_cLowScale;
 						bIsNumber = false;
 						return;
 					}
@@ -1707,7 +1653,7 @@ public string GetCurrentLanguage
 				{
 					if (!m_ScaleAl.Contains(cboLowScale.Text))
 					{
-						//Hier die Aufnahme in die Datei Preconfigure_Converter.xml
+						//更新配置文件
 						m_objCommonXML.FindSection("scales");
 						m_objCommonXML.CreateEntry("scale");
 						m_objCommonXML.SetEntryValue(cboLowScale.Text);
@@ -1719,32 +1665,47 @@ public string GetCurrentLanguage
 				MessageBox.Show("Unbekannter Fehler." + "\r\n" + ex.Message + "\r\n" + ex.StackTrace);
 			}
 		}
-		
+		/// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
 		private void cboHighScale_Enter(object sender, System.EventArgs e)
 		{
 			m_cHighScale = cboHighScale.Text;
 		}
-		
+		/// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
 		private void cboLowScale_Enter(object sender, System.EventArgs e)
 		{
 			m_cLowScale = cboLowScale.Text;
 		}
-		
+		/// <summary>
+        /// 加载新的最小比例尺
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
 		private void cboHighScale_DropDown(object sender, System.EventArgs e)
 		{
 			LoadCboScalesNew();
 		}
-		
+		/// <summary>
+        /// 加载新的最大比例尺
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
 		private void cboLowScale_DropDown(object sender, System.EventArgs e)
 		{
 			LoadCboScalesNew();
 		}
-		
-		//############################################################################################################
-		//Die folgenden Ereignisse beziehen sich alle auf die Men黮eiste
-		//############################################################################################################
-		
-		//Men? Deutsch
+        /// <summary>
+        /// 语言设置
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
 		private void MenuItem3_Click(System.Object sender, System.EventArgs e)
 		{
 			MenuItem3.Checked = true;
@@ -1754,7 +1715,11 @@ public string GetCurrentLanguage
 			InitTooltips();
 		}
 		
-		//Men? English
+		/// <summary>
+        /// 语言设置
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
 		private void MenuItem4_Click(System.Object sender, System.EventArgs e)
 		{
 			MenuItem3.Checked = false;
@@ -1763,8 +1728,11 @@ public string GetCurrentLanguage
 			InitControls();
 			InitTooltips();
 		}
-		
-		//Men? Tooltips
+		/// <summary>
+        /// 是否显示提示信息
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
 		private void MenuItem6_Click(System.Object sender, System.EventArgs e)
 		{
 			if (m_bTooltip == false)
@@ -1781,27 +1749,35 @@ public string GetCurrentLanguage
 				m_bTooltip = false;
 			}
 		}
-		
-		//Men? Layers All
+        /// <summary>
+        /// 获取全部图层信息
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
 		private void MenuItem8_Click(System.Object sender, System.EventArgs e)
 		{
 			m_bAllLayers = true;
 			MenuItem8.Checked = true;
 			MenuItem9.Checked = false;
 		}
-		
-		//Men? Layers Selected
+		/// <summary>
+        /// 转换选择图层
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
 		private void MenuItem9_Click(System.Object sender, System.EventArgs e)
 		{
 			m_bAllLayers = false;
 			MenuItem8.Checked = false;
 			MenuItem9.Checked = true;
 		}
-		
-		//Menu: AboutBox
+		/// <summary>
+        ///关于信息显示 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
 		private void MenuItem10_Click(System.Object sender, System.EventArgs e)
 		{
-			//MessageBox.Show(m_enumLang.ToString)
 			AboutFrame frmAboutBox = default(AboutFrame);
 			frmAboutBox = new AboutFrame(System.Convert.ToString(m_enumLang.ToString()));
 			frmAboutBox.Show();
@@ -1822,18 +1798,23 @@ public string GetCurrentLanguage
 				MenuItem11.Checked = false;
 			}
 		}
-		
-		
-		//Beim Schlie遝n der Anwendung werden die Werte zur點kgeschrieben in die Datei PreconfigureConverter
+		/// <summary>
+        /// 窗体关闭事件、保存比例尺配置信息
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
 		private void Motherform_Closing(object sender, System.ComponentModel.CancelEventArgs e)
 		{
 			ReadBackValues();
 		}
 #endregion
-		
+		/// <summary>
+        /// 窗体加载事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
 		private void Motherform_Load(System.Object sender, System.EventArgs e)
 		{
-			//' Initialize form
 			InitControls();
 			InitTooltips();
 		}

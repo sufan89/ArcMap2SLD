@@ -1,148 +1,148 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <preconfigure>
-  <Label3>
-    <english>
-      <text>save SLD to</text>
-      <tooltip> in this file save-dialogue specifywhere to save the SLD file</tooltip>
-    </english>
-    <deutsch>
-      <text>SLD Speicherort</text>
-      <tooltip>Wählen Sie hier den Speicherort, an dem die SLD erstellt werden soll</tooltip>
-    </deutsch>
-  </Label3>
-  <Label4>
-    <english>
-      <text>Large scale</text>
-      <tooltip>Specify the lower bound of scale to display the map (remember: large scale means small scale-number!)</tooltip>
-    </english>
-    <deutsch>
-      <text>Großer Maßstab</text>
-      <tooltip>Geben Sie hier die Untergrenze des Darstellungsbereichs der Karte an (Kleine Erinnerung: Großer Maßstab bedeutet kleine Maßstabszahl)</tooltip>
-    </deutsch>
-  </Label4>
-  <Label5>
-    <english>
-      <text>Small scale</text>
-      <tooltip>Specify the upper bound of scale to display the map (remember: small scale means big scale-number!)</tooltip>
-    </english>
-    <deutsch>
-      <text>Kleiner Maßstab</text>
-      <tooltip>Geben Sie hier die Obergrenze des Darstellungsbereichs der Karte an (Kleine Erinnerung: Kleiner Maßstab bedeutet große Maßstabszahl)</tooltip>
-    </deutsch>
-  </Label5>
-  <Label6>
-    <english>
-      <text>in SLD?</text>
-      <tooltip>If you check the O.K.-box, the scale-elements will be taken in the SLD. Remember: the upperbound and lowerbound SLD-elements specify the view limits wherein the map will be displayed</tooltip>
-    </english>
-    <deutsch>
-      <text>in SLD?</text>
-      <tooltip>Wenn Sie das O.K.-Optionsfeld betätigen, werden die  upperbound und lowerbound- SLD-Elemente in die SLD übernommen. Zur Erinnerung: die Elemente sagen aus, innerhalb welchen Rahmens die Karte angezeigt wird</tooltip>
-    </deutsch>
-  </Label6>
-  <GroupBox1>
-    <english>
-      <text>Server data</text>
-      <tooltip>depending on the data source on which the map-service is based on, the ArcMap2SLDConverter writes special formates for the PropertyName-element of the filter-element. See the tooltips of the checkboxes.</tooltip>
-    </english>
-    <deutsch>
-      <text>Serverdaten</text>
-      <tooltip>Abhängig von der Datenquelle, auf welcher der Kartendienst basiert, werden in das PropertyName-Element des Filter-Elements bestimmte Formate geschrieben. Beachten Sie die Tooltips der Optionselemente.</tooltip>
-    </deutsch>
-  </GroupBox1>
-  <GroupBox2>
-    <english>
-      <text>Infoframe</text>
-      <tooltip>See the progress of the current process</tooltip>
-    </english>
-    <deutsch>
-      <text>Infofeld</text>
-      <tooltip>Der Fortschritt des aktuellen Prozesses</tooltip>
-    </deutsch>
-  </GroupBox2>
-  <GroupBox3>
-    <english>
-      <text>Range of portrayal</text>
-      <tooltip>The upper and lower bound of portrayel of the map. You can edit the scale-numbers and your user-defined numbers will be remebered next time you use the tool</tooltip>
-    </english>
-    <deutsch>
-      <text>Darstellungsbereich</text>
-      <tooltip>Die Ober- und Untergrenze des Darstellungsbereichs der Karte. Die Maßstabszahlen können editiert werden. Beim nächsten Gebrauch des Tools finden Sie die benutzerdefinierten Zahlen wieder.</tooltip>
-    </deutsch>
-  </GroupBox3>
-  <chkArcIMS>
-    <english>
-      <text>ArcSDE</text>
-      <tooltip>This checkbox represents the special demands of ArcIMS-data to be classified. The format for the PropertyName-element of the filter-element is:datasetName.FieldName. FieldName is the ESRI appellation of the classname (of classified data). </tooltip>
-    </english>
-    <deutsch>
-      <text>ArcSDE</text>
-      <tooltip>Dieses Optionsfeld repräsentiert die besonderen Anforderungen, die ArcSDE-Daten an die Klassifizierung stellen. Das Format des PropertyName-elements vom filter-element lautet: datasetName.FieldName. Wobei FieldName die ESRI-Bezeichnung für den Klassenname eines klassifizierten Datensatzes steht.</tooltip>
-    </deutsch>
-  </chkArcIMS>
-  <chkUMN>
-    <english>
-      <text>Shapefile</text>
-      <tooltip>A shapefile can be classified in a simple way. The format of is simply FieldName</tooltip>
-    </english>
-    <deutsch>
-      <text>Shapefile</text>
-      <tooltip>Ein Shapefile kann einfach klassifiziert werden. Hier lautet das Format für o.g. Element einfach FieldName</tooltip>
-    </deutsch>
-  </chkUMN>
-  <chkValidate>
-    <english>
-      <text>sld-validation</text>
-      <tooltip>If the option is chosen an open file dialogue opens to specify the location of the SLD schema-file (and its associated files like filter.xsd, etc with customised local paths). If chosen, the tool validates the resulting SLD against this schema files.</tooltip>
-    </english>
-    <deutsch>
-      <text>SLD-Validierung</text>
-      <tooltip>Wenn die Option gewählt wird, öffnet sich ein Datei-öffnen Dialog, in dem der Speicherort einer SLD-Schemadatei angegeben (und der assozierten Schemadateien wie z.B. filter.xsd, etc. mit angepassten lokalen Pfaden) werden kann. Wenn diese ausgewählt wurde, wird die entstandene SLD-Datei gegen dieses Schema auf Gültigkeit geprüft.</tooltip>
-    </deutsch>
-  </chkValidate>
-  <Button1>
-    <english>
-      <text>SLD</text>
-      <tooltip>Starts the analysis of the ArcMap-project and creation of SLD</tooltip>
-    </english>
-    <deutsch>
-      <text>SLD</text>
-      <tooltip>Startet den ArcMap-Analyse und SLD-Erstellungs-Prozess</tooltip>
-    </deutsch>
-  </Button1>
-  <MenuItem10>
-    <english>
-      <text>About</text>
-      <tooltip>About ArcMap2SLD</tooltip>
-    </english>
-    <deutsch>
-      <text>Über</text>
-      <tooltip>Über ArcMap2SLD</tooltip>
-    </deutsch>
-  </MenuItem10>
-  <mnuIncludeLayerNames>
-    <english>
-      <text>Include Layer Names</text>
-      <tooltip>Include Layer Names in SLD. Uncheck to create an SLD to be used with WorldMap.</tooltip>
-    </english>
-    <deutsch>
-      <text>Layer Namen inkludieren</text>
-      <tooltip>Layer Namen würden inkludiert in die SLD. Deaktivieren Sie diese Option für eine SLD die mit WorldMap benutzt kann worden.</tooltip>
-    </deutsch>
-  </mnuIncludeLayerNames>
-  <AboutLabel1>
-    <english>
-      <text>ArcMap2SLD Converter - Release No: </text>
-      <tooltip>Release No. of ArcMap2SLD Converter</tooltip>
-    </english>
-    <deutsch>
-      <text>ArcMap2SLD Converter - Version Nr: </text>
-      <tooltip>Release Nr. von ArcMap2SLD Converter</tooltip>
-    </deutsch>
-  </AboutLabel1>
-  <AboutLabel2>
-    <english>
-      <text>
+	<Label3>
+		<english>
+			<text>save SLD to</text>
+			<tooltip> in this file save-dialogue specifywhere to save the SLD file</tooltip>
+		</english>
+		<deutsch>
+			<text>SLD Speicherort</text>
+			<tooltip>WÃ¤hlen Sie hier den Speicherort, an dem die SLD erstellt werden soll</tooltip>
+		</deutsch>
+	</Label3>
+	<Label4>
+		<english>
+			<text>Large scale</text>
+			<tooltip>Specify the lower bound of scale to display the map (remember: large scale means small scale-number!)</tooltip>
+		</english>
+		<deutsch>
+			<text>GroÃŸer MaÃŸstab</text>
+			<tooltip>Geben Sie hier die Untergrenze des Darstellungsbereichs der Karte an (Kleine Erinnerung: GroÃŸer MaÃŸstab bedeutet kleine MaÃŸstabszahl)</tooltip>
+		</deutsch>
+	</Label4>
+	<Label5>
+		<english>
+			<text>Small scale</text>
+			<tooltip>Specify the upper bound of scale to display the map (remember: small scale means big scale-number!)</tooltip>
+		</english>
+		<deutsch>
+			<text>Kleiner MaÃŸstab</text>
+			<tooltip>Geben Sie hier die Obergrenze des Darstellungsbereichs der Karte an (Kleine Erinnerung: Kleiner MaÃŸstab bedeutet groÃŸe MaÃŸstabszahl)</tooltip>
+		</deutsch>
+	</Label5>
+	<Label6>
+		<english>
+			<text>in SLD?</text>
+			<tooltip>If you check the O.K.-box, the scale-elements will be taken in the SLD. Remember: the upperbound and lowerbound SLD-elements specify the view limits wherein the map will be displayed</tooltip>
+		</english>
+		<deutsch>
+			<text>in SLD?</text>
+			<tooltip>Wenn Sie das O.K.-Optionsfeld betÃ¤tigen, werden die  upperbound und lowerbound- SLD-Elemente in die SLD Ã¼bernommen. Zur Erinnerung: die Elemente sagen aus, innerhalb welchen Rahmens die Karte angezeigt wird</tooltip>
+		</deutsch>
+	</Label6>
+	<GroupBox1>
+		<english>
+			<text>Server data</text>
+			<tooltip>depending on the data source on which the map-service is based on, the ArcMap2SLDConverter writes special formates for the PropertyName-element of the filter-element. See the tooltips of the checkboxes.</tooltip>
+		</english>
+		<deutsch>
+			<text>Serverdaten</text>
+			<tooltip>AbhÃ¤ngig von der Datenquelle, auf welcher der Kartendienst basiert, werden in das PropertyName-Element des Filter-Elements bestimmte Formate geschrieben. Beachten Sie die Tooltips der Optionselemente.</tooltip>
+		</deutsch>
+	</GroupBox1>
+	<GroupBox2>
+		<english>
+			<text>Infoframe</text>
+			<tooltip>See the progress of the current process</tooltip>
+		</english>
+		<deutsch>
+			<text>Infofeld</text>
+			<tooltip>Der Fortschritt des aktuellen Prozesses</tooltip>
+		</deutsch>
+	</GroupBox2>
+	<GroupBox3>
+		<english>
+			<text>Range of portrayal</text>
+			<tooltip>The upper and lower bound of portrayel of the map. You can edit the scale-numbers and your user-defined numbers will be remebered next time you use the tool</tooltip>
+		</english>
+		<deutsch>
+			<text>Darstellungsbereich</text>
+			<tooltip>Die Ober- und Untergrenze des Darstellungsbereichs der Karte. Die MaÃŸstabszahlen kÃ¶nnen editiert werden. Beim nÃ¤chsten Gebrauch des Tools finden Sie die benutzerdefinierten Zahlen wieder.</tooltip>
+		</deutsch>
+	</GroupBox3>
+	<chkArcIMS>
+		<english>
+			<text>ArcSDE</text>
+			<tooltip>This checkbox represents the special demands of ArcIMS-data to be classified. The format for the PropertyName-element of the filter-element is:datasetName.FieldName. FieldName is the ESRI appellation of the classname (of classified data). </tooltip>
+		</english>
+		<deutsch>
+			<text>ArcSDE</text>
+			<tooltip>Dieses Optionsfeld reprÃ¤sentiert die besonderen Anforderungen, die ArcSDE-Daten an die Klassifizierung stellen. Das Format des PropertyName-elements vom filter-element lautet: datasetName.FieldName. Wobei FieldName die ESRI-Bezeichnung fÃ¼r den Klassenname eines klassifizierten Datensatzes steht.</tooltip>
+		</deutsch>
+	</chkArcIMS>
+	<chkUMN>
+		<english>
+			<text>Shapefile</text>
+			<tooltip>A shapefile can be classified in a simple way. The format of is simply FieldName</tooltip>
+		</english>
+		<deutsch>
+			<text>Shapefile</text>
+			<tooltip>Ein Shapefile kann einfach klassifiziert werden. Hier lautet das Format fÃ¼r o.g. Element einfach FieldName</tooltip>
+		</deutsch>
+	</chkUMN>
+	<chkValidate>
+		<english>
+			<text>sld-validation</text>
+			<tooltip>If the option is chosen an open file dialogue opens to specify the location of the SLD schema-file (and its associated files like filter.xsd, etc with customised local paths). If chosen, the tool validates the resulting SLD against this schema files.</tooltip>
+		</english>
+		<deutsch>
+			<text>SLD-Validierung</text>
+			<tooltip>Wenn die Option gewÃ¤hlt wird, Ã¶ffnet sich ein Datei-Ã¶ffnen Dialog, in dem der Speicherort einer SLD-Schemadatei angegeben (und der assozierten Schemadateien wie z.B. filter.xsd, etc. mit angepassten lokalen Pfaden) werden kann. Wenn diese ausgewÃ¤hlt wurde, wird die entstandene SLD-Datei gegen dieses Schema auf GÃ¼ltigkeit geprÃ¼ft.</tooltip>
+		</deutsch>
+	</chkValidate>
+	<Button1>
+		<english>
+			<text>SLD</text>
+			<tooltip>Starts the analysis of the ArcMap-project and creation of SLD</tooltip>
+		</english>
+		<deutsch>
+			<text>SLD</text>
+			<tooltip>Startet den ArcMap-Analyse und SLD-Erstellungs-Prozess</tooltip>
+		</deutsch>
+	</Button1>
+	<MenuItem10>
+		<english>
+			<text>About</text>
+			<tooltip>About ArcMap2SLD</tooltip>
+		</english>
+		<deutsch>
+			<text>Ãœber</text>
+			<tooltip>Ãœber ArcMap2SLD</tooltip>
+		</deutsch>
+	</MenuItem10>
+	<mnuIncludeLayerNames>
+		<english>
+			<text>Include Layer Names</text>
+			<tooltip>Include Layer Names in SLD. Uncheck to create an SLD to be used with WorldMap.</tooltip>
+		</english>
+		<deutsch>
+			<text>Layer Namen inkludieren</text>
+			<tooltip>Layer Namen wÃ¼rden inkludiert in die SLD. Deaktivieren Sie diese Option fÃ¼r eine SLD die mit WorldMap benutzt kann worden.</tooltip>
+		</deutsch>
+	</mnuIncludeLayerNames>
+	<AboutLabel1>
+		<english>
+			<text>ArcMap2SLD Converter - Release No: </text>
+			<tooltip>Release No. of ArcMap2SLD Converter</tooltip>
+		</english>
+		<deutsch>
+			<text>ArcMap2SLD Converter - Version Nr: </text>
+			<tooltip>Release Nr. von ArcMap2SLD Converter</tooltip>
+		</deutsch>
+	</AboutLabel1>
+	<AboutLabel2>
+		<english>
+			<text>
 The program so called "ArcGIS-map to SLD Converter" analyses an ArcMap-Project with respect to its symbolisation and assembles an SLD for the OGC-Web Map Service (WMS) from the gathered data. 
 ArcMap2SLD is started parallel to a running ArcMap 10-session. Subsequently the application deposits an SLD-file which complies the symbolisation of the available ArcMap-project. With the SLD a WMS-project may be classified and styled according to the preceding ArcMap-project. 
 The application is written in VisualBasic.NET and needs the .NET 3.5 Framework. 
@@ -151,72 +151,72 @@ http://arcmap2sld.geoinform.fh-mainz.de/ArcMap2SLDConverter_Eng.htm
 The code you'll find at:
 http://wald.intevation.org/projects/arcmap2sld
        </text>
-      <tooltip>Abstract</tooltip>
-    </english>
-    <deutsch>
-      <text> 
+			<tooltip>Abstract</tooltip>
+		</english>
+		<deutsch>
+			<text> 
 Das Programm "ArcGIS-map to SLD Converter" analysiert ein ArcMap-Projekt bezgl. seiner Symbolisierung und stellt aus den gesammelten Daten eine SLD-Datei zusammen, mit der der entsprechende Datensatz durch einen OGC-kompatiblen WMS dargestellt werden kann. 
 ArcMap2SLD wird mit einer laufenden ArcMap 10-Session gestartet. Im Folgenden wird von der Anwendung eine SLD angelegt welche nahezu der Symbolisierung des entsprechenden ArcMap-Projekts entspricht.
-Die Anwendung ist in VisualBasic.NET entwickelt und benötigt das .NET 3.5 framework als Voraussetzung. 
-Für weitere Informationen besuchen Sie bitte: http://arcmap2sld.geoinform.fh-mainz.de/
+Die Anwendung ist in VisualBasic.NET entwickelt und benÃ¶tigt das .NET 3.5 framework als Voraussetzung. 
+FÃ¼r weitere Informationen besuchen Sie bitte: http://arcmap2sld.geoinform.fh-mainz.de/
 Den Quellcode finden Sie unter:
 http://wald.intevation.org/projects/arcmap2sld    
       </text>
-      <tooltip>Zusammenfassung</tooltip>
-    </deutsch>
-  </AboutLabel2>
-  <AboutLabel3>
-    <english>
-      <text> 
+			<tooltip>Zusammenfassung</tooltip>
+		</deutsch>
+	</AboutLabel2>
+	<AboutLabel3>
+		<english>
+			<text> 
 This program is free software under the license of the GNU Lesser General Public License (LGPL) as published by the Free Software Foundation. With the use and further development of this code you accept the terms of LGPL. For questions of the License refer to:
 http://www.gnu.org/licenses/lgpl.html     
       
 THE USE OF THE SOFTWARE ArcGIS-map to SLD Converter HAPPENS AT OWN RISK. I CANNOT ISSUE A GUARANTEE FOR ANY DISADVANTAGES (INCLUDING LOSS OF DATA; ETC.) THAT MAY ARISE FROM USING THIS SOFTWARE. </text>
-      <tooltip>License information</tooltip>
-    </english>
-    <deutsch>
-      <text>
-Dieses Programm ist freie Software unter der Lizenz der GNU Lesser General Public License (LGPL) wie von der Free Software Foundation veröffentlicht. Mit der Nutzung und Weiterentwicklung des Quellcodes akzeptieren Sie die Bestimmungen der LGPL. Für weitere Fragen zu der Lizenz besuchen Sie bitte: :
+			<tooltip>License information</tooltip>
+		</english>
+		<deutsch>
+			<text>
+Dieses Programm ist freie Software unter der Lizenz der GNU Lesser General Public License (LGPL) wie von der Free Software Foundation verÃ¶ffentlicht. Mit der Nutzung und Weiterentwicklung des Quellcodes akzeptieren Sie die Bestimmungen der LGPL. FÃ¼r weitere Fragen zu der Lizenz besuchen Sie bitte: :
 'http://www.gnu.org/licenses/lgpl.html
       
-DIE BENUTZUNG DER SOFTWARE ArcGIS-map to SLD Converter ERFOLGT AUF EIGENE GARANTIE: D.H. FÜR IRGENDWELCHE DIREKTEN, INDIREKTEN, FOLGE- ODER ÄHNLICHEN SCHÄDEN (EINGESCHLOSSEN SIND SCHÄDEN AUS ENTGANGENEM GEWINN ODER VERLUST VON DATEN), DIE AUFGRUND DER BENUTZUNG DER SOFTWARE ODER DER UNFÄHIGKEIT, DIE SOFTWARE ZU VERWENDEN, ENTSTEHEN, ÜBERNEHME ICH KEINE GARANTIE. </text>
-      <tooltip>Lizenzinformation</tooltip>
-    </deutsch>
-  </AboutLabel3>
-  <Checkboxes>
-    <chkScale>false</chkScale>
-  </Checkboxes>
-  <SLDFilename>
+DIE BENUTZUNG DER SOFTWARE ArcGIS-map to SLD Converter ERFOLGT AUF EIGENE GARANTIE: D.H. FÃœR IRGENDWELCHE DIREKTEN, INDIREKTEN, FOLGE- ODER Ã„HNLICHEN SCHÃ„DEN (EINGESCHLOSSEN SIND SCHÃ„DEN AUS ENTGANGENEM GEWINN ODER VERLUST VON DATEN), DIE AUFGRUND DER BENUTZUNG DER SOFTWARE ODER DER UNFÃ„HIGKEIT, DIE SOFTWARE ZU VERWENDEN, ENTSTEHEN, ÃœBERNEHME ICH KEINE GARANTIE. </text>
+			<tooltip>Lizenzinformation</tooltip>
+		</deutsch>
+	</AboutLabel3>
+	<Checkboxes>
+		<chkScale>false</chkScale>
+	</Checkboxes>
+	<SLDFilename>
   </SLDFilename>
-  <scales>
-    <scale>100</scale>
-    <scale>1000</scale>
-    <scale>10000</scale>
-    <scale>100000</scale>
-    <scale>1000000</scale>
-    <scale>200</scale>
-    <scale>2000</scale>
-    <scale>20000</scale>
-    <scale>200000</scale>
-    <scale>2000000</scale>
-    <scale>300</scale>
-    <scale>3000</scale>
-    <scale>30000</scale>
-    <scale>300000</scale>
-    <scale>3000000</scale>
-    <scale>150</scale>
-    <scale>1500</scale>
-    <scale>15000</scale>
-    <scale>150000</scale>
-    <scale>1500000</scale>
-    <scale>250</scale>
-    <scale>2500</scale>
-    <scale>25000</scale>
-    <scale>250000</scale>
-    <scale>2500000</scale>
-    <scale>120</scale>
-    <scale>320</scale>
-    <scale>500</scale>
-    <scale>550</scale>
-  </scales>
+	<scales>
+		<scale>100</scale>
+		<scale>1000</scale>
+		<scale>10000</scale>
+		<scale>100000</scale>
+		<scale>1000000</scale>
+		<scale>200</scale>
+		<scale>2000</scale>
+		<scale>20000</scale>
+		<scale>200000</scale>
+		<scale>2000000</scale>
+		<scale>300</scale>
+		<scale>3000</scale>
+		<scale>30000</scale>
+		<scale>300000</scale>
+		<scale>3000000</scale>
+		<scale>150</scale>
+		<scale>1500</scale>
+		<scale>15000</scale>
+		<scale>150000</scale>
+		<scale>1500000</scale>
+		<scale>250</scale>
+		<scale>2500</scale>
+		<scale>25000</scale>
+		<scale>250000</scale>
+		<scale>2500000</scale>
+		<scale>120</scale>
+		<scale>320</scale>
+		<scale>500</scale>
+		<scale>550</scale>
+	</scales>
 </preconfigure>
