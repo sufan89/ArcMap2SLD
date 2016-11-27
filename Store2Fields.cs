@@ -7,23 +7,42 @@ using System.Collections;
 using System.Windows.Forms;
 namespace ArcGIS_SLD_Converter
 {
+    /// <summary>
+    /// 
+    /// </summary>
 	public class Store2Fields
 	{
+        /// <summary>
+        /// 数组1
+        /// </summary>
 		private ArrayList al1;
+        /// <summary>
+        /// 数组2
+        /// </summary>
 		private ArrayList al2;
-		
+		/// <summary>
+        /// 初始化
+        /// </summary>
 		public Store2Fields()
 		{
 			al1 = new ArrayList();
 			al2 = new ArrayList();
 		}
-		
+		/// <summary>
+        /// 添加数组元素
+        /// </summary>
+        /// <param name="String1">数组1</param>
+        /// <param name="String2">数组2</param>
 		public void Add2Strings(string String1, string String2)
 		{
 			al1.Add(String1);
 			al2.Add(String2);
 		}
-		
+		/// <summary>
+        /// 根据数组1索引获取数组1的元素
+        /// </summary>
+        /// <param name="Index"></param>
+        /// <returns></returns>
 		public string get_GetString1ByIndex(int Index)
 		{
 			if (!(al1.Count < Index))
@@ -35,8 +54,12 @@ namespace ArcGIS_SLD_Converter
 				return "false";
 			}
 		}
-		
-		public string get_GetString2ByIndex(int Index)
+        /// <summary>
+        /// 根据数组2索引获取数组2的元素
+        /// </summary>
+        /// <param name="Index"></param>
+        /// <returns></returns>
+        public string get_GetString2ByIndex(int Index)
 		{
 			if (!(al2.Count < Index))
 			{
@@ -47,7 +70,11 @@ namespace ArcGIS_SLD_Converter
 				return "false";
 			}
 		}
-		
+		/// <summary>
+        /// 根据数组2的要素获取数组1相应索引的要素
+        /// </summary>
+        /// <param name="String2"></param>
+        /// <returns></returns>
 		public string get_GetString1ForString2(string String2)
 		{
 			short i = 0;
@@ -60,7 +87,11 @@ namespace ArcGIS_SLD_Converter
 			}
 			return "";
 		}
-		
+		/// <summary>
+        /// 根据数组1的要素获取数组2相应索引的要素
+        /// </summary>
+        /// <param name="String1"></param>
+        /// <returns></returns>
 		public string get_GetString2ForString1(string String1)
 		{
 			short i = 0;
@@ -73,30 +104,36 @@ namespace ArcGIS_SLD_Converter
 			}
 			return "";
 		}
-		
-public ArrayList GetStringlist1
-		{
-			get
-			{
-				return al1;
-			}
-		}
-		
-public ArrayList GetStringlist2
-		{
-			get
-			{
-				return al2;
-			}
-		}
-		
-public int Count
-		{
-			get
-			{
-				return al1.Count;
-			}
-		}
+		/// <summary>
+        /// 获取数组1
+        /// </summary>
+        public ArrayList GetStringlist1
+		        {
+			        get
+			        {
+				        return al1;
+			        }
+		        }
+		/// <summary>
+        /// 获取数组2
+        /// </summary>
+        public ArrayList GetStringlist2
+		        {
+			        get
+			        {
+				        return al2;
+			        }
+		        }
+		/// <summary>
+        /// 获取数组1的元素个数
+        /// </summary>
+        public int Count
+		        {
+			        get
+			        {
+				        return al1.Count;
+			        }
+		        }
 		
 		public bool get_ContainsString1(string String1)
 		{

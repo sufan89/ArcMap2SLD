@@ -14,14 +14,25 @@ namespace ArcGIS_SLD_Converter
 	{
 #region 全局变量
 		private Motherform frmMotherForm;
+
 		private Analize_ArcMap_Symbols m_objData;
+
 		private Analize_ArcMap_Symbols.StructProject m_strDataSavings;
+        /// <summary>
+        /// XML处理对象
+        /// </summary>
 		private XMLHandle m_objXMLHandle;
+
 		private string m_cFilename; 
+
 		private string m_cFile; 
+
 		private string m_cPath; 
+
 		private bool m_bSepFiles; 
+
 		private string m_bIncludeLayerNames; 
+
 #endregion	
         		
 #region Routinen

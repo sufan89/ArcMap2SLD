@@ -11,47 +11,6 @@ using System.Collections.Specialized;
 using System.Xml.XPath;
 using Microsoft.VisualBasic.CompilerServices;
 
-//####################################################################################################################
-//*******************ArcGIS_SLD_Converter*****************************************************************************
-//*******************Class: XMLHandle*********************************************************************************
-//*******************AUTHOR: Albrecht Weiser, University of applied Sciences in Mainz, Germany 2005*******************
-//The Application was part of my Diploma thesis:**********************************************************************
-//"Transforming map-properties of maps in esri-data to an OGC-conformous SLD-document, for publishing the ArcGIS-map *
-//with an OGC- conformous map-server"*********************************************************************************
-//ABSTRACT:
-//The program so called "ArcGIS-map to SLD Converter" analyses an
-//ArcMap-Project with respect to its symbolisation and assembles an SLD
-//for the OGC-Web Map Service (WMS) from the gathered data. The program
-//is started parallel to a running ArcMap 9.X-session. Subsequently the
-//application deposits an SLD-file which complies the symbolisation of
-//the available ArcMap-project. With the SLD a WMS-project may be
-//classified and styled according to the preceding ArcMap-project. The
-//application is written in VisualBasic.NET and uses the .NET 2.0
-//Framework (plus XML files for configuration). For more informtion
-//refer to:
-//http://arcmap2sld.geoinform.fh-mainz.de/ArcMap2SLDConverter_Eng.htm.
-//LICENSE:
-//This program is free software under the license of the GNU Lesser General Public License (LGPL) As published by the Free Software Foundation.
-//With the use and further development of this code you accept the terms of LGPL. For questions of the License refer to:
-//http://www.gnu.org/licenses/lgpl.html
-//DISCLAIMER:
-//THE USE OF THE SOFTWARE ArcGIS-map to SLD Converter HAPPENS AT OWN RISK.
-//I CANNOT ISSUE A GUARANTEE FOR ANY DISADVANTAGES (INCLUDING LOSS OF DATA; ETC.) THAT
-//MAY ARISE FROM USING THIS SOFTWARE.
-//DESCRIPTION:
-//The class mainly consists of some public functions that depend to a current xml-file (the sld). There is always a pointer
-//on the last created Node. (one for the last element: "m_objActiveNode" and one for the last attribute: "m_objActiveNode")
-//If a calling function wants to create a new element or attribute it calls the function CreateElement or CreateAttribute.
-//The parameter for the call is a trivial name of the element that wants to be created (trivial names, the according OGC-
-//Names and the relating XPath devices can be found in the file LUT_sld_mapping_file.xml). This function handoff the trivial name
-// to the function "NavigateElement". NavigateElement looks in the LUT_sld_mapping_file.xml for the according XPath-expression
-//and with this expression navigates back in XML-hierarchy until the expression is true. Then the current element/attribute will set
-//to the new activeNode and the new element/attribute can be created.
-//CHANGES:
-//08.06.2011: (ARIS) Added new flavor of SLD that does not refernce layer names (to be used with WorldMap).
-//####################################################################################################################
-
-
 namespace ArcGIS_SLD_Converter
 {
 	public class XMLHandle
@@ -60,73 +19,95 @@ namespace ArcGIS_SLD_Converter
 		
 		private const string c_strLUT_Standard = "LUT_sld_mapping_file.xml";
 		private const string c_strLUT_WorldMap = "LUT_sld_WorldMap_mapping_file.xml";
-		
+		/// <summary>
+        /// 标准根节点名称
+        /// </summary>
 		private const string c_strRootNodeName_Standard = "StyledLayerDescriptor";
+        /// <summary>
+        /// 世界地图根节点名称
+        /// </summary>
 		private const string c_strRootNodeName_WorldMap = "UserStyle";
-		
-		//Private m_objParent As Output_SLD               'Instanz der aufrufenden Klasse
-		private string m_cXMLFilename; //Der ...\Pfad\Dateiname
-		private XMLState m_enDocMode; //Der aktuelle Status des Dokuments (geschlossen, ge鰂fnet,...)
-		private XmlDocument m_objDoc; //Das aktuelle Dokument
-		private StringDictionary m_objNameDict; //Im Schl黶selfeld:Tag-Aliase aus Programmcode; im Datenfeld: ogc-Name des sld-Tags
-		private StringDictionary m_objNamespaceDict; //Im Schl黶selfeld:Tag-Aliase aus Programmcode; im Datenfeld: der zum Namen geh鰎ende Namespacek黵zel
-		private Hashtable m_objXPathDict; //Im Schl黶selfeld:Tag-Aliase aus Programmcode; Datenfeld:String-Collection mit zugeh鰎igen XPath-Ausdr點ken
-		private XmlElement m_objRoot; //Der Wurzelknoten des xml-elements
-		private short m_iLevelCount; //Die nullbasierte Anzahl der Ebenen des XML-Dokuments
-		private XmlNode m_objActiveNode; //Der derzeit aktive Knoten
-		private XmlAttribute m_objActiveAttribute; //Das derzeit aktive Attribut
+	    /// <summary>
+        /// 保存的XML文件名称
+        /// </summary>
+		private string m_cXMLFilename; 
+        /// <summary>
+        /// 当前XML文档状态
+        /// </summary>
+		private XMLState m_enDocMode; 
+        /// <summary>
+        /// 全局处理XML文档对象
+        /// </summary>
+		private XmlDocument m_objDoc; 
+
+		private StringDictionary m_objNameDict;
+
+		private StringDictionary m_objNamespaceDict; 
+
+		private Hashtable m_objXPathDict; 
+
+		private XmlElement m_objRoot; 
+
+		private short m_iLevelCount; 
+        /// <summary>
+        /// 当前活动节点
+        /// </summary>
+		private XmlNode m_objActiveNode; 
+        /// <summary>
+        /// 当前活动节点属性
+        /// </summary>
+		private XmlAttribute m_objActiveAttribute; 
+        /// <summary>
+        /// XML版本
+        /// </summary>
 		private string m_cXMLVersion;
+        /// <summary>
+        /// SLD版本
+        /// </summary>
 		private string m_cSLDVersion;
+
 		private string m_SLDXmlns;
+        /// <summary>
+        /// XML编码规则
+        /// </summary>
 		private string m_cXMLEncoding;
-		private ArcGIS_SLD_Converter.Store2Fields m_objNamespaceURL; //Enth鋖t die Namespacelinks
-		private XmlNamespaceManager m_objNSManager; //Enth鋖t die Namespaces und URL's
-		private string m_sLUTFile; //The name of the LUT file
-		private string m_sRootNodeName; //The name of the root node
+
+		private ArcGIS_SLD_Converter.Store2Fields m_objNamespaceURL; 
+
+		private XmlNamespaceManager m_objNSManager; 
+
+		private string m_sLUTFile; 
+        /// <summary>
+        /// 跟节点名称
+        /// </summary>
+		private string m_sRootNodeName; 
 		
 #endregion
 
 #region Enums
-		
-		//Der Status des XML-Handle wird hier festgelegt (ge鰂fnetes Dokument, geschlossen,....)
+		/// <summary>
+        /// XML文档状态
+        /// </summary>
 		private enum XMLState
 		{
 			xmlDocClosed = 0,
 			xmlDocOpen = 1
 		}
-		
+
 #endregion
 		
-#region Datenstrukturen
-		
-		
-		
-#endregion
-		
-		
-		//##################################################################################################
-		//########################################### ROUTINEN #############################################
-		//##################################################################################################
+
 		
 #region Routinen
-		
-		//'f黵 schreibenden Zugriff
-		//Public Sub New(ByVal Parent As Output_SLD)
-		//    m_objParent = Parent
-		//    start()
-		//End Sub
-		
-		//'F黵 lesenden Zugriff
-		//Public Sub New(ByVal FileName As String, ByVal Parent As Output_SLD)
-		//    'm_objParent = Parent
-		//    m_cXMLFilename = FileName
-		//    start()
-		//End Sub
-		
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="FileName">SLD文件名称</param>
+        /// <param name="bIncludeLayerNames">是否包含图层名称</param>
 		public XMLHandle(string FileName, bool bIncludeLayerNames)
 		{
-			//m_objParent = Parent
 			m_cXMLFilename = FileName;
+
 			if (bIncludeLayerNames)
 			{
 				m_sLUTFile = c_strLUT_Standard;
@@ -137,9 +118,13 @@ namespace ArcGIS_SLD_Converter
 				m_sLUTFile = c_strLUT_WorldMap;
 				m_sRootNodeName = c_strRootNodeName_WorldMap;
 			}
+
 			start(bIncludeLayerNames);
 		}
-		
+		/// <summary>
+        /// 
+        /// </summary>
+        /// <param name="bIncludeLayerNames"></param>
 		public void start(bool bIncludeLayerNames)
 		{
 			
@@ -154,11 +139,7 @@ namespace ArcGIS_SLD_Converter
 			
 		}
 		
-		//************************************************************************************************
-		//READ ACCESS
-		//Die Routine 鰂fnet ein vorhandenes XML-Dokument mit dem 黚ergebenen Filename und setzt den
-		//XML-Status auf ge鰂fnet. Der Zeiger sitzt auf dem Root-Element
-		//************************************************************************************************
+
 		public void OpenDoc()
 		{
 			try
@@ -198,60 +179,51 @@ namespace ArcGIS_SLD_Converter
 		
 #endregion
 		
+
 		
-		//##################################################################################################
-		//######################################### PROPERTIES #############################################
-		//##################################################################################################
-		
-#region Properties
-		
-public string XMLFilename
-		{
-			get
-			{
-				return m_cXMLFilename;
-			}
-			set
-			{
-				m_cXMLFilename = value;
-			}
-		}
-		
-public XmlElement GetRoot
-		{
-			get
-			{
-				m_iLevelCount = (short) 0;
-				return m_objRoot;
-			}
-		}
-		
-public short LevelNumber
-		{
-			get
-			{
-				return m_iLevelCount;
-			}
-		}
+#region Properties 属性
+		/// <summary>
+        /// XML文件名称
+        /// </summary>
+        public string XMLFilename
+		        {
+			        get
+			        {
+				        return m_cXMLFilename;
+			        }
+			        set
+			        {
+				        m_cXMLFilename = value;
+			        }
+		        }
+		/// <summary>
+        /// XML文件跟节点
+        /// </summary>
+        public XmlElement GetRoot
+		        {
+			        get
+			        {
+				        m_iLevelCount = (short) 0;
+				        return m_objRoot;
+			        }
+		        }
+		/// <summary>
+        /// 节点级数
+        /// </summary>
+        public short LevelNumber
+		        {
+			        get
+			        {
+				        return m_iLevelCount;
+			        }
+		        }
 		
 #endregion
+
 		
+#region 读写函数
 		
-		//##################################################################################################
-		//######################################### FUNKTIONEN #############################################
-		//##################################################################################################
-		
-#region Read-Write-Functions
-		
-		//************************************************************************************************
-		//READ-ACCESS XPath/DOM
-		//Hier sollte nach M鰃lichkeit nichts ver鋘dert werden !!!!!
-		//Die Zentrale Navigationsfunktion. Das Prinzip: der gerade aktive Knoten wird mit einem eingelesenen
-		//XPath-Ausdruck verglichen. Es wird solange in der Hierarchie nach hinten (zum Elternelement) navigiert,
-		//bis der Ausdruck stimmt.Ist das der Fall, ist die richtige Ebene erreich,um das neue Element anzulegen
-		//Parameter: AliasTagName=   der programminterne Aliasname (zum Vergleich des ogc-Tagnamens aus
-		//                           der LUT)
-		//************************************************************************************************
+
 		public bool NavigateElement(string AliasTagName)
 		{
 			XPathNavigator objNav = default(XPathNavigator); //Das Navigatorobjekt, mit dem im Dokument navigiert wird
@@ -345,12 +317,7 @@ public short LevelNumber
 		
 		
 		
-		//************************************************************************************************
-		//WRITE-ACCESS DOM
-		//Legt einen neuen Kindknoten f黵 den gerade aktiven Knoten an
-		//Parameter: TagName =   der Name des zu schreibenden Knotens (TagName ist nur Vergleichswert.
-		//                       Wahrer Wert wird aus der LUT genommen)
-		//************************************************************************************************
+
 		public bool CreateElement(string AliasTagName)
 		{
 			XmlElement objNode = default(XmlElement);
@@ -377,11 +344,7 @@ public short LevelNumber
 		}
 		
 		
-		//************************************************************************************************
-		//WRITE-ACCESS DOM
-		//F黦t Text in den gerade aktiven Knoten ein
-		//Parameter: InnerText =   der Text, der in dem Element stehen soll
-		//************************************************************************************************
+
 		public bool SetElementText(string InnerText)
 		{
 			try
@@ -397,11 +360,7 @@ public short LevelNumber
 		}
 		
 		
-		//************************************************************************************************
-		//WRITE-ACCESS DOM
-		//Erstellt ein neues Attribut in dem aktiven Knoten
-		//Parameter: AttributeName = das Attribut, das an den aktiven Knoten angeh鋘gt werden soll
-		//************************************************************************************************
+
 		public bool CreateAttribute(string AttributeName)
 		{
 			XmlAttribute objXmlAttribute = default(XmlAttribute);
@@ -420,11 +379,7 @@ public short LevelNumber
 		}
 		
 		
-		//************************************************************************************************
-		//WRITE-ACCESS DOM
-		//Erstellt ein neues Attribut in dem aktiven Knoten
-		//AttributeValue: AttributeValue = der Attributwert (Text) des aktiven Attributs
-		//************************************************************************************************
+
 		public bool SetAttributeValue(string AttributeValue)
 		{
 			try
@@ -438,14 +393,6 @@ public short LevelNumber
 				return false;
 			}
 		}
-		
-		
-		//************************************************************************************************
-		//READ-ACCESS DOM-basierte Parsing-Funktion
-		//Parst durch das ge鰂fnete XML-Dokument-ab dem Knoten,der 黚ergeben wird. Rekursiver Aufruf!!
-		//Parameter:     CurrentNode - der Knoten, ab dem die Suche begonnen werden soll
-		//************************************************************************************************
-		// VBConversions Note: Former VB static variables moved to class level because they aren't supported in C#.
 		private short ParseDoc_iLevelCount = 0;
 		
 		public bool ParseDoc(XmlElement CurrentNode)
@@ -493,17 +440,7 @@ public short LevelNumber
 		
 		
 		
-		//********************************************************************************************
-		//WRITE-ACCESS
-		// Erstellen einer neuen XML-Datei
-		// ---------------------------------------------------------------
-		// Voraussetzung : Der Dateiname muss bekannt sein (Property "XMLfilename")
-		// Parameter :   OverWrite = Soll bestehende Datei 黚erschrieben werden (Ja / Nein)
-		// R點kgabewerte:
-		//       true = Ausf黨rung korrekt; Datei wurde erstellt
-		//       false = Bei der Ausf黨rung trat ein Fehler auf
-		// Zeiger sitzt auf Root-Knoten
-		//********************************************************************************************
+
 		public bool CreateNewFile(bool OverWrite, bool blnIncludeLayerNames)
 		{
 			XmlDeclaration objDeclare = default(XmlDeclaration);
@@ -566,41 +503,20 @@ public short LevelNumber
 				return false;
 			}
 		}
-		
-		//'************************************************************************************************
-		//'Legt Eigenschaften f黵 den Root-Knoten fest
-		//'************************************************************************************************
-		//Public Function SetRootAttribute(ByVal AttributeName As String, ByVal AttributeValue As String) As Boolean
-		//    Dim objRootAttrib As XmlAttribute
-		//    Try
-		//        If m_enDocMode = XMLState.xmlDocOpen Then
-		//            objRootAttrib = m_objDoc.CreateAttribute(AttributeName)
-		//            m_objRoot.Attributes.Append(objRootAttrib)
-		//            objRootAttrib.Value = AttributeValue
-		//        End If
-		//    Catch ex As Exception
-		//        ErrorMsg("Fehler beim Anlegen des RootAttributes", ex.Message, ex.StackTrace, SetRootAttribute)
-		//    End Try
-		//End Function
-		
 #endregion
 		
 		
 #region Hilfsfunktionen
-		
-		//******************************************************************************************************
-		//Read-Access DOM
-		//Liest die LUT-Datei f黵 die SLD-Tagumwandlungen ein und speichert die Elemente in der StringDictionary
-		//******************************************************************************************************
+
 		private bool ReadLUT()
 		{
 			string cFilename = "";
-			XmlDocument objLUTDoc = default(XmlDocument); //Das doc der LUT-XML f黵 die sld-Tags
+			XmlDocument objLUTDoc = default(XmlDocument); 
 			XmlElement objRoot = default(XmlElement);
 			XmlElement objNode = default(XmlElement);
 			XmlElement objNode2 = default(XmlElement);
 			XmlElement objNode3 = default(XmlElement);
-			StringCollection objXPathExp = default(StringCollection); //Die Sammlung der Xpath-Ausdr點ke
+			StringCollection objXPathExp = default(StringCollection); 
 			m_objNameDict = new StringDictionary();
 			m_objNamespaceDict = new StringDictionary();
 			m_objXPathDict = new Hashtable();
@@ -617,7 +533,7 @@ public short LevelNumber
                     objNode = objRoot.FirstChild as XmlElement;
 					while (!(objNode == null))
 					{
-						//Die Unterelemente des Knotens sldSyntax werden ausgelesen und abgespeichert
+					
 						if (objNode.Name == "sldSyntax")
 						{
                             objNode2 = objNode.FirstChild as XmlElement;
@@ -627,7 +543,7 @@ public short LevelNumber
 								m_objNamespaceDict.Add(objNode2.Name, objNode2.GetAttribute("Namespace"));
 								objXPathExp = new StringCollection();
                                 objNode3 = objNode2.FirstChild as XmlElement;
-								//Die Kindelemente mit den XPath-Ausdr點ken
+								
 								while (!(objNode3 == null))
 								{
 									objXPathExp.Add(objNode3.InnerText);
@@ -636,7 +552,7 @@ public short LevelNumber
 								m_objXPathDict.Add(objNode2.Name, objXPathExp);
                                 objNode2 = objNode2.NextSibling as XmlElement;
 							}
-							//Die Unterelemente des Knotens "sldConfiguration" werden ausgelesen und abgespeichert
+							
 						}
 						else if (objNode.Name == "sldConfiguration")
 						{
@@ -691,10 +607,11 @@ public short LevelNumber
                 return false;
 			}
 		}
-		//******************************************************************************************************
-		//Gibt den im String-Dictionary eingelesenen Tagnamen zur點k nach einem Vergleich mit dem Trivialnamen
-		//PARAMETER:     Value = AliasTagName
-		//******************************************************************************************************
+        /// <summary>
+        /// 获取OGC名称
+        /// </summary>
+        /// <param name="Value"></param>
+        /// <returns></returns>
 		private string GetOGCName(string Value)
 		{
 			string cRightTag = "";
@@ -717,12 +634,11 @@ public short LevelNumber
 			}
 			return "";
 		}
-		
-		
-		//******************************************************************************************************
-		//Gibt den im String-Dictionary eingelesenen Namespacek黵zel zur點k nach einem Vergleich mit dem Trivialnamen
-		//PARAMETER:     Value = AliasTagName
-		//******************************************************************************************************
+        /// <summary>
+        /// 获取XML命名空间前缀
+        /// </summary>
+        /// <param name="Value"></param>
+        /// <returns></returns>
 		private string GetNamespacePrefix(string Value)
 		{
 			string cRightTag = "";
@@ -734,7 +650,6 @@ public short LevelNumber
 				}
 				else
 				{
-					throw (new Exception("Leider ist dieser Namensraumk黵zel " + Value + " noch nicht in die LUT aufgenommen"));
 					return "ERROR:" + Value;
 				}
 				return cRightTag;
@@ -746,12 +661,11 @@ public short LevelNumber
 			
 			return "";
 		}
-		
-		
-		//******************************************************************************************************
-		//Gibt den im String-Dictionary eingelesenen NamespaceURL zur點k nach einem Vergleich mit dem Namespacek黵zel
-		//PARAMETER:     Value = Namespacek黵zel
-		//******************************************************************************************************
+        /// <summary>
+        /// 获取命名空间URL
+        /// </summary>
+        /// <param name="Value"></param>
+        /// <returns></returns>
 		private string GetNamespaceURL(object Value)
 		{
 			string cRightTag = "";
@@ -764,62 +678,45 @@ public short LevelNumber
 				}
 				else
 				{
-					throw (new Exception("Leider ist dieser URL " + System.Convert.ToString(Value) + " noch nicht in die LUT aufgenommen"));
 					return "ERROR:" + System.Convert.ToString(Value);
 				}
 				return cRightTag;
 			}
 			catch (Exception ex)
 			{
-				ErrorMsg("Fehler beim Beziehen der Namensraum-URL", ex.Message, ex.StackTrace, "GetNamespaceURL");
+				ErrorMsg("获取命名空间失败", ex.Message, ex.StackTrace, "GetNamespaceURL");
 			}
 			return "";
 		}
-		
-		
-		//************************************************************************************************
-		//**********************************Die zentrale Fehlermeldung************************************
-		//************************************************************************************************
+        /// <summary>
+        /// 错误信息，并关闭程序
+        /// </summary>
+        /// <param name="message">信息</param>
+        /// <param name="exMessage"></param>
+        /// <param name="stack"></param>
+        /// <param name="functionname">方法名称</param>
+        /// <returns></returns>
 		private object ErrorMsg(string message, string exMessage, string stack, string functionname)
 		{
 			MessageBox.Show(message + "." + "\r\n" + exMessage + "\r\n" + stack, "ArcGIS_SLD_Converter | XMLHandle | " + functionname, MessageBoxButtons.OK, MessageBoxIcon.Error);
-			//WriteToFile()
 			MyTermination();
 			return null;
 		}
-		
-		
-		//************************************************************************************************
-		//**********************************Die zentrale Infomeldung************************************
-		//************************************************************************************************
+        /// <summary>
+        ///显示信息
+        /// </summary>
+        /// <param name="message">信息</param>
+        /// <param name="functionname">方法名称</param>
+        /// <returns></returns>
 		private object InfoMsg(string message, string functionname)
 		{
 			MessageBox.Show(message, "ArcGIS_SLD_Converter | XMLHandle | " + functionname, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 			return null;
 		}
-		
-		
-		//'************************************************************************************************
-		//'*************************************gibt die letzte fehlerhafte SLD aus************************
-		//'************************************************************************************************
-		//Private Function WriteToFile()
-		//    Dim dummy As XmlComment
-		//    Try
-		//        If Not m_objDoc Is Nothing Then
-		//            dummy = m_objDoc.CreateComment("DIESE SLD IST DIE LETZTE FEHLERHAFTE SLD, DIE VOM PROGRAMM AUSGEGEBEN WURDE")
-		//            m_objDoc.AppendChild(dummy)
-		//            m_objDoc.Save(AppDomain.CurrentDomain.BaseDirectory & "Fehler_SLD.sld")
-		//        End If
-		//    Catch ex As Exception
-		//        'MyTermination()
-		//    End Try
-		//End Function
-		
-		
-		//************************************************************************************************
-		//*************************************** Speicher-Funktion **************************************
-		//Speichert das aktuelle Dokument mit dem aktuellen Dateinamen
-		//************************************************************************************************
+        /// <summary>
+        /// 保存文档
+        /// </summary>
+        /// <returns></returns>
 		public bool SaveDoc()
 		{
 			try
@@ -828,24 +725,19 @@ public short LevelNumber
 			}
 			catch (Exception ex)
 			{
-				ErrorMsg("Fehler beim speichern der Datei", ex.Message, ex.StackTrace, "SaveDoc");
+				ErrorMsg("文件保存失败", ex.Message, ex.StackTrace, "SaveDoc");
 			}
-			return default(bool);
+			return true;
 		}
-		
-		
-		//************************************************************************************************
-		//*****************************     Beenden der Anwendung     ************************************
-		//************************************************************************************************
-		private object MyTermination()
+        /// <summary>
+        /// 关闭程序
+        /// </summary>
+        /// <returns></returns>
+		private void MyTermination()
 		{
 			ProjectData.EndApp();
-			//oder: application.exit
-			return null;
 		}
 #endregion
-		
-		
 	}
 	
 }
