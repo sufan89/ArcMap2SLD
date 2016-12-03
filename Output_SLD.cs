@@ -54,12 +54,6 @@ namespace ArcGIS_SLD_Converter
 			m_bIncludeLayerNames = frmMotherForm.GetInfoIncludeLayerNames;
 			CentralProcessingFunc();
 		}
-		
-		public Output_SLD()
-		{
-			CentralProcessingFunc();
-		}
-		
 #endregion 
 		
 
@@ -2296,13 +2290,6 @@ namespace ArcGIS_SLD_Converter
 		{
 			string cReturn = "";
 			cReturn = value.ToString();
-			cReturn = cReturn.Replace(",", ".");
-			return cReturn;
-		}
-		private string CommaToPoint(string value)
-		{
-			string cReturn = "";
-			cReturn = value;
 			cReturn = cReturn.Replace(",", ".");
 			return cReturn;
 		}

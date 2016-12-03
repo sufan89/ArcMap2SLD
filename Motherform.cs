@@ -748,12 +748,19 @@ namespace ArcGIS_SLD_Converter
 		
 
 #region 界面信息修改
+        /// <summary>
+        /// 更新提示框底部信息
+        /// </summary>
+        /// <param name="value"></param>
 		public void CHLabelBottom(string value)
 		{
 			this.lblBottom.Text = value;
 			this.Refresh();
 		}
-		
+		/// <summary>
+        /// 更新提示框头部信息
+        /// </summary>
+        /// <param name="value"></param>
 		public void CHLabelTop(string value)
 		{
 			this.lblTop.Text = value;
@@ -784,7 +791,9 @@ namespace ArcGIS_SLD_Converter
 			this.CHLabelTop("");
 			SetSizeClose();
 		}
-		
+		/// <summary>
+        /// 窗体隐藏提示信息
+        /// </summary>
 		internal void MinimizeWindow2()
 		{
 			this.CHLabelSmall("");

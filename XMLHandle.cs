@@ -18,6 +18,7 @@ namespace ArcGIS_SLD_Converter
 #region Membervariablen
 		
 		private const string c_strLUT_Standard = "LUT_sld_mapping_file.xml";
+
 		private const string c_strLUT_WorldMap = "LUT_sld_WorldMap_mapping_file.xml";
 		/// <summary>
         /// 标准根节点名称
@@ -45,9 +46,13 @@ namespace ArcGIS_SLD_Converter
 		private StringDictionary m_objNamespaceDict; 
 
 		private Hashtable m_objXPathDict; 
-
+        /// <summary>
+        /// 根节点要素
+        /// </summary>
 		private XmlElement m_objRoot; 
-
+        /// <summary>
+        /// 节点级别
+        /// </summary>
 		private short m_iLevelCount; 
         /// <summary>
         /// 当前活动节点
@@ -122,7 +127,7 @@ namespace ArcGIS_SLD_Converter
 			start(bIncludeLayerNames);
 		}
 		/// <summary>
-        /// 
+        /// 开始执行
         /// </summary>
         /// <param name="bIncludeLayerNames"></param>
 		public void start(bool bIncludeLayerNames)
@@ -132,48 +137,49 @@ namespace ArcGIS_SLD_Converter
 			m_enDocMode = XMLState.xmlDocClosed;
 			m_objDoc = new XmlDocument();
 			m_iLevelCount = (short) 0;
-			if (!(m_cXMLFilename == ""))
+			if (!string.IsNullOrEmpty(m_cXMLFilename))
 			{
 				OpenDoc();
 			}
 			
 		}
-		
-
+        /// <summary>
+        /// 打开文档
+        /// </summary>
 		public void OpenDoc()
 		{
 			try
 			{
 				if (m_enDocMode == XMLState.xmlDocClosed)
 				{
-					if (File.Exists(m_cXMLFilename) == true)
+					if (File.Exists(m_cXMLFilename))
 					{
-						if (!(m_cXMLFilename == ""))
+						if (!string.IsNullOrEmpty(m_cXMLFilename))
 						{
 							m_objDoc = new XmlDocument();
 							m_objDoc.Load(m_cXMLFilename);
 							m_objRoot = m_objDoc.DocumentElement;
 							if (m_objRoot == null)
 							{
-								throw (new Exception("Das Dokument ist leer. Bitte w鋒len Sie eine existierende, g黮tige XML-Datei aus"));
+								throw (new Exception("打开文档不正确！"));
 							}
 							m_enDocMode = XMLState.xmlDocOpen;
 						}
 						else
 						{
-							throw (new Exception("Es wurde noch kein Dateiname/Speicherort f黵 das XML-Dokument angegeben"));
+							throw (new Exception("文件路径不正确"));
 						}
 					}
 				}
 				else
 				{
-					MessageBox.Show("Das Dokument ist schon ge鰂fnet!");
+					MessageBox.Show("打开XML文档错误");
 					return;
 				}
 			}
 			catch (Exception ex)
 			{
-				ErrorMsg("Konnte XML-Dokument nicht 鰂fnen", ex.Message, ex.StackTrace, "OpenDoc");
+				ErrorMsg("打开XML文档错误", ex.Message, ex.StackTrace, "OpenDoc");
 			}
 		}
 		
@@ -181,49 +187,10 @@ namespace ArcGIS_SLD_Converter
 		
 
 		
-#region Properties 属性
-		/// <summary>
-        /// XML文件名称
-        /// </summary>
-        public string XMLFilename
-		        {
-			        get
-			        {
-				        return m_cXMLFilename;
-			        }
-			        set
-			        {
-				        m_cXMLFilename = value;
-			        }
-		        }
-		/// <summary>
-        /// XML文件跟节点
-        /// </summary>
-        public XmlElement GetRoot
-		        {
-			        get
-			        {
-				        m_iLevelCount = (short) 0;
-				        return m_objRoot;
-			        }
-		        }
-		/// <summary>
-        /// 节点级数
-        /// </summary>
-        public short LevelNumber
-		        {
-			        get
-			        {
-				        return m_iLevelCount;
-			        }
-		        }
-		
-#endregion
+
 
 		
 #region 读写函数
-		
-
 		public bool NavigateElement(string AliasTagName)
 		{
 			XPathNavigator objNav = default(XPathNavigator); //Das Navigatorobjekt, mit dem im Dokument navigiert wird
@@ -314,10 +281,6 @@ namespace ArcGIS_SLD_Converter
 				return false;
 			}
 		}
-		
-		
-		
-
 		public bool CreateElement(string AliasTagName)
 		{
 			XmlElement objNode = default(XmlElement);
@@ -342,9 +305,6 @@ namespace ArcGIS_SLD_Converter
 			}
 			return default(bool);
 		}
-		
-		
-
 		public bool SetElementText(string InnerText)
 		{
 			try
@@ -358,9 +318,6 @@ namespace ArcGIS_SLD_Converter
 				return false;
 			}
 		}
-		
-		
-
 		public bool CreateAttribute(string AttributeName)
 		{
 			XmlAttribute objXmlAttribute = default(XmlAttribute);
@@ -377,9 +334,6 @@ namespace ArcGIS_SLD_Converter
 				return false;
 			}
 		}
-		
-		
-
 		public bool SetAttributeValue(string AttributeValue)
 		{
 			try
@@ -394,7 +348,6 @@ namespace ArcGIS_SLD_Converter
 			}
 		}
 		private short ParseDoc_iLevelCount = 0;
-		
 		public bool ParseDoc(XmlElement CurrentNode)
 		{
 			XmlElement objNode = default(XmlElement); //Der jeweilige Kindknoten
@@ -436,11 +389,6 @@ namespace ArcGIS_SLD_Converter
                 return false;
 			}
 		}
-		
-		
-		
-		
-
 		public bool CreateNewFile(bool OverWrite, bool blnIncludeLayerNames)
 		{
 			XmlDeclaration objDeclare = default(XmlDeclaration);
@@ -507,7 +455,10 @@ namespace ArcGIS_SLD_Converter
 		
 		
 #region Hilfsfunktionen
-
+        /// <summary>
+        /// 读取XML文档配置信息
+        /// </summary>
+        /// <returns></returns>
 		private bool ReadLUT()
 		{
 			string cFilename = "";
@@ -520,6 +471,7 @@ namespace ArcGIS_SLD_Converter
 			m_objNameDict = new StringDictionary();
 			m_objNamespaceDict = new StringDictionary();
 			m_objXPathDict = new Hashtable();
+            //命名空间
 			m_objNamespaceURL = new ArcGIS_SLD_Converter.Store2Fields();
 			
 			try
@@ -700,17 +652,6 @@ namespace ArcGIS_SLD_Converter
 		{
 			MessageBox.Show(message + "." + "\r\n" + exMessage + "\r\n" + stack, "ArcGIS_SLD_Converter | XMLHandle | " + functionname, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			MyTermination();
-			return null;
-		}
-        /// <summary>
-        ///显示信息
-        /// </summary>
-        /// <param name="message">信息</param>
-        /// <param name="functionname">方法名称</param>
-        /// <returns></returns>
-		private object InfoMsg(string message, string functionname)
-		{
-			MessageBox.Show(message, "ArcGIS_SLD_Converter | XMLHandle | " + functionname, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 			return null;
 		}
         /// <summary>

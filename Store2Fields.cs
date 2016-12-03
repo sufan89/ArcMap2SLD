@@ -71,23 +71,6 @@ namespace ArcGIS_SLD_Converter
 			}
 		}
 		/// <summary>
-        /// 根据数组2的要素获取数组1相应索引的要素
-        /// </summary>
-        /// <param name="String2"></param>
-        /// <returns></returns>
-		public string get_GetString1ForString2(string String2)
-		{
-			short i = 0;
-			for (i = 0; i <= al2.Count - 1; i++)
-			{
-				if (al2[i].ToString() == String2)
-				{
-					return al1[i].ToString();
-				}
-			}
-			return "";
-		}
-		/// <summary>
         /// 根据数组1的要素获取数组2相应索引的要素
         /// </summary>
         /// <param name="String1"></param>
@@ -105,26 +88,6 @@ namespace ArcGIS_SLD_Converter
 			return "";
 		}
 		/// <summary>
-        /// 获取数组1
-        /// </summary>
-        public ArrayList GetStringlist1
-		        {
-			        get
-			        {
-				        return al1;
-			        }
-		        }
-		/// <summary>
-        /// 获取数组2
-        /// </summary>
-        public ArrayList GetStringlist2
-		        {
-			        get
-			        {
-				        return al2;
-			        }
-		        }
-		/// <summary>
         /// 获取数组1的元素个数
         /// </summary>
         public int Count
@@ -134,7 +97,6 @@ namespace ArcGIS_SLD_Converter
 				        return al1.Count;
 			        }
 		        }
-		
 		public bool get_ContainsString1(string String1)
 		{
 			bool bSwitch;
@@ -154,27 +116,6 @@ namespace ArcGIS_SLD_Converter
 			}
 			return default(bool);
 		}
-		
-		public bool get_ContainsString2(string String2)
-		{
-			bool bSwitch;
-			bSwitch = false;
-			short i = 0;
-			for (i = 0; i <= al1.Count - 1; i++)
-			{
-				if (String2 == (string) al2[i])
-				{
-					bSwitch = true;
-					return true;
-				}
-			}
-			if (bSwitch == false)
-			{
-				return false;
-			}
-			return default(bool);
-		}
-		
 	}
 	
 }

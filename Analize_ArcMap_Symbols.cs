@@ -80,11 +80,16 @@ namespace ArcGIS_SLD_Converter
 #endregion
 
 #region Datenstrukturen
-
+        /// <summary>
+        /// 渲染方式
+        /// </summary>
         public class ptRender
         {
             
         }
+        /// <summary>
+        /// 符号
+        /// </summary>
         public class ptSymbol
         {
  

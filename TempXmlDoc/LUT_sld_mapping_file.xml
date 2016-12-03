@@ -1,22 +1,3 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<!-- MAPPINGDATEI FÜR DIE ANWENDUNG ARCGIS_SLD_CONVERTER -->
-<!-- Die Elementnamen wie z.B. 'NamedLayer' dürfen nicht verändert werden. Sie heißen so, wie im Programmcode festgelegt -->
-<!-- Die Elementnamen müssen eindeutig sein!! D.h. es darf kein zweites Element des selben Namens existieren -->
-<!-- Gro/Kleinschreibung wird nicht beachtet. D.h. 'LayerName' ~ 'layername'-->
-<!--Die Textknoten z.B. 'sld:NamedLayer' können verändert werden, je nach der aktuellen OGC-Spec -->
-<!-- Auch das Wurzelelement 'LUT' muss so heißen -->
-<!-- Es darf keine weitere Hierarchiestufe bzw. Verzweigung hinzugefügt werden -->
-<!-- Es können beliebig viele Elemente der Hierarchistufe 1 (wie 'NamedLayer')  hinzugefügt werden-->
-<!--Das Attribut xpath=der XPath-Ausdruck für den Elternknoten des betreffenden Tags -->
-<!-- Als Ebene 0 wird die Ebene des Wurzelelements bezeichnet -->
-<!--Unter sldConfiguration darf kein weiteres Element hinzugefügt werden, außer es wird im Code berücksichtigt-->
-<!-- Unter Namespaces dürfen weitere Elemente hinzugefügt werden -->
-<!-- Jeder Namespace, der unter sldSyntax neu eingeführt wird, muss in sldConfiguration/Namespaces aufgeführt sein ! -->
-<!-- 28.02.2007: Added tags for FeatureTypeName, RuleName, PointSymbolizer fill and stroke -->
-<!-- 28.03.2007: Added tags for TextSymbolizer, TextLabel, TextFont, TextFill. -->
-<!-- 12.09.2007: - Changed the logical Operator "AND" to the OGC-compliant "And"-->
-<!-- 09.06.2008: - Fixed OGC "And" from all uppercase to initial case.
-                 - Added OGC "Or" for PropertyIsEqualTo -->
 <LUT>
 	<sldConfiguration>
 		<xmlVersion>1.0</xmlVersion>
@@ -94,10 +75,10 @@
 		<PropertyIsBetween ogcTag="PropertyIsBetween" Namespace="ogc">
 			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/ogc:Filter</XPath>
 		</PropertyIsBetween>
-		<LowerBoundary  ogcTag="LowerBoundary" Namespace="ogc">
+		<LowerBoundary ogcTag="LowerBoundary" Namespace="ogc">
 			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/ogc:Filter/ogc:PropertyIsBetween</XPath>
 		</LowerBoundary>
-		<UpperBoundary   ogcTag="UpperBoundary" Namespace="ogc">
+		<UpperBoundary ogcTag="UpperBoundary" Namespace="ogc">
 			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/ogc:Filter/ogc:PropertyIsBetween</XPath>
 		</UpperBoundary>
 		<PropertyName ogcTag="PropertyName" Namespace="ogc">
