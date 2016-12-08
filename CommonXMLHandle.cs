@@ -7,9 +7,6 @@ using System.Collections;
 using System.Windows.Forms;
 using System.Xml;
 using System.IO;
-
-
-
 namespace ArcGIS_SLD_Converter
 {
 	public class CommonXMLHandle

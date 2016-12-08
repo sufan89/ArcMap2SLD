@@ -14,21 +14,29 @@ namespace ArcGIS_SLD_Converter
 	{
 #region 全局变量
 		private Motherform frmMotherForm;
-
+        /// <summary>
+        /// 符号分析对象
+        /// </summary>
 		private Analize_ArcMap_Symbols m_objData;
-
+        /// <summary>
+        /// 分析图层信息
+        /// </summary>
 		private Analize_ArcMap_Symbols.StructProject m_strDataSavings;
         /// <summary>
         /// XML处理对象
         /// </summary>
 		private XMLHandle m_objXMLHandle;
-
+        /// <summary>
+        /// SLD文件名称
+        /// </summary>
 		private string m_cFilename; 
 
 		private string m_cFile; 
 
 		private string m_cPath; 
-
+        /// <summary>
+        /// 是否存在一个SLD文件还是根据图层来进行分别存储SLD
+        /// </summary>
 		private bool m_bSepFiles; 
 
 		private string m_bIncludeLayerNames; 
@@ -46,12 +54,15 @@ namespace ArcGIS_SLD_Converter
 		{
 			frmMotherForm = Mother;
 			m_cFilename = Filename;
+
 			m_bSepFiles = frmMotherForm.GetInfoSeparateLayers;
+
 			m_cFile = frmMotherForm.GetSLDFile;
 			m_cPath = frmMotherForm.GetSLDPath;
 			m_objData = Analize;
             m_strDataSavings = (Analize_ArcMap_Symbols.StructProject)m_objData.GetProjectData;
 			m_bIncludeLayerNames = frmMotherForm.GetInfoIncludeLayerNames;
+            //输出SLD文件
 			CentralProcessingFunc();
 		}
 #endregion 
@@ -68,17 +79,18 @@ namespace ArcGIS_SLD_Converter
 			bool bSuccess = false;
             frmMotherForm.CHLabelTop(string.Format("输出SLD文件..."));
             frmMotherForm.CHLabelBottom(string.Format("正在输出SLD文件..."));
-            if (WriteToSLD() == true)
+            if (WriteToSLD())
 			{
 				bSuccess = true;
 			}
             frmMotherForm.CHLabelTop(string.Format("开始..."));
-            if (bSuccess == true)
+            if (bSuccess)
 			{
                 frmMotherForm.CHLabelBottom(string.Format("成功创建文件..."));
                 //如果描述文件存在，则加载设置的XML头文件
                 if (frmMotherForm.chkValidate.Checked == true)
 				{
+                    //验证SLD文件是否可用
 					ValidateSLD ValSLD = new ValidateSLD(frmMotherForm);
 				}
 				else
@@ -112,14 +124,12 @@ namespace ArcGIS_SLD_Converter
         /// <returns></returns>
 		public bool WriteToSLD()
 		{
-			int i = 0;
-			int j = 0;
-			int l = 0;
-			string cLayerName = "";
-			ArrayList objFieldValues = default(ArrayList);
-			bool bDoOneLayer = default(bool);
-			double dummy = 0; 
-			if (m_bSepFiles == true)
+			string cLayerName = "";//图层名称
+			ArrayList objFieldValues = default(ArrayList);//字段值列表
+			bool bDoOneLayer = false;
+			double dummy = 0;
+             
+			if (m_bSepFiles)
 			{
 				bDoOneLayer = false;
 			}
@@ -128,77 +138,77 @@ namespace ArcGIS_SLD_Converter
 				bDoOneLayer = true;
 				CreateSLD(m_cFilename, bool.Parse(m_bIncludeLayerNames));
 			}
+
 			try
 			{
-				for (i = 0; i <= m_strDataSavings.LayerCount - 1; i++)
+				for (int i = 0; i <= m_strDataSavings.LayerCount - 1; i++)
                 {
                     #region 获取图层名称
-                    string strDatasetName = "";
-                    ArrayList objSymbols = default(ArrayList); 
+                    string strDatasetName = "";//数据集名称
+                    ArrayList objSymbols = default(ArrayList); //符号列表
+                    //唯一值渲染
                     if (m_strDataSavings.LayerList[i] is Analize_ArcMap_Symbols.StructUniqueValueRenderer)
                     {
                         Analize_ArcMap_Symbols.StructUniqueValueRenderer temp = (Analize_ArcMap_Symbols.StructUniqueValueRenderer)m_strDataSavings.LayerList[i];
                         strDatasetName = temp.DatasetName;
                         objSymbols = temp.SymbolList;
-                        cLayerName = System.Convert.ToString(temp.LayerName);
+                        cLayerName = temp.LayerName;
                     }
+                    //分类渲染
                     else if (m_strDataSavings.LayerList[i] is Analize_ArcMap_Symbols.StructClassBreaksRenderer)
                     {
                         Analize_ArcMap_Symbols.StructClassBreaksRenderer temp = (Analize_ArcMap_Symbols.StructClassBreaksRenderer)m_strDataSavings.LayerList[i];
                         strDatasetName = temp.DatasetName;
                         objSymbols = temp.SymbolList;
-                        cLayerName = System.Convert.ToString(temp.LayerName);
+                        cLayerName = temp.LayerName;
                     }
+                    //简单渲染
                     else if (m_strDataSavings.LayerList[i] is Analize_ArcMap_Symbols.StructSimpleRenderer)
                     {
                         Analize_ArcMap_Symbols.StructSimpleRenderer temp = (Analize_ArcMap_Symbols.StructSimpleRenderer)m_strDataSavings.LayerList[i];
                         strDatasetName = temp.DatasetName;
                         objSymbols = temp.SymbolList;
-                        cLayerName = System.Convert.ToString(temp.LayerName);
+                        cLayerName = temp.LayerName;
                     }
                     #endregion
+
                     frmMotherForm.CHLabelBottom(string.Format("正在处理图层【{0}】...", cLayerName));
-                    if (bDoOneLayer == false)
+                    //是否每个图层都要新建一个SLD文件
+                    if (!bDoOneLayer)
 					{
 						CreateSLD(m_cFilename + "_" + cLayerName + ".sld", bool.Parse(m_bIncludeLayerNames));
 					}
-					if (Convert.ToBoolean(m_bIncludeLayerNames))
+                    #region 创建基础节点
+                    if (Convert.ToBoolean(m_bIncludeLayerNames))
 					{
-						//' ARIS: Standard SLD output
 						m_objXMLHandle.CreateElement("NamedLayer");
 						m_objXMLHandle.CreateElement("LayerName");
-                        m_objXMLHandle.SetElementText(System.Convert.ToString(strDatasetName));
+                        m_objXMLHandle.SetElementText(strDatasetName);
 						m_objXMLHandle.CreateElement("UserStyle");
 						m_objXMLHandle.CreateElement("StyleName");
 						m_objXMLHandle.SetElementText("Style1");
 						m_objXMLHandle.CreateElement("FeatureTypeStyle");
 						m_objXMLHandle.CreateElement("FeatureTypeName");
-                        m_objXMLHandle.SetElementText(System.Convert.ToString(strDatasetName));
+                        m_objXMLHandle.SetElementText(strDatasetName);
 					}
 					else
 					{
-						//' ARIS: WorldMap SLD output
 						m_objXMLHandle.CreateElement("FeatureTypeStyle");
 						m_objXMLHandle.CreateElement("FeatureTypeName");
-                        m_objXMLHandle.SetElementText(System.Convert.ToString(strDatasetName));
+                        m_objXMLHandle.SetElementText(strDatasetName);
 						m_objXMLHandle.CreateElement("FeatureTypeTitle");
-                        m_objXMLHandle.SetElementText(System.Convert.ToString(strDatasetName));
+                        m_objXMLHandle.SetElementText(strDatasetName);
 					}
-					
-					//XML-Schreibanweisungen auf Layerebene und auf Symbolebene
-					for (j = 0; j <= objSymbols.Count - 1; j++) //IN DER SCHLEIFE AUF SYMBOLEBENE objSymbols(j) repr鋝entiert 1 Symbol!!!
-					{
-						if (frmMotherForm.m_enumLang == Motherform.Language.Deutsch)
-						{
-							frmMotherForm.CHLabelSmall("Symbol " + (j + 1).ToString() + " von " + objSymbols.Count.ToString());
-						}
-						else if (frmMotherForm.m_enumLang == Motherform.Language.English)
-						{
-							frmMotherForm.CHLabelSmall("Symbol " + (j + 1).ToString() + " of " + objSymbols.Count.ToString());
-                        }
+                    #endregion 
 
-                        #region
-                        string StrLabel = "";
+                    for (int j = 0; j <= objSymbols.Count - 1; j++)
+					{
+
+						frmMotherForm.CHLabelSmall("写入符号 " + (j + 1).ToString() + " 中 " + objSymbols.Count.ToString());
+                      
+
+                        #region 读取符号基础信息
+                        string StrLabel = "";//标题
                         double StrLowerLimit = 0.00;
                         double StrUpperLimit = 0.00;
                         if (objSymbols[j] is Analize_ArcMap_Symbols.StructSimpleMarkerSymbol)
@@ -379,52 +389,54 @@ namespace ArcGIS_SLD_Converter
                         }
                         #endregion
 
-                        //HIER DIE UNTERSCHEIDUNGEN NACH DEN EINZELNEN RENDERERN: UNIQUEVALUERENDERER
-						if (m_strDataSavings.LayerList[i] is Analize_ArcMap_Symbols.StructUniqueValueRenderer)
+                        #region 唯一值渲染
+                        if (m_strDataSavings.LayerList[i] is Analize_ArcMap_Symbols.StructUniqueValueRenderer)
 						{
-							Analize_ArcMap_Symbols.StructUniqueValueRenderer objStructUVR = new Analize_ArcMap_Symbols.StructUniqueValueRenderer();
-                            objStructUVR = (Analize_ArcMap_Symbols.StructUniqueValueRenderer)m_strDataSavings.LayerList[i]; //Zuweisung des StructsUVR. Repr鋝entiert je einen Layer!!!
+							Analize_ArcMap_Symbols.StructUniqueValueRenderer objStructUVR = (Analize_ArcMap_Symbols.StructUniqueValueRenderer)m_strDataSavings.LayerList[i];
 							m_objXMLHandle.CreateElement("Rule");
 							m_objXMLHandle.CreateElement("RuleName");
                             m_objXMLHandle.SetElementText(StrLabel);
 							m_objXMLHandle.CreateElement("Title");
                             m_objXMLHandle.SetElementText(StrLabel);
 							m_objXMLHandle.CreateElement("Filter");
-							if (frmMotherForm.chkScale.Checked == true)
-							{
-								m_objXMLHandle.CreateElement("MinScale");
-								m_objXMLHandle.SetElementText(frmMotherForm.cboLowScale.Text);
-								m_objXMLHandle.CreateElement("MaxScale");
-								m_objXMLHandle.SetElementText(frmMotherForm.cboHighScale.Text);
-							}
-							if (objStructUVR.FieldCount > 1) //Nur wenn nach mehr als 1 Feld klassifiziert wurde, wird der <AND>-Tag gesetzt
+                            //设置显示比例尺
+							//if (frmMotherForm.chkScale.Checked == true)
+							//{
+							//	m_objXMLHandle.CreateElement("MinScale");
+							//	m_objXMLHandle.SetElementText(frmMotherForm.cboLowScale.Text);
+							//	m_objXMLHandle.CreateElement("MaxScale");
+							//	m_objXMLHandle.SetElementText(frmMotherForm.cboHighScale.Text);
+							//}
+                            //多字段多值组合符号
+							if (objStructUVR.FieldCount > 1) 
 							{
 								m_objXMLHandle.CreateElement("And");
-								for (l = 0; l <= objStructUVR.FieldCount - 1; l++) //Die Schleife ist nur daf黵 da, falls nach mehreren Feldern klassifiziert wurde
+								for (int l = 0; l <= objStructUVR.FieldCount - 1; l++) 
 								{
-									m_objXMLHandle.CreateElement("PropertyIsEqualTo"); //Sie schreibt pro Feld nach dem klass. wurde das <PropertyIsEqualTo> und alle Kinder
+									m_objXMLHandle.CreateElement("PropertyIsEqualTo"); 
 									m_objXMLHandle.CreateElement("PropertyName");
 									m_objXMLHandle.SetElementText(System.Convert.ToString(objStructUVR.FieldNames[l]));
 									m_objXMLHandle.CreateElement("Fieldvalue");
 									m_objXMLHandle.SetElementText(System.Convert.ToString(objFieldValues[l]));
 								}
 							}
+                            //单字段多值同一符号
 							else if (objStructUVR.FieldCount == 1)
 							{
 								if (objFieldValues.Count > 1)
 								{
 									m_objXMLHandle.CreateElement("Or");
 								}
-								for (l = 0; l <= objFieldValues.Count - 1; l++) //If multiple values grouped in same class
+								for (int l = 0; l <= objFieldValues.Count - 1; l++) 
 								{
-									m_objXMLHandle.CreateElement("PropertyIsEqualTo"); //Sie schreibt pro Feld nach dem klass. wurde das <PropertyIsEqualTo> und alle Kinder
+									m_objXMLHandle.CreateElement("PropertyIsEqualTo"); 
 									m_objXMLHandle.CreateElement("PropertyName");
 									m_objXMLHandle.SetElementText(System.Convert.ToString(objStructUVR.FieldNames[0]));
 									m_objXMLHandle.CreateElement("Fieldvalue");
 									m_objXMLHandle.SetElementText(System.Convert.ToString(objFieldValues[l]));
 								}
 							}
-							//UNTERSCHEIDUNG NACH FEATURECLASS DES BETREFFENDEN SYMBOLS
+
 							switch (objStructUVR.FeatureCls)
 							{
 								case Analize_ArcMap_Symbols.FeatureClass.PointFeature:
@@ -437,37 +449,35 @@ namespace ArcGIS_SLD_Converter
 									WritePolygonFeatures(objSymbols[j]);
 									break;
 							}
-							//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-							//HIER DIE UNTERSCHEIDUNGEN NACH DEN EINZELNEN RENDERERN: CLASSBREAKSRENDERER
 						}
-						else if (m_strDataSavings.LayerList[i] is Analize_ArcMap_Symbols.StructClassBreaksRenderer)
+                        #endregion
+
+                        #region 分类值渲染方式
+                        else if (m_strDataSavings.LayerList[i] is Analize_ArcMap_Symbols.StructClassBreaksRenderer)
 						{
-							Analize_ArcMap_Symbols.StructClassBreaksRenderer objStructCBR = new Analize_ArcMap_Symbols.StructClassBreaksRenderer();
-							objStructCBR = (Analize_ArcMap_Symbols.StructClassBreaksRenderer)m_strDataSavings.LayerList[i];
+							Analize_ArcMap_Symbols.StructClassBreaksRenderer objStructCBR = (Analize_ArcMap_Symbols.StructClassBreaksRenderer)m_strDataSavings.LayerList[i];
 							m_objXMLHandle.CreateElement("Rule");
 							m_objXMLHandle.CreateElement("RuleName");
                             m_objXMLHandle.SetElementText(StrLabel);
 							m_objXMLHandle.CreateElement("Title");
                             m_objXMLHandle.SetElementText(StrLabel);
 							m_objXMLHandle.CreateElement("Filter");
-							if (frmMotherForm.chkScale.Checked == true)
-							{
-								m_objXMLHandle.CreateElement("MinScale");
-								m_objXMLHandle.SetElementText(frmMotherForm.cboLowScale.Text);
-								m_objXMLHandle.CreateElement("MaxScale");
-								m_objXMLHandle.SetElementText(frmMotherForm.cboHighScale.Text);
-							}
+							//if (frmMotherForm.chkScale.Checked == true)
+							//{
+							//	m_objXMLHandle.CreateElement("MinScale");
+							//	m_objXMLHandle.SetElementText(frmMotherForm.cboLowScale.Text);
+							//	m_objXMLHandle.CreateElement("MaxScale");
+							//	m_objXMLHandle.SetElementText(frmMotherForm.cboHighScale.Text);
+							//}
 							m_objXMLHandle.CreateElement("PropertyIsBetween");
 							m_objXMLHandle.CreateElement("PropertyName");
 							m_objXMLHandle.SetElementText(objStructCBR.FieldName);
 							m_objXMLHandle.CreateElement("LowerBoundary");
 							m_objXMLHandle.CreateElement("Fieldvalue");
-                            //As ArrayList member the type is no more recognized from compiler. If saving in a dummy double its recognized again
                             dummy = StrLowerLimit;
 							m_objXMLHandle.SetElementText(CommaToPoint(dummy));
 							m_objXMLHandle.CreateElement("UpperBoundary");
 							m_objXMLHandle.CreateElement("Fieldvalue");
-                            //As ArrayList member the type is no more recognized from compiler. If saving in a dummy double its recognized again
                             dummy = StrUpperLimit; 
 							m_objXMLHandle.SetElementText(CommaToPoint(dummy));
 							switch (objStructCBR.FeatureCls)
@@ -482,9 +492,11 @@ namespace ArcGIS_SLD_Converter
 									WritePolygonFeatures(objSymbols[j]);
 									break;
 							}
-							//HIER DIE UNTERSCHEIDUNGEN NACH DEN EINZELNEN RENDERERN: SIMPLERENDERER
 						}
-						else if (m_strDataSavings.LayerList[i] is Analize_ArcMap_Symbols.StructSimpleRenderer)
+                        #endregion
+
+                        #region 简单渲染方式
+                        else if (m_strDataSavings.LayerList[i] is Analize_ArcMap_Symbols.StructSimpleRenderer)
 						{
 							Analize_ArcMap_Symbols.StructSimpleRenderer objStructSR = new Analize_ArcMap_Symbols.StructSimpleRenderer();
                             objStructSR = (Analize_ArcMap_Symbols.StructSimpleRenderer)m_strDataSavings.LayerList[i];
@@ -507,24 +519,26 @@ namespace ArcGIS_SLD_Converter
 							}
                             WriteAnnotation(objStructSR.Annotation);
 						}
-					}
-					if (bDoOneLayer == false)
+                        #endregion
+                    }
+                    if (bDoOneLayer == false)
 					{
-						m_objXMLHandle.SaveDoc(); //If separate layer, the files have to be saved here
+						m_objXMLHandle.SaveDoc(); 
 					}
 				}
 				if (bDoOneLayer == true)
 				{
-					m_objXMLHandle.SaveDoc(); //else the file has to be saved here
+					m_objXMLHandle.SaveDoc(); 
 				}
 				return true;
 			}
 			catch (Exception ex)
 			{
-				ErrorMsg("Konnte die SLD nicht schreiben", ex.Message, ex.StackTrace, "WriteToSLD");
+				ErrorMsg("SLD文件写入错误", ex.Message, ex.StackTrace, "WriteToSLD");
 				return false;
 			}
 		}
+
 		/// <summary>
         /// 写标注符号信息
         /// </summary>
@@ -574,6 +588,11 @@ namespace ArcGIS_SLD_Converter
 			}
 			return true;
 		}
+        /// <summary>
+        /// 解析点要素符号
+        /// </summary>
+        /// <param name="Symbol"></param>
+        /// <returns></returns>
 		private bool WritePointFeatures(object Symbol)
 		{
 			try
@@ -583,8 +602,7 @@ namespace ArcGIS_SLD_Converter
 				
 				if (Symbol is Analize_ArcMap_Symbols.StructMultilayerMarkerSymbol)
 				{
-					Analize_ArcMap_Symbols.StructMultilayerMarkerSymbol objTempStruct = new Analize_ArcMap_Symbols.StructMultilayerMarkerSymbol();
-                    objTempStruct = (Analize_ArcMap_Symbols.StructMultilayerMarkerSymbol)Symbol;
+					Analize_ArcMap_Symbols.StructMultilayerMarkerSymbol objTempStruct = (Analize_ArcMap_Symbols.StructMultilayerMarkerSymbol)Symbol;
 					maxLayerIdx = objTempStruct.LayerCount;
 				}
 				for (layerIdx = 0; layerIdx <= maxLayerIdx - 1; layerIdx++)
@@ -594,6 +612,7 @@ namespace ArcGIS_SLD_Converter
 					m_objXMLHandle.CreateElement("Mark");
 					m_objXMLHandle.CreateElement("PointWellKnownName");
 					m_objXMLHandle.SetElementText(GetValueFromSymbolstruct("WellKnownName", Symbol, layerIdx));
+
 					if (GetValueFromSymbolstruct("PointColor", Symbol, layerIdx) != "")
 					{
 						m_objXMLHandle.CreateElement("PointFill");
@@ -631,24 +650,26 @@ namespace ArcGIS_SLD_Converter
 			}
 			catch (Exception ex)
 			{
-				ErrorMsg("Fehler beim Schreiben der Schraffur", ex.Message, ex.StackTrace, "WritePointFeatures");
+				ErrorMsg("解析点符号出错", ex.Message, ex.StackTrace, "WritePointFeatures");
 				return false;
 			}
 		}
+        /// <summary>
+        /// 解析线要素符号
+        /// </summary>
+        /// <param name="Symbol"></param>
+        /// <returns></returns>
 		private bool WriteLineFeatures(object Symbol)
 		{
 			try
 			{
-				int layerIdx = 0;
 				int maxLayerIdx = 1;
-				
 				if (Symbol is Analize_ArcMap_Symbols.StructMultilayerLineSymbol)
 				{
-					Analize_ArcMap_Symbols.StructMultilayerLineSymbol objTempStruct = new Analize_ArcMap_Symbols.StructMultilayerLineSymbol();
-                    objTempStruct = (Analize_ArcMap_Symbols.StructMultilayerLineSymbol)Symbol;
+                    Analize_ArcMap_Symbols.StructMultilayerLineSymbol objTempStruct = (Analize_ArcMap_Symbols.StructMultilayerLineSymbol)Symbol;
 					maxLayerIdx = objTempStruct.LayerCount;
 				}
-				for (layerIdx = 0; layerIdx <= maxLayerIdx - 1; layerIdx++)
+				for (int layerIdx = 0; layerIdx <= maxLayerIdx - 1; layerIdx++)
 				{
 					if (GetValueFromSymbolstruct("LineColor", Symbol, layerIdx) != "" && GetValueFromSymbolstruct("LineWidth", Symbol, layerIdx) != "0")
 					{
@@ -679,13 +700,17 @@ namespace ArcGIS_SLD_Converter
 			}
 			catch (Exception ex)
 			{
-				ErrorMsg("Fehler beim Schreiben der Schraffur", ex.Message, ex.StackTrace, "WriteLineFeatures");
+				ErrorMsg("解析线符号出错", ex.Message, ex.StackTrace, "WriteLineFeatures");
 				return false;
 			}
 		}
+        /// <summary>
+        /// 解析面要素图层符号
+        /// </summary>
+        /// <param name="Symbol"></param>
+        /// <returns></returns>
 		private bool WritePolygonFeatures(object Symbol)
 		{
-			int i = 0;
             int iSecure = 0;
 			try
 			{
@@ -699,7 +724,6 @@ namespace ArcGIS_SLD_Converter
 				}
 				else if (Symbol is Analize_ArcMap_Symbols.StructLineFillSymbol)
 				{
-					//Die Winkel der Schraffuren Original:(Schr鋑/Horizontal,Vertikal)-SLD(Kreuzschraffur schr鋑/Kreuzschraffur Achsparallel)
                     Analize_ArcMap_Symbols.StructLineFillSymbol tempSymbol = (Analize_ArcMap_Symbols.StructLineFillSymbol)Symbol;
                     if (tempSymbol.Angle > 22.5 && tempSymbol.Angle < 67.5)
 					{
@@ -736,37 +760,35 @@ namespace ArcGIS_SLD_Converter
 				}
 				else if (Symbol is Analize_ArcMap_Symbols.StructDotDensityFillSymbol)
 				{
-					WriteMarkerFill(Symbol); //Ist z.Zt. sowieso nicht m鰃lich, Dichte mit Punktf黮lungen auszugeben
+					WriteMarkerFill(Symbol); 
 				}
 				else if (Symbol is Analize_ArcMap_Symbols.StructPictureFillSymbol)
 				{
-					//TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
+					
 				}
 				else if (Symbol is Analize_ArcMap_Symbols.StructGradientFillSymbol)
 				{
-					//TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
+					
 				}
 				else if (Symbol is Analize_ArcMap_Symbols.StructMultilayerFillSymbol)
 				{
-					Analize_ArcMap_Symbols.StructMultilayerFillSymbol MFS = new Analize_ArcMap_Symbols.StructMultilayerFillSymbol();
-                    MFS = (Analize_ArcMap_Symbols.StructMultilayerFillSymbol)Symbol;
-					bool bSwitch; //Wenn mehr als 3 Symbollayer sind, und einer davon ist ein SimpleFill
+					Analize_ArcMap_Symbols.StructMultilayerFillSymbol MFS = MFS = (Analize_ArcMap_Symbols.StructMultilayerFillSymbol)Symbol;
+                    bool bSwitch; 
 					bSwitch = false;
-					//Hier muss aufgepasst werden: Manche Mapserver k鰊nen nur 2 Symbollayer 黚ereinander abbilden. Deshalb werden derzeit nur 2 Symbollayer gebildet
 					if (MFS.LayerCount == 1)
 					{
 						WritePolygonFeatures(MFS.MultiFillLayers[0]);
 					}
 					else if (MFS.LayerCount == 2)
 					{
-						for (i = MFS.LayerCount - 1; i >= 0; i--)
+						for (int i = MFS.LayerCount - 1; i >= 0; i--)
 						{
-							WritePolygonFeatures(MFS.MultiFillLayers[i]); //hier rekursiver Aufruf
+							WritePolygonFeatures(MFS.MultiFillLayers[i]); 
 						}
 					}
 					else if (MFS.LayerCount > 2)
 					{
-						for (i = MFS.LayerCount - 1; i >= 0; i--)
+						for (int i = MFS.LayerCount - 1; i >= 0; i--)
 						{
 							if (iSecure <= 1)
 							{
@@ -780,10 +802,15 @@ namespace ArcGIS_SLD_Converter
 			}
 			catch (Exception ex)
 			{
-				ErrorMsg("Fehler beim Schreiben der Schraffur", ex.Message, ex.StackTrace, "WritePolygonFeatures");
+				ErrorMsg("解析面要素图层符号", ex.Message, ex.StackTrace, "WritePolygonFeatures");
 				return false;
 			}
 		}
+        /// <summary>
+        /// 写入简单面符号
+        /// </summary>
+        /// <param name="Symbol"></param>
+        /// <returns></returns>
 		private bool WriteSolidFill(object Symbol)
 		{
 			try
@@ -821,11 +848,16 @@ namespace ArcGIS_SLD_Converter
 			}
 			catch (Exception ex)
 			{
-				ErrorMsg("Fehler beim Schreiben der Fl鋍henf黮lung", ex.Message, ex.StackTrace, "WriteSimpleFill");
+				ErrorMsg("写入简单面符号到SLD文件中出错", ex.Message, ex.StackTrace, "WriteSimpleFill");
 				return false;
 			}
 			
 		}
+        /// <summary>
+        /// 写入标记面符号
+        /// </summary>
+        /// <param name="Symbol"></param>
+        /// <returns></returns>
 		private bool WriteMarkerFill(object Symbol)
 		{
 			try
@@ -871,11 +903,16 @@ namespace ArcGIS_SLD_Converter
 			}
 			catch (Exception ex)
 			{
-				ErrorMsg("Fehler beim Schreiben der Punktf黮lung", ex.Message, ex.StackTrace, "WriteMarkerFill");
+				ErrorMsg("写入标记面符号到SLD文件出错", ex.Message, ex.StackTrace, "WriteMarkerFill");
 				return false;
 			}
 			
 		}
+        /// <summary>
+        /// 写入斜线标记面符号
+        /// </summary>
+        /// <param name="Symbol"></param>
+        /// <returns></returns>
         private bool WriteSlopedHatching(Analize_ArcMap_Symbols.StructLineFillSymbol Symbol)
 		{
 			double dDummy = 0;
@@ -887,21 +924,17 @@ namespace ArcGIS_SLD_Converter
 					m_objXMLHandle.CreateElement("Fill");
 					m_objXMLHandle.CreateElement("PolygonGraphicFill");
 					m_objXMLHandle.CreateElement("PolygonGraphic");
-					//.SetElementText(GetValueFromSymbolstruct("LineWidth", Symbol))
 					m_objXMLHandle.CreateElement("PolygonMark");
 					m_objXMLHandle.CreateElement("PolygonSize");
-					//Schraffurgr鲞e
-					dDummy = System.Convert.ToDouble(Symbol.Separation + 5);
+					dDummy = Symbol.Separation + 5;
 					m_objXMLHandle.SetElementText(CommaToPoint(dDummy));
 					m_objXMLHandle.CreateElement("PolygonWellKnownName");
-					m_objXMLHandle.SetElementText("x"); //Macht die schr鋑e Kreuzschraffur
+					m_objXMLHandle.SetElementText("x"); 
 					m_objXMLHandle.CreateElement("PolygonGraphicParamFill");
 					m_objXMLHandle.CreateElement("PolygonGraphicCssParameter");
 					m_objXMLHandle.CreateAttribute("name");
 					m_objXMLHandle.SetAttributeValue("fill");
-					//Die Schraffurfarbe
 					m_objXMLHandle.SetElementText(System.Convert.ToString(Symbol.Color));
-					//.SetElementText(GetValueFromSymbolstruct("LineColor", Symbol))
 					m_objXMLHandle.CreateElement("PolygonGraphicCssParameter");
 					m_objXMLHandle.CreateAttribute("name");
 					m_objXMLHandle.SetAttributeValue("fill-opacity");
@@ -927,10 +960,15 @@ namespace ArcGIS_SLD_Converter
 			}
 			catch (Exception ex)
 			{
-				ErrorMsg("Fehler beim Schreiben der Schraffur", ex.Message, ex.StackTrace, "WriteSlopedHatching");
+				ErrorMsg("写入线标记面符号到SLD文件出错", ex.Message, ex.StackTrace, "WriteSlopedHatching");
 				return false;
 			}
 		}
+        /// <summary>
+        /// 垂直线填充符号
+        /// </summary>
+        /// <param name="Symbol"></param>
+        /// <returns></returns>
         private bool WritePerpendicularHatching(Analize_ArcMap_Symbols.StructLineFillSymbol Symbol)
 		{
 			double dDummy = 0;
@@ -942,10 +980,8 @@ namespace ArcGIS_SLD_Converter
 					m_objXMLHandle.CreateElement("Fill");
 					m_objXMLHandle.CreateElement("PolygonGraphicFill");
 					m_objXMLHandle.CreateElement("PolygonGraphic");
-					//.SetElementText(GetValueFromSymbolstruct("LineWidth", Symbol))
 					m_objXMLHandle.CreateElement("PolygonMark");
 					m_objXMLHandle.CreateElement("PolygonSize");
-					//Schraffurgr鲞e
 					dDummy = System.Convert.ToDouble(Symbol.Separation + 5);
 					m_objXMLHandle.SetElementText(CommaToPoint(dDummy));
 					m_objXMLHandle.CreateElement("PolygonWellKnownName");
@@ -954,9 +990,7 @@ namespace ArcGIS_SLD_Converter
 					m_objXMLHandle.CreateElement("PolygonGraphicCssParameter");
 					m_objXMLHandle.CreateAttribute("name");
 					m_objXMLHandle.SetAttributeValue("fill");
-					//Die Schraffurfarbe
 					m_objXMLHandle.SetElementText(System.Convert.ToString(Symbol.Color));
-					//.SetElementText(GetValueFromSymbolstruct("LineColor", Symbol))
 					m_objXMLHandle.CreateElement("PolygonGraphicCssParameter");
 					m_objXMLHandle.CreateAttribute("name");
 					m_objXMLHandle.SetAttributeValue("fill-opacity");
@@ -982,25 +1016,32 @@ namespace ArcGIS_SLD_Converter
 			}
 			catch (Exception ex)
 			{
-				ErrorMsg("Fehler beim Schreiben der Punktf黮lung", ex.Message, ex.StackTrace, "WritePerpendicularHatching");
+				ErrorMsg("写入线填充符号出错", ex.Message, ex.StackTrace, "WritePerpendicularHatching");
 				return false;
 			}
 		}
 #endregion
-#region Symbolstructanalysefunktionen
+
+#region 符号转换
 		private string GetValueFromSymbolstruct(string ValueNameOfValueYouWant, object SymbolStructure)
 		{
 			return GetValueFromSymbolstruct(ValueNameOfValueYouWant, SymbolStructure, 0);
 		}
+        /// <summary>
+        /// 从符号类中获取指点名称信息
+        /// </summary>
+        /// <param name="ValueNameOfValueYouWant"></param>
+        /// <param name="SymbolStructure"></param>
+        /// <param name="LayerIdx"></param>
+        /// <returns></returns>
 		private string GetValueFromSymbolstruct(string ValueNameOfValueYouWant, object SymbolStructure, int LayerIdx)
 		{
-			string cReturn = "";
-			bool bSwitch;
-			bSwitch = false; //(ben鰐igt f黵 Multilayersymbole)der Schalter wird umgelegt, wenn es kein simple.. Symbol gibt. Dann wird der Wert des ersten Symbols genommen
-			cReturn = "0"; //Wenn keiner der 黚ergebenen ValueNames passt, wird 0 zur點kgegeben
+			string cReturn = "0";
+			bool bSwitch = false;
 			try
 			{
-				if (SymbolStructure is Analize_ArcMap_Symbols.StructSimpleMarkerSymbol)
+                #region  处理点符号
+                if (SymbolStructure is Analize_ArcMap_Symbols.StructSimpleMarkerSymbol)
 				{
 					cReturn = GetMarkerValue(ValueNameOfValueYouWant, SymbolStructure);
 					return cReturn;
@@ -1020,10 +1061,12 @@ namespace ArcGIS_SLD_Converter
 					cReturn = GetMarkerValue(ValueNameOfValueYouWant, SymbolStructure);
 					return cReturn;
 				}
-				else if (SymbolStructure is Analize_ArcMap_Symbols.StructSimpleLineSymbol)
+                #endregion
+
+                #region 处理线符号
+                else if (SymbolStructure is Analize_ArcMap_Symbols.StructSimpleLineSymbol)
 				{
-					Analize_ArcMap_Symbols.StructSimpleLineSymbol objTempStruct = new Analize_ArcMap_Symbols.StructSimpleLineSymbol();
-                    objTempStruct = (Analize_ArcMap_Symbols.StructSimpleLineSymbol)SymbolStructure;
+                    Analize_ArcMap_Symbols.StructSimpleLineSymbol objTempStruct = (Analize_ArcMap_Symbols.StructSimpleLineSymbol)SymbolStructure;
 					if (ValueNameOfValueYouWant.ToUpper() == "LineWidth".ToUpper())
 					{
 						cReturn = CommaToPoint(objTempStruct.Width);
@@ -1036,7 +1079,6 @@ namespace ArcGIS_SLD_Converter
 					{
 						double tmpTransparency = objTempStruct.Transparency;
 						cReturn = CommaToPoint(tmpTransparency / 255.0);
-						//Case "PointRotation".ToUpper
 					}
 					else if (ValueNameOfValueYouWant.ToUpper() == "LineDashArray".ToUpper())
 					{
@@ -1063,8 +1105,7 @@ namespace ArcGIS_SLD_Converter
 				}
 				else if (SymbolStructure is Analize_ArcMap_Symbols.StructCartographicLineSymbol)
 				{
-					Analize_ArcMap_Symbols.StructCartographicLineSymbol objTempStruct = new Analize_ArcMap_Symbols.StructCartographicLineSymbol();
-                    objTempStruct = (Analize_ArcMap_Symbols.StructCartographicLineSymbol)SymbolStructure;
+                    Analize_ArcMap_Symbols.StructCartographicLineSymbol  objTempStruct = (Analize_ArcMap_Symbols.StructCartographicLineSymbol)SymbolStructure;
 					if (ValueNameOfValueYouWant.ToUpper() == "LineWidth".ToUpper())
 					{
 						cReturn = CommaToPoint(objTempStruct.Width);
@@ -1080,27 +1121,21 @@ namespace ArcGIS_SLD_Converter
 					}
 					else if (ValueNameOfValueYouWant.ToUpper() == "LineDashArray".ToUpper())
 					{
-						int dashIdx = 0;
-						double size = 0;
 						cReturn = "";
-						for (dashIdx = 0; dashIdx <= objTempStruct.DashArray.Count - 1; dashIdx++)
+						for (int dashIdx = 0; dashIdx <= objTempStruct.DashArray.Count - 1; dashIdx++)
 						{
 							if (dashIdx > 0)
 							{
 								cReturn = cReturn + " ";
 							}
-							size = System.Convert.ToDouble(objTempStruct.DashArray[dashIdx]);
+                            double size = System.Convert.ToDouble(objTempStruct.DashArray[dashIdx]);
 							cReturn = cReturn + CommaToPoint(size);
 						}
-					}
-					else if (ValueNameOfValueYouWant.ToUpper() == "")
-					{
 					}
 				}
 				else if (SymbolStructure is Analize_ArcMap_Symbols.StructHashLineSymbol)
 				{
-					Analize_ArcMap_Symbols.StructHashLineSymbol objTempStruct = new Analize_ArcMap_Symbols.StructHashLineSymbol();
-                    objTempStruct = (Analize_ArcMap_Symbols.StructHashLineSymbol)SymbolStructure;
+                    Analize_ArcMap_Symbols.StructHashLineSymbol objTempStruct = (Analize_ArcMap_Symbols.StructHashLineSymbol)SymbolStructure;
 					if ((ValueNameOfValueYouWant.ToUpper() == "LineWidth".ToUpper()) || (ValueNameOfValueYouWant.ToUpper() == "LineDashArray".ToUpper()))
 					{
 						switch (objTempStruct.kindOfLineStruct)
@@ -1131,18 +1166,14 @@ namespace ArcGIS_SLD_Converter
 						double tmpTransparency = objTempStruct.Transparency;
 						cReturn = CommaToPoint(tmpTransparency / 255.0);
 					}
-					else if (ValueNameOfValueYouWant.ToUpper() == "")
-					{
-					}
 					return cReturn;
 				}
 				else if (SymbolStructure is Analize_ArcMap_Symbols.StructMarkerLineSymbol)
 				{
-					Analize_ArcMap_Symbols.StructMarkerLineSymbol objTempStruct = new Analize_ArcMap_Symbols.StructMarkerLineSymbol();
-                    objTempStruct = (Analize_ArcMap_Symbols.StructMarkerLineSymbol)SymbolStructure;
+                    Analize_ArcMap_Symbols.StructMarkerLineSymbol objTempStruct = (Analize_ArcMap_Symbols.StructMarkerLineSymbol)SymbolStructure;
 					if (ValueNameOfValueYouWant.ToUpper() == "LineWidth".ToUpper())
 					{
-						InfoMsg("Abfrage von Linienbreite der Markerlines ist im Augenblick nicht implementiert", "GetValueFromSymbolstruct");
+						InfoMsg("无线宽", "GetValueFromSymbolstruct");
 					}
 					else if (ValueNameOfValueYouWant.ToUpper() == "LineColor".ToUpper())
 					{
@@ -1153,15 +1184,11 @@ namespace ArcGIS_SLD_Converter
 						double tmpTransparency = objTempStruct.Transparency;
 						cReturn = CommaToPoint(tmpTransparency / 255.0);
 					}
-					else if (ValueNameOfValueYouWant.ToUpper() == "")
-					{
-					}
 					return cReturn;
 				}
 				else if (SymbolStructure is Analize_ArcMap_Symbols.StructPictureLineSymbol)
 				{
-					Analize_ArcMap_Symbols.StructPictureLineSymbol objTempStruct = new Analize_ArcMap_Symbols.StructPictureLineSymbol();
-                    objTempStruct = (Analize_ArcMap_Symbols.StructPictureLineSymbol)SymbolStructure;
+                    Analize_ArcMap_Symbols.StructPictureLineSymbol objTempStruct = (Analize_ArcMap_Symbols.StructPictureLineSymbol)SymbolStructure;
 					if (ValueNameOfValueYouWant.ToUpper() == "LineWidth".ToUpper())
 					{
 						cReturn = CommaToPoint(objTempStruct.Width);
@@ -1175,15 +1202,14 @@ namespace ArcGIS_SLD_Converter
 						double tmpTransparency = objTempStruct.BackgroundTransparency;
 						cReturn = CommaToPoint(tmpTransparency / 255.0);
 					}
-					else if (ValueNameOfValueYouWant.ToUpper() == "")
-					{
-					}
 					return cReturn;
 				}
-				else if (SymbolStructure is Analize_ArcMap_Symbols.StructSimpleFillSymbol)
+                #endregion
+
+                #region 处理面符号
+                else if (SymbolStructure is Analize_ArcMap_Symbols.StructSimpleFillSymbol)
 				{
-					Analize_ArcMap_Symbols.StructSimpleFillSymbol objTempStruct = new Analize_ArcMap_Symbols.StructSimpleFillSymbol();
-                    objTempStruct = (Analize_ArcMap_Symbols.StructSimpleFillSymbol)SymbolStructure;
+                    Analize_ArcMap_Symbols.StructSimpleFillSymbol objTempStruct = (Analize_ArcMap_Symbols.StructSimpleFillSymbol)SymbolStructure;
 					if (ValueNameOfValueYouWant.ToUpper() == "PolygonColor".ToUpper())
 					{
 						cReturn = objTempStruct.Color;
@@ -1262,8 +1288,7 @@ namespace ArcGIS_SLD_Converter
 				}
 				else if (SymbolStructure is Analize_ArcMap_Symbols.StructMarkerFillSymbol)
 				{
-					Analize_ArcMap_Symbols.StructMarkerFillSymbol objTempStruct = new Analize_ArcMap_Symbols.StructMarkerFillSymbol();
-                    objTempStruct = (Analize_ArcMap_Symbols.StructMarkerFillSymbol)SymbolStructure;
+                    Analize_ArcMap_Symbols.StructMarkerFillSymbol objTempStruct = (Analize_ArcMap_Symbols.StructMarkerFillSymbol)SymbolStructure;
 					if (ValueNameOfValueYouWant.ToUpper() == "PolygonColor".ToUpper())
 					{
 						cReturn = objTempStruct.Color;
@@ -1384,8 +1409,7 @@ namespace ArcGIS_SLD_Converter
 				}
 				else if (SymbolStructure is Analize_ArcMap_Symbols.StructLineFillSymbol)
 				{
-					Analize_ArcMap_Symbols.StructLineFillSymbol objTempStruct = new Analize_ArcMap_Symbols.StructLineFillSymbol();
-                    objTempStruct = (Analize_ArcMap_Symbols.StructLineFillSymbol)SymbolStructure;
+                    Analize_ArcMap_Symbols.StructLineFillSymbol objTempStruct = (Analize_ArcMap_Symbols.StructLineFillSymbol)SymbolStructure;
 					if (ValueNameOfValueYouWant.ToUpper() == "PolygonColor".ToUpper())
 					{
 						cReturn = objTempStruct.Color;
@@ -1538,8 +1562,7 @@ namespace ArcGIS_SLD_Converter
 				}
 				else if (SymbolStructure is Analize_ArcMap_Symbols.StructDotDensityFillSymbol)
 				{
-					Analize_ArcMap_Symbols.StructDotDensityFillSymbol objTempStruct = new Analize_ArcMap_Symbols.StructDotDensityFillSymbol();
-                    objTempStruct = (Analize_ArcMap_Symbols.StructDotDensityFillSymbol)SymbolStructure;
+                    Analize_ArcMap_Symbols.StructDotDensityFillSymbol objTempStruct = (Analize_ArcMap_Symbols.StructDotDensityFillSymbol)SymbolStructure;
 					if (ValueNameOfValueYouWant.ToUpper() == "PolygonColor".ToUpper())
 					{
 						cReturn = objTempStruct.BackgroundColor;
@@ -1626,8 +1649,7 @@ namespace ArcGIS_SLD_Converter
 				}
 				else if (SymbolStructure is Analize_ArcMap_Symbols.StructPictureFillSymbol)
 				{
-					Analize_ArcMap_Symbols.StructPictureFillSymbol objTempStruct = new Analize_ArcMap_Symbols.StructPictureFillSymbol();
-                    objTempStruct = (Analize_ArcMap_Symbols.StructPictureFillSymbol)SymbolStructure;
+                    Analize_ArcMap_Symbols.StructPictureFillSymbol objTempStruct = (Analize_ArcMap_Symbols.StructPictureFillSymbol)SymbolStructure;
 					if (ValueNameOfValueYouWant.ToUpper() == "PolygonColor".ToUpper())
 					{
 						cReturn = objTempStruct.BackgroundColor;
@@ -1706,8 +1728,7 @@ namespace ArcGIS_SLD_Converter
 				}
 				else if (SymbolStructure is Analize_ArcMap_Symbols.StructGradientFillSymbol)
 				{
-					Analize_ArcMap_Symbols.StructGradientFillSymbol objTempStruct = new Analize_ArcMap_Symbols.StructGradientFillSymbol();
-                    objTempStruct = (Analize_ArcMap_Symbols.StructGradientFillSymbol)SymbolStructure;
+                    Analize_ArcMap_Symbols.StructGradientFillSymbol objTempStruct = (Analize_ArcMap_Symbols.StructGradientFillSymbol)SymbolStructure;
 					if (ValueNameOfValueYouWant.ToUpper() == "PolygonColor".ToUpper())
 					{
 						cReturn = objTempStruct.Color;
@@ -1784,10 +1805,12 @@ namespace ArcGIS_SLD_Converter
 					}
 					return cReturn;
 				}
-				else if (SymbolStructure is Analize_ArcMap_Symbols.StructBarChartSymbol)
+                #endregion
+
+                #region 统计图符号（不支持）
+                else if (SymbolStructure is Analize_ArcMap_Symbols.StructBarChartSymbol)
 				{
-					Analize_ArcMap_Symbols.StructBarChartSymbol objTempStruct;
-                    objTempStruct = (Analize_ArcMap_Symbols.StructBarChartSymbol)SymbolStructure;
+                    Analize_ArcMap_Symbols.StructBarChartSymbol objTempStruct = (Analize_ArcMap_Symbols.StructBarChartSymbol)SymbolStructure;
 					switch (ValueNameOfValueYouWant.ToUpper())
 					{
 						case "":
@@ -1838,10 +1861,12 @@ namespace ArcGIS_SLD_Converter
 					}
 					return cReturn;
 				}
-				else if (SymbolStructure is Analize_ArcMap_Symbols.StructTextSymbol)
+                #endregion
+
+                #region 文本符号
+                else if (SymbolStructure is Analize_ArcMap_Symbols.StructTextSymbol)
 				{
-					Analize_ArcMap_Symbols.StructTextSymbol objTempStruct = new Analize_ArcMap_Symbols.StructTextSymbol();
-                    objTempStruct = (Analize_ArcMap_Symbols.StructTextSymbol)SymbolStructure;
+                    Analize_ArcMap_Symbols.StructTextSymbol objTempStruct = (Analize_ArcMap_Symbols.StructTextSymbol)SymbolStructure;
 					if (ValueNameOfValueYouWant.ToUpper() == "TextColor".ToUpper())
 					{
 						cReturn = objTempStruct.Color;
@@ -1888,29 +1913,26 @@ namespace ArcGIS_SLD_Converter
 						cReturn = objTempStruct.Weight;
 					}
 					return cReturn;
-					//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-					//Die Multilayer-Symbolstructs
 				}
-				else if (SymbolStructure is Analize_ArcMap_Symbols.StructMultilayerMarkerSymbol)
+                #endregion
+
+                #region 多图层符号
+                else if (SymbolStructure is Analize_ArcMap_Symbols.StructMultilayerMarkerSymbol)
 				{
-					Analize_ArcMap_Symbols.StructMultilayerMarkerSymbol objTempStruct = new Analize_ArcMap_Symbols.StructMultilayerMarkerSymbol();
-                    objTempStruct = (Analize_ArcMap_Symbols.StructMultilayerMarkerSymbol)SymbolStructure;
+                    Analize_ArcMap_Symbols.StructMultilayerMarkerSymbol objTempStruct = (Analize_ArcMap_Symbols.StructMultilayerMarkerSymbol)SymbolStructure;
 					cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, objTempStruct.MultiMarkerLayers[LayerIdx]);
 					return cReturn;
 				}
 				else if (SymbolStructure is Analize_ArcMap_Symbols.StructMultilayerLineSymbol)
 				{
-					Analize_ArcMap_Symbols.StructMultilayerLineSymbol objTempStruct = new Analize_ArcMap_Symbols.StructMultilayerLineSymbol();
-                    objTempStruct = (Analize_ArcMap_Symbols.StructMultilayerLineSymbol)SymbolStructure;
-					short i = 0;
+                    Analize_ArcMap_Symbols.StructMultilayerLineSymbol objTempStruct = (Analize_ArcMap_Symbols.StructMultilayerLineSymbol)SymbolStructure;
 					if (objTempStruct.LayerCount > 1)
 					{
-						for (i = 0; i <= objTempStruct.LayerCount - 1; i++)
+						for (int i = 0; i <= objTempStruct.LayerCount - 1; i++)
 						{
 							if (objTempStruct.MultiLineLayers[i] is Analize_ArcMap_Symbols.StructSimpleLineSymbol)
 							{
-								Analize_ArcMap_Symbols.StructSimpleLineSymbol SLFS = new Analize_ArcMap_Symbols.StructSimpleLineSymbol();
-                                SLFS = (Analize_ArcMap_Symbols.StructSimpleLineSymbol)objTempStruct.MultiLineLayers[i];
+                                Analize_ArcMap_Symbols.StructSimpleLineSymbol SLFS  = (Analize_ArcMap_Symbols.StructSimpleLineSymbol)objTempStruct.MultiLineLayers[i];
 								cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, SLFS);
 								bSwitch = true;
 							}
@@ -1928,19 +1950,16 @@ namespace ArcGIS_SLD_Converter
 				}
 				else if (SymbolStructure is Analize_ArcMap_Symbols.StructMultilayerFillSymbol)
 				{
-					Analize_ArcMap_Symbols.StructMultilayerFillSymbol objTempStruct = new Analize_ArcMap_Symbols.StructMultilayerFillSymbol();
-                    objTempStruct = (Analize_ArcMap_Symbols.StructMultilayerFillSymbol)SymbolStructure;
-					short i = 0;
+                    Analize_ArcMap_Symbols.StructMultilayerFillSymbol objTempStruct = (Analize_ArcMap_Symbols.StructMultilayerFillSymbol)SymbolStructure;
 					if (objTempStruct.LayerCount > 1)
 					{
-						for (i = 0; i <= objTempStruct.LayerCount - 1; i++)
+						for (int i = 0; i <= objTempStruct.LayerCount - 1; i++)
 						{
 							if (((((ValueNameOfValueYouWant.ToUpper() == "PolygonColor".ToUpper()) || (ValueNameOfValueYouWant.ToUpper() == "PolygonOpacity".ToUpper())) || (ValueNameOfValueYouWant.ToUpper() == "PolygonBorderWidth".ToUpper())) || (ValueNameOfValueYouWant.ToUpper() == "PolygonBorderColor".ToUpper())) || (ValueNameOfValueYouWant.ToUpper() == "PolygonBorderOpacity".ToUpper()))
 							{
 								if (objTempStruct.MultiFillLayers[i] is Analize_ArcMap_Symbols.StructSimpleFillSymbol)
 								{
-									Analize_ArcMap_Symbols.StructSimpleFillSymbol SSFS = new Analize_ArcMap_Symbols.StructSimpleFillSymbol();
-                                    SSFS = (Analize_ArcMap_Symbols.StructSimpleFillSymbol)objTempStruct.MultiFillLayers[i];
+                                    Analize_ArcMap_Symbols.StructSimpleFillSymbol SSFS = (Analize_ArcMap_Symbols.StructSimpleFillSymbol)objTempStruct.MultiFillLayers[i];
 									cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, SSFS);
 									bSwitch = true;
 								}
@@ -1949,8 +1968,7 @@ namespace ArcGIS_SLD_Converter
 							{
 								if (objTempStruct.MultiFillLayers[i] is Analize_ArcMap_Symbols.StructMarkerFillSymbol)
 								{
-									Analize_ArcMap_Symbols.StructMarkerFillSymbol SMFS = new Analize_ArcMap_Symbols.StructMarkerFillSymbol();
-                                    SMFS = (Analize_ArcMap_Symbols.StructMarkerFillSymbol)objTempStruct.MultiFillLayers[i];
+                                    Analize_ArcMap_Symbols.StructMarkerFillSymbol SMFS = (Analize_ArcMap_Symbols.StructMarkerFillSymbol)objTempStruct.MultiFillLayers[i];
 									cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, SMFS);
 									bSwitch = true;
 								}
@@ -1959,8 +1977,7 @@ namespace ArcGIS_SLD_Converter
 							{
 								if (objTempStruct.MultiFillLayers[i] is Analize_ArcMap_Symbols.StructLineFillSymbol)
 								{
-									Analize_ArcMap_Symbols.StructLineFillSymbol SLFS = new Analize_ArcMap_Symbols.StructLineFillSymbol();
-                                    SLFS = (Analize_ArcMap_Symbols.StructLineFillSymbol)objTempStruct.MultiFillLayers[i];
+                                    Analize_ArcMap_Symbols.StructLineFillSymbol SLFS = (Analize_ArcMap_Symbols.StructLineFillSymbol)objTempStruct.MultiFillLayers[i];
 									cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, SLFS);
 									bSwitch = true;
 								}
@@ -1977,29 +1994,36 @@ namespace ArcGIS_SLD_Converter
 					}
 					return cReturn;
 				}
-				return cReturn;
+                #endregion
+
+                return cReturn;
 			}
 			catch (Exception ex)
 			{
-				ErrorMsg("Konnte den Wert aus der SymbolStruct nicht auswerten.", ex.Message, ex.StackTrace, "GetValueFromSymbolstruct");
+				ErrorMsg("获取出错", ex.Message, ex.StackTrace, "GetValueFromSymbolstruct");
                 return cReturn;
 			}
 		}
+        /// <summary>
+        /// 获取标记值
+        /// </summary>
+        /// <param name="ValueNameOfValueYouWant"></param>
+        /// <param name="SymbolStructure"></param>
+        /// <returns></returns>
 		private string GetMarkerValue(string ValueNameOfValueYouWant, object SymbolStructure)
 		{
-			string cReturn = "";
+			string cReturn = "0";
 			string cColor = "";
 			string cOutlineColor = "";
-			bool bSwitch;
-			bSwitch = false; 
-			cReturn = "0"; 
+            bool bSwitch = false; 
 			try
 			{
-				if (SymbolStructure is Analize_ArcMap_Symbols.StructSimpleMarkerSymbol)
+                #region 简单标记符号
+                if (SymbolStructure is Analize_ArcMap_Symbols.StructSimpleMarkerSymbol)
 				{
-					Analize_ArcMap_Symbols.StructSimpleMarkerSymbol objTempStruct = new Analize_ArcMap_Symbols.StructSimpleMarkerSymbol();
-                    objTempStruct = (Analize_ArcMap_Symbols.StructSimpleMarkerSymbol)SymbolStructure;
-					if (ValueNameOfValueYouWant.ToUpper() == "WellKnownName".ToUpper())
+                    Analize_ArcMap_Symbols.StructSimpleMarkerSymbol objTempStruct = objTempStruct = (Analize_ArcMap_Symbols.StructSimpleMarkerSymbol)SymbolStructure;
+                    #region WellKnownName
+                    if (ValueNameOfValueYouWant.ToUpper() == "WellKnownName".ToUpper())
 					{
 						switch (objTempStruct.Style)
 						{
@@ -2023,7 +2047,8 @@ namespace ArcGIS_SLD_Converter
 								break;
 						}
 					}
-					else if (ValueNameOfValueYouWant.ToUpper() == "PointColor".ToUpper())
+                    #endregion 
+                    else if (ValueNameOfValueYouWant.ToUpper() == "PointColor".ToUpper())
 					{
 						if (objTempStruct.Filled)
 						{
@@ -2044,14 +2069,8 @@ namespace ArcGIS_SLD_Converter
 					}
 					else if (ValueNameOfValueYouWant.ToUpper() == "PointOutlineColor".ToUpper())
 					{
-						if (objTempStruct.Outline)
-						{
-							cReturn = objTempStruct.OutlineColor;
-						}
-						else
-						{
-							cReturn = "";
-						}
+						if (objTempStruct.Outline){cReturn = objTempStruct.OutlineColor;}
+						else{cReturn = "";}
 					}
 					else if (ValueNameOfValueYouWant.ToUpper() == "PointOutlineSize".ToUpper())
 					{
@@ -2059,13 +2078,15 @@ namespace ArcGIS_SLD_Converter
 					}
 					return cReturn;
 				}
-				else if (SymbolStructure is Analize_ArcMap_Symbols.StructCharacterMarkerSymbol)
+                #endregion
+
+                #region 字符集标记符号
+                else if (SymbolStructure is Analize_ArcMap_Symbols.StructCharacterMarkerSymbol)
 				{
-					Analize_ArcMap_Symbols.StructCharacterMarkerSymbol objTempStruct = new Analize_ArcMap_Symbols.StructCharacterMarkerSymbol();
-                    objTempStruct = (Analize_ArcMap_Symbols.StructCharacterMarkerSymbol)SymbolStructure;
+                    Analize_ArcMap_Symbols.StructCharacterMarkerSymbol objTempStruct = (Analize_ArcMap_Symbols.StructCharacterMarkerSymbol)SymbolStructure;
 					if (ValueNameOfValueYouWant.ToUpper() == "WellKnownName".ToUpper())
 					{
-						cReturn = "circle"; //Default
+						cReturn = "circle";
 						switch (objTempStruct.Font.ToUpper())
 						{
 							case "ESRI DEFAULT MARKER":
@@ -2134,8 +2155,8 @@ namespace ArcGIS_SLD_Converter
 					}
 					else if ((ValueNameOfValueYouWant.ToUpper() == "PointColor".ToUpper()) || (ValueNameOfValueYouWant.ToUpper() == "PointOutlineColor".ToUpper()))
 					{
-						cColor = objTempStruct.Color; //Default
-						cOutlineColor = ""; //Default
+						cColor = objTempStruct.Color; 
+						cOutlineColor = ""; 
 						switch (objTempStruct.Font.ToUpper())
 						{
 							case "ESRI DEFAULT MARKER":
@@ -2216,13 +2237,15 @@ namespace ArcGIS_SLD_Converter
 					}
 					return cReturn;
 				}
-				else if (SymbolStructure is Analize_ArcMap_Symbols.StructPictureMarkerSymbol)
+                #endregion
+
+                #region 图片标记符号
+                else if (SymbolStructure is Analize_ArcMap_Symbols.StructPictureMarkerSymbol)
 				{
-					Analize_ArcMap_Symbols.StructPictureMarkerSymbol objTempStruct = new Analize_ArcMap_Symbols.StructPictureMarkerSymbol();
-                    objTempStruct = (Analize_ArcMap_Symbols.StructPictureMarkerSymbol)SymbolStructure;
+                    Analize_ArcMap_Symbols.StructPictureMarkerSymbol objTempStruct = (Analize_ArcMap_Symbols.StructPictureMarkerSymbol)SymbolStructure;
 					if (ValueNameOfValueYouWant.ToUpper() == "WellKnownName".ToUpper())
 					{
-						cReturn = "circle"; //TODO
+						cReturn = "circle"; 
 					}
 					else if (ValueNameOfValueYouWant.ToUpper() == "PointColor".ToUpper())
 					{
@@ -2238,15 +2261,18 @@ namespace ArcGIS_SLD_Converter
 					}
 					else if (ValueNameOfValueYouWant.ToUpper() == "PointOutlineColor".ToUpper())
 					{
-						cReturn = ""; //TODO
+						cReturn = ""; 
 					}
 					else if (ValueNameOfValueYouWant.ToUpper() == "PointOutlineSize".ToUpper())
 					{
-						cReturn = "0"; //TODO
+						cReturn = "0"; 
 					}
 					return cReturn;
 				}
-				else if (SymbolStructure is Analize_ArcMap_Symbols.StructArrowMarkerSymbol)
+                #endregion
+
+                #region 箭头标记符号
+                else if (SymbolStructure is Analize_ArcMap_Symbols.StructArrowMarkerSymbol)
 				{
 					Analize_ArcMap_Symbols.StructArrowMarkerSymbol objTempStruct = new Analize_ArcMap_Symbols.StructArrowMarkerSymbol();
                     objTempStruct = (Analize_ArcMap_Symbols.StructArrowMarkerSymbol)SymbolStructure;
@@ -2268,24 +2294,30 @@ namespace ArcGIS_SLD_Converter
 					}
 					else if (ValueNameOfValueYouWant.ToUpper() == "PointOutlineColor".ToUpper())
 					{
-						cReturn = ""; //Never an outline
+						cReturn = ""; 
 					}
 					else if (ValueNameOfValueYouWant.ToUpper() == "PointOutlineSize".ToUpper())
 					{
-						cReturn = "0"; //Never an outline
+						cReturn = "0";
 					}
 					return cReturn;
 				}
-			}
-			catch (Exception ex)
+                #endregion
+            }
+            catch (Exception ex)
 			{
-				ErrorMsg("Konnte den Wert aus der SymbolStruct nicht auswerten.", ex.Message, ex.StackTrace, "GetValueFromSymbolstruct");
+				ErrorMsg("获取点符号信息失败", ex.Message, ex.StackTrace, "GetValueFromSymbolstruct");
 			}
 			return cReturn;
 		}
 #endregion
 		
-#region Hilfsfunktionen
+#region 
+        /// <summary>
+        /// 数值中去掉逗号
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
 		private string CommaToPoint(double value)
 		{
 			string cReturn = "";
@@ -2323,11 +2355,11 @@ namespace ArcGIS_SLD_Converter
         /// 关闭程序
         /// </summary>
         /// <returns></returns>
-		public object MyTermination()
+		public void MyTermination()
 		{
 			ProjectData.EndApp();
 			m_objData.MyTermination();
-			return null;
+			
 		}
 #endregion
 	}

@@ -53,7 +53,7 @@ namespace ArcGIS_SLD_Converter
         /// <summary>
         /// 节点级别
         /// </summary>
-		private short m_iLevelCount; 
+		private int m_iLevelCount; 
         /// <summary>
         /// 当前活动节点
         /// </summary>
@@ -136,7 +136,7 @@ namespace ArcGIS_SLD_Converter
 			ReadLUT();
 			m_enDocMode = XMLState.xmlDocClosed;
 			m_objDoc = new XmlDocument();
-			m_iLevelCount = (short) 0;
+			m_iLevelCount = 0;
 			if (!string.IsNullOrEmpty(m_cXMLFilename))
 			{
 				OpenDoc();
@@ -191,44 +191,40 @@ namespace ArcGIS_SLD_Converter
 
 		
 #region 读写函数
+        /// <summary>
+        /// 创建导航节点
+        /// </summary>
+        /// <param name="AliasTagName"></param>
+        /// <returns></returns>
 		public bool NavigateElement(string AliasTagName)
 		{
-			XPathNavigator objNav = default(XPathNavigator); //Das Navigatorobjekt, mit dem im Dokument navigiert wird
-			StringCollection objXPathColl = default(StringCollection); //Die XPath-Ausdr點ke, die den ogc-Tag repr鋝entieren welcher durch den AliasTagName benannt wird
+			XPathNavigator objNav = default(XPathNavigator); 
+			StringCollection objXPathColl = default(StringCollection); 
 			XmlNodeList objNodelist = default(XmlNodeList);
 			XmlNode objEvalNode = default(XmlNode);
 			XmlNode objTempNode = default(XmlNode);
 			XmlNode objTempNode2 = default(XmlNode);
-			short i = 0;
-			short j;
-			short iInsurance = 0;
-			iInsurance = (short) 0;
-			i = (short) 0;
-			bool bSwitch; //Der Flag steuert die do while und wird dann true, wenn der knoten, der mit dem XPath-Ausdruck 黚ereinstimmt gefunden wurde
-			bSwitch = false;
-			
-			try
+			int  iInsurance = 0;
+			bool bSwitch = false;
+            try
 			{
 				if (m_objXPathDict.ContainsKey(AliasTagName))
 				{
                     objXPathColl = (StringCollection)m_objXPathDict[AliasTagName];
-					objTempNode = m_objActiveNode; //Aktiver Knoten
+					objTempNode = m_objActiveNode; 
 					objNav = objTempNode.CreateNavigator();
-					while (!(bSwitch == true))
+					while (!bSwitch)
 					{
-						//Wenn mehr als 1 Knoten auf der Ebene gibt, m黶sen alle Knoten getestet werden
 						if (objTempNode.ParentNode.ChildNodes.Count > 1)
 						{
 							objTempNode2 = objTempNode;
-							//Die Do-until Schleife testet alle Geschwisterknoten des gerade aktiven Knotens
 							while (!(objTempNode == null))
 							{
-								for (i = 0; i <= objXPathColl.Count - 1; i++) //L鋟ft solange es XPathausdr點ke zum auswerten gibt
+								for (int i = 0; i <= objXPathColl.Count - 1; i++) 
 								{
-									objNodelist = m_objActiveNode.SelectNodes(objXPathColl[i], m_objNSManager); //alle in Frage kommenden Knoten
-									objEvalNode = objNodelist[objNodelist.Count - 1]; //Es muss immer zum letzten Knoten gegangen werden, da die Datei seriell geschrieben wird
-									//Wenn die Bedingung erf黮lt ist, wird der objTempNode (der ja der richtige Knoten ist) zum aktiven Knoten
-									if ((objEvalNode == objTempNode) == true)
+									objNodelist = m_objActiveNode.SelectNodes(objXPathColl[i], m_objNSManager); 
+									objEvalNode = objNodelist[objNodelist.Count - 1];
+									if (objEvalNode == objTempNode)
 									{
 										m_objActiveNode = objTempNode;
 										bSwitch = true;
@@ -239,14 +235,13 @@ namespace ArcGIS_SLD_Converter
 							}
 							objTempNode = objTempNode2;
 						}
-						else //Wenn es nur einen Knoten auf der Ebene gibt
+						else 
 						{
-							for (i = 0; i <= objXPathColl.Count - 1; i++) //L鋟ft solange es XPathausdr點ke zum auswerten gibt
+							for (int i = 0; i <= objXPathColl.Count - 1; i++) 
 							{
-								objNodelist = m_objActiveNode.SelectNodes(objXPathColl[i], m_objNSManager); //alle in Frage kommenden Knoten
-								objEvalNode = objNodelist[objNodelist.Count - 1]; //Es muss immer zum letzten Knoten gegangen werden, da die Datei seriell geschrieben wird
-								//Wenn die Bedingung erf黮lt ist, wird der objTempNode (der ja der richtige Knoten ist) zum aktiven Knoten
-								if ((objEvalNode == objTempNode) == true)
+								objNodelist = m_objActiveNode.SelectNodes(objXPathColl[i], m_objNSManager); 
+								objEvalNode = objNodelist[objNodelist.Count - 1];
+								if (objEvalNode == objTempNode)
 								{
 									m_objActiveNode = objTempNode;
 									bSwitch = true;
@@ -254,34 +249,36 @@ namespace ArcGIS_SLD_Converter
 								}
 							}
 						}
-						
-						//Wenn alle XPathausdr點ke nicht zutrafen, wird zum Elternknoten navigiert
-						if (!(objNav.Matches("/"))) //Hier die Navigation r點kw鋜ts im Tree
+						if (!(objNav.Matches("/"))) 
 						{
 							objNav.MoveToParent();
 							objTempNode = objTempNode.ParentNode;
 						}
-						//Dient lediglich zur Sicherheit, da die do while ewig laufen kann, wenn Bedingung nicht erf黮lt ist
 						iInsurance++;
-						if (iInsurance > 100) //Keiner nimmt 100 passende XPath-Ausdr點ke in die LUT auf!
+						if (iInsurance > 100) 
 						{
-							throw (new Exception("Kein g黮tiger XPathausdruck f黵 \'" + AliasTagName + "\' gefunden - Sicherheitsabbruch"));
+							throw (new Exception(AliasTagName + "节点数过多"));
 						}
 					}
 				}
 				else
 				{
-					throw (new Exception("Die Datei " + m_sLUTFile + " enth鋖t den Tag-Alias \'" + AliasTagName + "\' nicht."));
+					throw (new Exception( m_sLUTFile + " " + AliasTagName));
 				}
 				return true;
 			}
 			catch (Exception ex)
 			{
-				ErrorMsg("Der XPath-Ausdruck \'" + AliasTagName + "\' in der LUT-Datei stimmt nicht; oder Navigieren nicht m鰃lich.", ex.Message, ex.StackTrace, "NavigateElement");
+				ErrorMsg(AliasTagName , ex.Message, ex.StackTrace, "NavigateElement");
 				return false;
 			}
 		}
-		public bool CreateElement(string AliasTagName)
+        /// <summary>
+        ///  创建指定元素
+        /// </summary>
+        /// <param name="AliasTagName"></param>
+        /// <returns></returns>
+        public bool CreateElement(string AliasTagName)
 		{
 			XmlElement objNode = default(XmlElement);
 			string cNamespacePrefix = "";
@@ -294,17 +291,22 @@ namespace ArcGIS_SLD_Converter
 					cNamespaceURL = GetNamespaceURL(cNamespacePrefix);
 					objNode = m_objDoc.CreateElement(cNamespacePrefix, GetOGCName(AliasTagName), cNamespaceURL);
 					m_objActiveNode.AppendChild(objNode);
-					m_objActiveNode = objNode; //Der gerade gemachte Knoten wird aktiv gesetzt
+					m_objActiveNode = objNode; 
 					return true;
 				}
 			}
 			catch (Exception ex)
 			{
-				ErrorMsg("Konnte Elementknoten nicht erstellen.", ex.Message, ex.StackTrace, "CreateElement");
+				ErrorMsg("创建XML元素出错", ex.Message, ex.StackTrace, "CreateElement");
 				return false;
 			}
-			return default(bool);
+			return false;
 		}
+        /// <summary>
+        /// 设置XML要素内容
+        /// </summary>
+        /// <param name="InnerText"></param>
+        /// <returns></returns>
 		public bool SetElementText(string InnerText)
 		{
 			try
@@ -314,10 +316,15 @@ namespace ArcGIS_SLD_Converter
 			}
 			catch (Exception ex)
 			{
-				ErrorMsg("Konnte Elementtext nicht schreiben.", ex.Message, ex.StackTrace, "SetElementText");
+				ErrorMsg("设置XML要素内容出错", ex.Message, ex.StackTrace, "SetElementText");
 				return false;
 			}
 		}
+        /// <summary>
+        /// 创建指定属性
+        /// </summary>
+        /// <param name="AttributeName"></param>
+        /// <returns></returns>
 		public bool CreateAttribute(string AttributeName)
 		{
 			XmlAttribute objXmlAttribute = default(XmlAttribute);
@@ -325,15 +332,20 @@ namespace ArcGIS_SLD_Converter
 			{
 				objXmlAttribute = m_objDoc.CreateAttribute(AttributeName);
 				m_objActiveNode.Attributes.Append(objXmlAttribute);
-				m_objActiveAttribute = objXmlAttribute; //Das gerade gemachte Attribut wird aktiv gesetzt
+				m_objActiveAttribute = objXmlAttribute; 
 				return true;
 			}
 			catch (Exception ex)
 			{
-				ErrorMsg("Konnte Attribut nicht erstellen", ex.Message, ex.StackTrace, "CreateAttribute");
+				ErrorMsg("创建指定属性出错", ex.Message, ex.StackTrace, "CreateAttribute");
 				return false;
 			}
 		}
+        /// <summary>
+        /// 设置属性值
+        /// </summary>
+        /// <param name="AttributeValue"></param>
+        /// <returns></returns>
 		public bool SetAttributeValue(string AttributeValue)
 		{
 			try
@@ -343,17 +355,20 @@ namespace ArcGIS_SLD_Converter
 			}
 			catch (Exception ex)
 			{
-				ErrorMsg("Konnte Attribut nicht erstellen", ex.Message, ex.StackTrace, "SetAttributeValue");
+				ErrorMsg("设置属性值出错", ex.Message, ex.StackTrace, "SetAttributeValue");
 				return false;
 			}
 		}
-		private short ParseDoc_iLevelCount = 0;
+		/// <summary>
+        /// 复制XML文档
+        /// </summary>
+        /// <param name="CurrentNode"></param>
+        /// <returns></returns>
 		public bool ParseDoc(XmlElement CurrentNode)
 		{
-			XmlElement objNode = default(XmlElement); //Der jeweilige Kindknoten
-			// static short iLevelCount = 0; VBConversions Note: Static variable moved to class level and renamed ParseDoc_iLevelCount. Local static variables are not supported in C#. //Durch die Deklaration als static vergisst die Variable ihren Wert nicht bei Verlassen der Funktion
-			ParseDoc_iLevelCount++; //Anzahl der Levels im XML-Dok ab dem CurrentNode
-			
+             int  ParseDoc_iLevelCount = 0;
+			XmlElement objNode = default(XmlElement); 
+			ParseDoc_iLevelCount++;
 			try
 			{
 				if (m_enDocMode == XMLState.xmlDocOpen)
@@ -365,9 +380,9 @@ namespace ArcGIS_SLD_Converter
 						{
 							if (objNode.HasChildNodes)
 							{
-								if (objNode.FirstChild is XmlElement) //Auch InnerText oder Attribute ist ein ChildNode
+								if (objNode.FirstChild is XmlElement) 
 								{
-									ParseDoc(objNode); //Rekursion
+									ParseDoc(objNode);
 								}
 							}
                             objNode = objNode.NextSibling as XmlElement;
@@ -376,37 +391,41 @@ namespace ArcGIS_SLD_Converter
 				}
 				else
 				{
-					MessageBox.Show("Das Dokument ist noch nicht ge鰂fnet");
+					MessageBox.Show("不能复制XML文档");
 					return default(bool);
 				}
 				m_iLevelCount = ParseDoc_iLevelCount;
-				ParseDoc_iLevelCount = (short) 0;
 				return true;
 			}
 			catch (Exception ex)
 			{
-				ErrorMsg("Das Dokument ist unbrauchbar", ex.Message, ex.StackTrace, "ParseDoc");
+				ErrorMsg("复制XML文档出错", ex.Message, ex.StackTrace, "ParseDoc");
                 return false;
 			}
 		}
+        /// <summary>
+        /// 新建一个XML文档
+        /// </summary>
+        /// <param name="OverWrite">是否重写</param>
+        /// <param name="blnIncludeLayerNames">是否包含图层名称</param>
+        /// <returns></returns>
 		public bool CreateNewFile(bool OverWrite, bool blnIncludeLayerNames)
 		{
 			XmlDeclaration objDeclare = default(XmlDeclaration);
-			short i = 0;
-			short j = 0;
 			string cNamePre = "";
 			
 			try
 			{
-				if (File.Exists(m_cXMLFilename) == true)
+				if (File.Exists(m_cXMLFilename))
 				{
 					if (OverWrite == false)
 					{
-						throw (new Exception("Fehler beim Anlegen der XML-Datei (Datei besteht bereits)"));
+						throw (new Exception("当前XML文件已存在"));
 						return false;
 					}
 					File.Delete(m_cXMLFilename);
 				}
+
 				cNamePre = GetNamespacePrefix(m_sRootNodeName);
 				
 				m_objDoc = new XmlDocument();
@@ -416,30 +435,30 @@ namespace ArcGIS_SLD_Converter
 				
 				if (blnIncludeLayerNames)
 				{
-					//' ARIS: standard SLD
+					//标准SLD文件
 					CreateAttribute("version");
 					SetAttributeValue(m_cSLDVersion);
 				}
 				else
 				{
-					//' ARIS: WorldMap SLD
+					//世界地图SLD
 					CreateAttribute("xmlns");
 					SetAttributeValue(m_SLDXmlns);
 				}
-				//Hier werden die Namespaces geschrieben
-				for (i = 0; i <= m_objNamespaceURL.Count - 1; i++)
+				//写入XML命名空间
+				for (int i = 0; i <= m_objNamespaceURL.Count - 1; i++)
 				{
 					CreateAttribute("xmlns" + ":" + m_objNamespaceURL.get_GetString1ByIndex(i));
 					SetAttributeValue(m_objNamespaceURL.get_GetString2ByIndex(i));
 				}
 				
-				objDeclare = m_objDoc.CreateXmlDeclaration(m_cXMLVersion, m_cXMLEncoding, "yes"); //Version muss z.Zt. 1.0 sein!
+				objDeclare = m_objDoc.CreateXmlDeclaration(m_cXMLVersion, m_cXMLEncoding, "yes"); //XML版本和XML编码规则
 				m_objDoc.InsertBefore(objDeclare, m_objRoot);
-				SaveDoc(); //Speichert das aktuelle Dokument mit dem aktuellen Dateinamen
+				SaveDoc(); //保存新建的文档
 				m_enDocMode = XMLState.xmlDocOpen;
-				//Der Namespacemanager, der n鰐ig ist, f黵 die XPath-Navigation mit Namespacepr鋐ixen
+				//XML命名空间管理器
 				m_objNSManager = new XmlNamespaceManager(m_objDoc.NameTable);
-				for (j = 0; j <= m_objNamespaceURL.Count - 1; j++)
+				for (int j = 0; j <= m_objNamespaceURL.Count - 1; j++)
 				{
 					m_objNSManager.AddNamespace(m_objNamespaceURL.get_GetString1ByIndex(j), m_objNamespaceURL.get_GetString2ByIndex(j));
 				}
@@ -447,7 +466,7 @@ namespace ArcGIS_SLD_Converter
 			}
 			catch (Exception ex)
 			{
-				ErrorMsg("Fehler beim Anlegen der XML-Datei (" + ex.Message.ToString() + ")", ex.Message, ex.StackTrace, "CreateNewFile");
+				ErrorMsg("新建XML文档失败 (" + ex.Message.ToString() + ")", ex.Message, ex.StackTrace, "CreateNewFile");
 				return false;
 			}
 		}
@@ -476,7 +495,8 @@ namespace ArcGIS_SLD_Converter
 			
 			try
 			{
-				cFilename = AppDomain.CurrentDomain.BaseDirectory + m_sLUTFile;
+                string tempStr = System.IO.Path.GetDirectoryName(GetType().Assembly.Location);
+                cFilename = tempStr +"\\"+ m_sLUTFile;
 				if (File.Exists(cFilename))
 				{
 					objLUTDoc = new XmlDocument();
@@ -550,12 +570,12 @@ namespace ArcGIS_SLD_Converter
 			}
 			catch (FileNotFoundException ex)
 			{
-				ErrorMsg("Die Datei " + m_sLUTFile + " muss im Anwendungsverzeichnis stehen. Bitte kopieren SIe die Datei an diese Stelle und starten Sie die Anwendung erneut.", ex.Message, ex.StackTrace, "ReadLUT");
+				ErrorMsg(m_sLUTFile, ex.Message, ex.StackTrace, "ReadLUT");
                 return false;
 			}
 			catch (Exception ex)
 			{
-				ErrorMsg("Fehler beim 鰂fnen der Konfigurationsdatei", ex.Message, ex.StackTrace, "ReadLUT");
+				ErrorMsg("读取SLD配置信息出错", ex.Message, ex.StackTrace, "ReadLUT");
                 return false;
 			}
 		}
@@ -575,16 +595,16 @@ namespace ArcGIS_SLD_Converter
 				}
 				else
 				{
-					throw (new Exception("Der Tag " + Value + " ist noch nicht in die LUT-Datei aufgenommen"));
-					return "ERROR:" + Value;
+					throw (new Exception(Value + "不存在"));
+					return cRightTag;
 				}
 				return cRightTag;
 			}
 			catch (Exception ex)
 			{
-				ErrorMsg("Fehler beim Beziehen der OGC-Tagnames", ex.Message, ex.StackTrace, "GetOGCName");
+				ErrorMsg("获取OGC名称出错", ex.Message, ex.StackTrace, "GetOGCName");
 			}
-			return "";
+			return cRightTag;
 		}
         /// <summary>
         /// 获取XML命名空间前缀
@@ -602,17 +622,17 @@ namespace ArcGIS_SLD_Converter
 				}
 				else
 				{
-					return "ERROR:" + Value;
+					return cRightTag;
 				}
 				return cRightTag;
 			}
 			catch (Exception ex)
 			{
-				ErrorMsg("Fehler beim Beziehen der Namensraumk黵zel", ex.Message, ex.StackTrace, "GetNamespacePrefix");
+				ErrorMsg("获取XML命名空间出错", ex.Message, ex.StackTrace, "GetNamespacePrefix");
 			}
 			
-			return "";
-		}
+			return cRightTag;
+        }
         /// <summary>
         /// 获取命名空间URL
         /// </summary>
@@ -621,16 +641,15 @@ namespace ArcGIS_SLD_Converter
 		private string GetNamespaceURL(object Value)
 		{
 			string cRightTag = "";
-			
 			try
 			{
-				if (m_objNamespaceURL.get_ContainsString1(System.Convert.ToString(Value)) == true)
+				if (m_objNamespaceURL.get_ContainsString1(System.Convert.ToString(Value)))
 				{
 					cRightTag = m_objNamespaceURL.get_GetString2ForString1(System.Convert.ToString(Value));
 				}
 				else
 				{
-					return "ERROR:" + System.Convert.ToString(Value);
+					return cRightTag;
 				}
 				return cRightTag;
 			}
@@ -650,7 +669,7 @@ namespace ArcGIS_SLD_Converter
         /// <returns></returns>
 		private object ErrorMsg(string message, string exMessage, string stack, string functionname)
 		{
-			MessageBox.Show(message + "." + "\r\n" + exMessage + "\r\n" + stack, "ArcGIS_SLD_Converter | XMLHandle | " + functionname, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			MessageBox.Show(message + "." + "\r\n" + exMessage + "\r\n" + stack, functionname, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			MyTermination();
 			return null;
 		}
@@ -676,7 +695,7 @@ namespace ArcGIS_SLD_Converter
         /// <returns></returns>
 		private void MyTermination()
 		{
-			ProjectData.EndApp();
+			//ProjectData.EndApp();
 		}
 #endregion
 	}

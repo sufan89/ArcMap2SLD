@@ -18,12 +18,13 @@
     <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
     <DefaultTargetSchema>IE50</DefaultTargetSchema>
     <DelaySign>false</DelaySign>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Library</OutputType>
     <OptionCompare>Binary</OptionCompare>
     <OptionExplicit>On</OptionExplicit>
     <OptionStrict>Off</OptionStrict>
     <RootNamespace>ArcGIS_SLD_Converter</RootNamespace>
-    <StartupObject>ArcGIS_SLD_Converter.Motherform</StartupObject>
+    <StartupObject>
+    </StartupObject>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <MyType>WindowsFormsWithCustomSubMain</MyType>
@@ -31,6 +32,8 @@
     </UpgradeBackupLocation>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <OldToolsVersion>2.0</OldToolsVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <TargetFrameworkProfile />
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -43,10 +46,8 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>bin\</OutputPath>
@@ -127,6 +128,9 @@
     <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ESRI.ArcGIS.ADF.Local, Version=10.3.0.0, Culture=neutral, PublicKeyToken=8fc3cc631e44ad86, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="mscorlib" />
     <Reference Include="ESRI.ArcGIS.ArcMapUI">
@@ -222,15 +226,17 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AboutFrame.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Analize_ArcMap_Symbols.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="AnnotationClass\Annotation.cs" />
+    <Compile Include="ArcGISClass\Command\ptCmdSymbolToSLD.cs" />
+    <Compile Include="ArcGISClass\ptToolBar.cs" />
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="CommClass\ProjectClass.cs" />
+    <Compile Include="CommClass\ptLayer.cs" />
     <Compile Include="CommonXMLHandle.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -240,9 +246,12 @@
     <Compile Include="Output_SLD.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="RenderClass\ptRender.cs" />
     <Compile Include="Store2Fields.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="SymbolClass\AnnotationClass.cs" />
+    <Compile Include="SymbolClass\ptSymbolClass.cs" />
     <Compile Include="ValidateSLD.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -252,6 +261,7 @@
     <Compile Include="XMLHandle.cs">
       <SubType>Code</SubType>
     </Compile>
+    <EmbeddedResource Include="ArcGISClass\Command\ptCmdSymbolToSLD.bmp" />
     <Content Include="TempXmlDoc\LUT_sld_mapping_file.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -261,10 +271,6 @@
     <Content Include="TempXmlDoc\Preconfigure_Converter.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <EmbeddedResource Include="AboutFrame.resx">
-      <DependentUpon>AboutFrame.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Motherform.resx">
       <DependentUpon>Motherform.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -275,6 +281,7 @@
     <Content Include="ArcMap2SLDConverter.ico" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="ArcGISClass\Tool\" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
