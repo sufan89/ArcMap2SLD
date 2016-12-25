@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ESRI.ArcGIS.Carto;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -38,6 +39,24 @@ namespace ArcGIS_SLD_Converter
         public string m_LayerName
         {
             get; set;
+        }
+        /// <summary>
+        /// 根据图层初始化基本信息
+        /// </summary>
+        /// <param name="player"></param>
+        public void InitailGeneralInfo(ILayer player)
+        {
+            if (player == null) return;
+            try
+            {
+                m_LayerName = player.Name;
+                m_MaxScale = player.MaximumScale;
+                m_MinScale = player.MinimumScale;
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
     }
 }

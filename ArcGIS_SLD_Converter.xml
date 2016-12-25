@@ -9,14 +9,19 @@
             地图文档
             </summary>
         </member>
-        <member name="F:ArcGIS_SLD_Converter.Analize_ArcMap_Symbols.m_ObjApp">
-            <summary>
-            当前运行的ArcGISApp进程对象
-            </summary>
-        </member>
         <member name="F:ArcGIS_SLD_Converter.Analize_ArcMap_Symbols.m_ObjMap">
             <summary>
             当前运行的ArcMap程序中的地图对象
+            </summary>
+        </member>
+        <member name="F:ArcGIS_SLD_Converter.Analize_ArcMap_Symbols.frmMotherform">
+            <summary>
+            主窗体
+            </summary>
+        </member>
+        <member name="F:ArcGIS_SLD_Converter.Analize_ArcMap_Symbols.m_StrProject">
+            <summary>
+            工程对象
             </summary>
         </member>
         <member name="F:ArcGIS_SLD_Converter.Analize_ArcMap_Symbols.m_alClassifiedFields">
@@ -468,6 +473,46 @@
             Do not modify the contents of this method with the code editor.
             </summary>
         </member>
+        <member name="M:ArcGIS_SLD_Converter.CommStaticClass.GimmeStringForColor(ESRI.ArcGIS.Display.IColor)">
+            <summary>
+            获取颜色字符串
+            </summary>
+            <param name="color"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.CommStaticClass.CheckDigits(System.String)">
+            <summary>
+            16进制颜色补位
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.ptLayer.InitailGeneralInfo(ESRI.ArcGIS.Carto.ILayer)">
+            <summary>
+            根据图层初始化基本信息
+            </summary>
+            <param name="player"></param>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptLayer.m_LayerRender">
+            <summary>
+            渲染方式
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptLayer.m_MinScale">
+            <summary>
+            最小比例尺
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptLayer.m_MaxScale">
+            <summary>
+            最大比例尺
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptLayer.m_LayerName">
+            <summary>
+            图层名称
+            </summary>
+        </member>
         <member name="F:ArcGIS_SLD_Converter.CommonXMLHandle.bDocIsOpen">
             <summary>
             XML打开状态
@@ -573,6 +618,12 @@
             XML状态
             </summary>
         </member>
+        <member name="M:ArcGIS_SLD_Converter.Motherform.#ctor(ESRI.ArcGIS.ArcMapUI.IMxDocument)">
+            <summary>
+            初始化函数
+            </summary>
+            <param name="mainDocument"></param>
+        </member>
         <member name="M:ArcGIS_SLD_Converter.Motherform.Dispose(System.Boolean)">
             <summary>
             Clean up any resources being used.
@@ -592,6 +643,11 @@
         <member name="F:ArcGIS_SLD_Converter.Motherform.m_bSeparateFiles">
             <summary>
             是否存储为一个SLD文件
+            </summary>
+        </member>
+        <member name="F:ArcGIS_SLD_Converter.Motherform.m_bIncludeLayerNames">
+            <summary>
+            是否包含图层名称
             </summary>
         </member>
         <member name="M:ArcGIS_SLD_Converter.Motherform.GetFileInfo(System.String,ArcGIS_SLD_Converter.Motherform.Fileinfo)">
@@ -934,15 +990,93 @@
             渲染方式
             </summary>
         </member>
-        <member name="T:ArcGIS_SLD_Converter.UniqueValueRendererClass">
+        <member name="M:ArcGIS_SLD_Converter.ptRender.InitialSymbol">
+            <summary>
+            初始化符号信息
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptRender.m_FeatureClass">
+            <summary>
+            渲染的要素类
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptRender.m_LayerName">
+            <summary>
+            渲染图层名称
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptRender.m_DatasetName">
+            <summary>
+            数据集名称
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptRender.AnnotationClass">
+            <summary>
+            标记
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptRender.SymbolList">
+            <summary>
+            符号列表
+            </summary>
+        </member>
+        <member name="T:ArcGIS_SLD_Converter.ptUniqueValueRendererClass">
             <summary>
             唯一值渲染
             </summary>
         </member>
-        <member name="T:ArcGIS_SLD_Converter.ClassBreaksRendererCalss">
+        <member name="M:ArcGIS_SLD_Converter.ptUniqueValueRendererClass.InitialSymbol">
+            <summary>
+            初始化符号信息
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptUniqueValueRendererClass.ValueCount">
+            <summary>
+            唯一值数量
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptUniqueValueRendererClass.FieldCount">
+            <summary>
+            字段数量
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptUniqueValueRendererClass.FieldNames">
+            <summary>
+            所有字段名称
+            </summary>
+        </member>
+        <member name="T:ArcGIS_SLD_Converter.ptClassBreaksRendererCalss">
             <summary>
             分类渲染
             </summary>
+        </member>
+        <member name="T:ArcGIS_SLD_Converter.ptSimpleRendererClass">
+            <summary>
+            简单渲染方式
+            </summary>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.ptRenderFactory.#ctor(ESRI.ArcGIS.Carto.IFeatureRenderer,ESRI.ArcGIS.Carto.ILayer)">
+            <summary>
+            渲染工厂
+            </summary>
+            <param name="pFeatureRender"></param>
+            <param name="pFeatureLayer"></param>
+        </member>
+        <member name="F:ArcGIS_SLD_Converter.ptRenderFactory.m_FeatureRender">
+            <summary>
+            要素渲染方式
+            </summary>
+        </member>
+        <member name="F:ArcGIS_SLD_Converter.ptRenderFactory.m_FeatureLayer">
+            <summary>
+            要素图层
+            </summary>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.ptRenderFactory.GetRenderLayer">
+            <summary>
+            渲染解析
+            </summary>
+            <returns></returns>
         </member>
         <member name="T:ArcGIS_SLD_Converter.Store2Fields">
             <summary>
@@ -997,85 +1131,657 @@
             获取数组1的元素个数
             </summary>
         </member>
-        <member name="T:ArcGIS_SLD_Converter.SimpleMarkerSymbolClass">
+        <member name="P:ArcGIS_SLD_Converter.AnnotationClass.IsSingleProperty">
+            <summary>
+            是否是单个属性
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.AnnotationClass.PropertyName">
+            <summary>
+            属性名称
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.AnnotationClass.TextSymbol">
+            <summary>
+            标注文本符号
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptSymbolClass.Label">
+            <summary>
+            标记
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptSymbolClass.Fieldvalues">
+            <summary>
+            字段值
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptSymbolClass.UpperLimit">
+            <summary>
+            最大限制
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptSymbolClass.LowerLimit">
+            <summary>
+            最小限制
+            </summary>
+        </member>
+        <member name="T:ArcGIS_SLD_Converter.TextSymbolClass">
+            <summary>
+            文本符号
+            </summary>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.TextSymbolClass.#ctor(ESRI.ArcGIS.Display.ISymbol)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="symbol"></param>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.TextSymbolClass.Angle">
+            <summary>
+            角度
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.TextSymbolClass.Color">
+            <summary>
+            颜色
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.TextSymbolClass.Font">
+            <summary>
+            字体
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.TextSymbolClass.Style">
+            <summary>
+            样式
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.TextSymbolClass.Weight">
+            <summary>
+            粗细
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.TextSymbolClass.HorizontalAlignment">
+            <summary>
+            水平对齐
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.TextSymbolClass.RightToLeft">
+            <summary>
+            是否对齐
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.TextSymbolClass.Size">
+             <summary>
+            大小 
+             </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.TextSymbolClass.Text">
+            <summary>
+            文本
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.TextSymbolClass.VerticalAlignment">
+            <summary>
+            垂直对齐
+            </summary>
+        </member>
+        <member name="T:ArcGIS_SLD_Converter.ptMarkerSymbolClass">
+            <summary>
+            点符号
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptMarkerSymbolClass.Angle">
+            <summary>
+            角度
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptMarkerSymbolClass.Color">
+            <summary>
+            颜色
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptMarkerSymbolClass.Size">
+            <summary>
+            大小
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptMarkerSymbolClass.XOffset">
+            <summary>
+            X偏移量
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptMarkerSymbolClass.YOffset">
+            <summary>
+            Y偏移量
+            </summary>
+        </member>
+        <member name="T:ArcGIS_SLD_Converter.ptSimpleMarkerSymbolClass">
             <summary>
             简单标记符号
             </summary>
         </member>
-        <member name="T:ArcGIS_SLD_Converter.CharacterMarkerSymbolClass">
+        <member name="F:ArcGIS_SLD_Converter.ptSimpleMarkerSymbolClass.OutlineColor">
+            <summary>
+            边框线颜色
+            </summary>
+        </member>
+        <member name="F:ArcGIS_SLD_Converter.ptSimpleMarkerSymbolClass.OutlineSize">
+            <summary>
+            边框线尺寸
+            </summary>
+        </member>
+        <member name="F:ArcGIS_SLD_Converter.ptSimpleMarkerSymbolClass.Style">
+            <summary>
+            样式
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptSimpleMarkerSymbolClass.Outline">
+            <summary>
+            是否有边框线
+            </summary>
+        </member>
+        <member name="T:ArcGIS_SLD_Converter.ptCharacterMarkerSymbolClass">
              <summary>
             字符标记符号
              </summary>
         </member>
-        <member name="T:ArcGIS_SLD_Converter.PictureMarkerSymbolClass">
+        <member name="P:ArcGIS_SLD_Converter.ptCharacterMarkerSymbolClass.CharacterIndex">
+            <summary>
+            字符集索引
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptCharacterMarkerSymbolClass.Font">
+            <summary>
+            字体名称
+            </summary>
+        </member>
+        <member name="T:ArcGIS_SLD_Converter.ptPictureMarkerSymbolClass">
             <summary>
             图片标记符号
             </summary>
         </member>
-        <member name="T:ArcGIS_SLD_Converter.ArrowMarkerSymbolClass">
+        <member name="P:ArcGIS_SLD_Converter.ptPictureMarkerSymbolClass.BackgroundColor">
+            <summary>
+            背景颜色
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptPictureMarkerSymbolClass.Picture">
+            <summary>
+            图片对象
+            </summary>
+        </member>
+        <member name="T:ArcGIS_SLD_Converter.ptArrowMarkerSymbolClass">
             <summary>
             箭头标记符号
             </summary>
         </member>
-        <member name="T:ArcGIS_SLD_Converter.SimpleLineSymbolClass">
+        <member name="P:ArcGIS_SLD_Converter.ptArrowMarkerSymbolClass.Style">
+            <summary>
+            样式
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptArrowMarkerSymbolClass.Width">
+            <summary>
+            宽度
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptArrowMarkerSymbolClass.Length">
+            <summary>
+            长度
+            </summary>
+        </member>
+        <member name="T:ArcGIS_SLD_Converter.ptLineSymbolClass">
+            <summary>
+            线符号
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptLineSymbolClass.Color">
+            <summary>
+            颜色
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptLineSymbolClass.Transparency">
+            <summary>
+            透明度
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptLineSymbolClass.Width">
+            <summary>
+            宽度
+            </summary>
+        </member>
+        <member name="T:ArcGIS_SLD_Converter.ptSimpleLineSymbolClass">
             <summary>
             简单线符号
             </summary>
         </member>
-        <member name="T:ArcGIS_SLD_Converter.CartographicLineSymbol">
+        <member name="P:ArcGIS_SLD_Converter.ptSimpleLineSymbolClass.publicStyle">
             <summary>
-            
+            样式类型
             </summary>
         </member>
-        <member name="T:ArcGIS_SLD_Converter.HashLineSymbolClass">
+        <member name="T:ArcGIS_SLD_Converter.ptCartographicLineSymbol">
             <summary>
-            
+            制图线符号
             </summary>
         </member>
-        <member name="T:ArcGIS_SLD_Converter.PictureLineSymbolClass">
+        <member name="M:ArcGIS_SLD_Converter.ptCartographicLineSymbol.#ctor(ESRI.ArcGIS.Display.ISymbol)">
+            <summary>
+            制图线符号
+            </summary>
+            <param name="pSymbol"></param>
+        </member>
+        <member name="T:ArcGIS_SLD_Converter.ptHashLineSymbolClass">
+            <summary>
+            混列线符号
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptHashLineSymbolClass.Angle">
+            <summary>
+            角度
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptHashLineSymbolClass.HashSymbol">
+            <summary>
+            混列线符号
+            </summary>
+        </member>
+        <member name="T:ArcGIS_SLD_Converter.ptMarkerLineSymbolClass">
+            <summary>
+            标记线符号
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptMarkerLineSymbolClass.MarkSymbol">
+            <summary>
+            标记符号
+            </summary>
+        </member>
+        <member name="T:ArcGIS_SLD_Converter.ptPictureLineSymbolClass">
             <summary>
             图片线符号
             </summary>
         </member>
-        <member name="T:ArcGIS_SLD_Converter.SimpleFillSymbolClass">
+        <member name="P:ArcGIS_SLD_Converter.ptPictureLineSymbolClass.BackgroundColor">
+            <summary>
+            背景颜色
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptPictureLineSymbolClass.BackgroundTransparency">
+            <summary>
+            背景透明度
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptPictureLineSymbolClass.Picture">
+            <summary>
+            图片
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptPictureLineSymbolClass.Rotate">
+            <summary>
+            是否旋转
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptPictureLineSymbolClass.XScale">
+            <summary>
+            X比例
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptPictureLineSymbolClass.YScale">
+            <summary>
+            Y比例
+            </summary>
+        </member>
+        <member name="T:ArcGIS_SLD_Converter.ptFillSymbolClass">
+            <summary>
+            面符号
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptFillSymbolClass.Color">
+            <summary>
+            颜色
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptFillSymbolClass.Transparency">
+            <summary>
+            透明度
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptFillSymbolClass.OutlineSymbol">
+            <summary>
+            轮廓符号
+            </summary>
+        </member>
+        <member name="T:ArcGIS_SLD_Converter.ptSimpleFillSymbolClass">
             <summary>
             简单填充符号
             </summary>
         </member>
-        <member name="T:ArcGIS_SLD_Converter.MarkerFillSymbolClass">
+        <member name="P:ArcGIS_SLD_Converter.ptSimpleFillSymbolClass.Style">
+            <summary>
+            样式
+            </summary>
+        </member>
+        <member name="T:ArcGIS_SLD_Converter.ptMarkerFillSymbolClass">
             <summary>
             标记填充符号
             </summary>
         </member>
-        <member name="T:ArcGIS_SLD_Converter.LineFillSymbolClass">
+        <member name="P:ArcGIS_SLD_Converter.ptMarkerFillSymbolClass.GridAngle">
+            <summary>
+            网格角度
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptMarkerFillSymbolClass.MarkerSymbol">
+            <summary>
+            标记符号
+            </summary>
+        </member>
+        <member name="T:ArcGIS_SLD_Converter.ptLineFillSymbolClass">
             <summary>
             线填充符号
             </summary>
         </member>
-        <member name="T:ArcGIS_SLD_Converter.PictureFillSymbolClass">
+        <member name="P:ArcGIS_SLD_Converter.ptLineFillSymbolClass.Angle">
+            <summary>
+            角度
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptLineFillSymbolClass.Offset">
+            <summary>
+            偏移
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptLineFillSymbolClass.Separation">
+            <summary>
+            间隔
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptLineFillSymbolClass.LineSymbol">
+            <summary>
+            填充线符号
+            </summary>
+        </member>
+        <member name="T:ArcGIS_SLD_Converter.ptDotDensityFillSymbolClass">
+            <summary>
+            点密度填充符号
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptDotDensityFillSymbolClass.BackgroundColor">
+            <summary>
+            背景颜色
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptDotDensityFillSymbolClass.BackgroundTransparency">
+            <summary>
+            背景透明度
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptDotDensityFillSymbolClass.DotCount">
+            <summary>
+            点数量
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptDotDensityFillSymbolClass.DotSize">
+            <summary>
+            点大小
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptDotDensityFillSymbolClass.DotSpacing">
+            <summary>
+            点间隔
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptDotDensityFillSymbolClass.FixedPlacement">
+            <summary>
+            固定位置
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptDotDensityFillSymbolClass.SymbolList">
+            <summary>
+            符号列表
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptDotDensityFillSymbolClass.SymbolCount">
+            <summary>
+            符号数量
+            </summary>
+        </member>
+        <member name="T:ArcGIS_SLD_Converter.ptPictureFillSymbolClass">
             <summary>
             图片填充符号
             </summary>
         </member>
-        <member name="T:ArcGIS_SLD_Converter.MultilayerSymbolClass">
+        <member name="P:ArcGIS_SLD_Converter.ptPictureFillSymbolClass.Angle">
+            <summary>
+            角度
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptPictureFillSymbolClass.BackgroundColor">
+            <summary>
+            背景颜色
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptPictureFillSymbolClass.BackgroundTransparency">
+            <summary>
+            背景透明度
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptPictureFillSymbolClass.Picture">
+            <summary>
+            图片
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptPictureFillSymbolClass.XScale">
+            <summary>
+            X比例
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptPictureFillSymbolClass.YScale">
+            <summary>
+            Y比例
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptPictureFillSymbolClass.OffsetX">
+            <summary>
+            X偏移
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptPictureFillSymbolClass.OffsetY">
+            <summary>
+            Y偏移
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptPictureFillSymbolClass.SeparationX">
+            <summary>
+            间隔X
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptPictureFillSymbolClass.SeparationY">
+            <summary>
+            间隔Y
+            </summary>
+        </member>
+        <member name="T:ArcGIS_SLD_Converter.ptGradientFillSymbolClass">
+            <summary>
+            渐变填充符号
+            </summary>
+        </member>
+        <member name="F:ArcGIS_SLD_Converter.ptGradientFillSymbolClass.Colors">
+            <summary>
+            颜色列表
+            </summary>
+        </member>
+        <member name="F:ArcGIS_SLD_Converter.ptGradientFillSymbolClass.GradientAngle">
+            <summary>
+            角度
+            </summary>
+        </member>
+        <member name="F:ArcGIS_SLD_Converter.ptGradientFillSymbolClass.GradientPercentage">
+            <summary>
+            百分比
+            </summary>
+        </member>
+        <member name="F:ArcGIS_SLD_Converter.ptGradientFillSymbolClass.IntervallCount">
+            <summary>
+            间隔带
+            </summary>
+        </member>
+        <member name="F:ArcGIS_SLD_Converter.ptGradientFillSymbolClass.Style">
+            <summary>
+            样式
+            </summary>
+        </member>
+        <member name="T:ArcGIS_SLD_Converter.ptBarChartSymbolClass">
+            <summary>
+            条形图符号
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptBarChartSymbolClass.ShowAxes">
+            <summary>
+            是否显示轴
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptBarChartSymbolClass.Spacing">
+            <summary>
+            间隔
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptBarChartSymbolClass.VerticalBars">
+            <summary>
+            显示方向
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptBarChartSymbolClass.Width">
+            <summary>
+            宽度
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptBarChartSymbolClass.AxesLineSymbol">
+            <summary>
+            坐标轴线符号
+            </summary>
+        </member>
+        <member name="T:ArcGIS_SLD_Converter.ptPieChartSymbolClass">
+            <summary>
+            饼状图符号
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptPieChartSymbolClass.Clockwise">
+            <summary>
+            方向
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptPieChartSymbolClass.UseOutline">
+            <summary>
+            轮廓
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptPieChartSymbolClass.OutLineSymbol">
+            <summary>
+            轮廓线符号
+            </summary>
+        </member>
+        <member name="T:ArcGIS_SLD_Converter.ptStackedChartSymbolClass">
+            <summary>
+            堆柱状符号
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptStackedChartSymbolClass.Fixed">
+            <summary>
+            确定的
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptStackedChartSymbolClass.UseOutline">
+            <summary>
+            是否有轮廓
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptStackedChartSymbolClass.VerticalBar">
+            <summary>
+            方向
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptStackedChartSymbolClass.Width">
+            <summary>
+            宽度
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptStackedChartSymbolClass.OutLineSymbol">
+            <summary>
+            轮廓线符号
+            </summary>
+        </member>
+        <member name="T:ArcGIS_SLD_Converter.ptMultilayerSymbolClass">
             <summary>
             多图层符号
             </summary>
         </member>
-        <member name="T:ArcGIS_SLD_Converter.MultilayerMarkerSymbolClass">
+        <member name="P:ArcGIS_SLD_Converter.ptMultilayerSymbolClass.MultiMarkerLayers">
+            <summary>
+            符号列表
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptMultilayerSymbolClass.LayerCount">
+            <summary>
+            图层数量
+            </summary>
+        </member>
+        <member name="T:ArcGIS_SLD_Converter.ptMultilayerMarkerSymbolClass">
              <summary>
             多图层标记符号
              </summary>
         </member>
-        <member name="T:ArcGIS_SLD_Converter.MultilayerLineSymbolClass">
+        <member name="T:ArcGIS_SLD_Converter.ptMultilayerLineSymbolClass">
             <summary>
             多图层线符号
             </summary>
         </member>
-        <member name="T:ArcGIS_SLD_Converter.MultilayerFillSymbolClass">
+        <member name="T:ArcGIS_SLD_Converter.ptMultilayerFillSymbolClass">
             <summary>
             多图层填充符号
             </summary>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.ptSymbolFactory.#ctor(ESRI.ArcGIS.Display.ISymbol)">
+            <summary>
+            符号工厂
+            </summary>
+            <param name="pSymbol"></param>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.ptSymbolFactory.GetSymbolClass">
+            <summary>
+            解析符号信息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.ptSymbolFactory.GetMarkerSymbolClass(ESRI.ArcGIS.Display.ISymbol)">
+            <summary>
+            获取标记符号
+            </summary>
+            <param name="Symbol"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.ptSymbolFactory.GetLineSymbolClass(ESRI.ArcGIS.Display.ISymbol)">
+            <summary>
+            获取线符号
+            </summary>
+            <param name="Symbol"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.ptSymbolFactory.GetFillSymbolClass(ESRI.ArcGIS.Display.ISymbol)">
+            <summary>
+            获取填充符号
+            </summary>
+            <param name="Symbol"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.ptSymbolFactory.GetIIIDChartSymbolClass(ESRI.ArcGIS.Display.ISymbol)">
+            <summary>
+            获取3D图标符号
+            </summary>
+            <param name="Symbol"></param>
+            <returns></returns>
         </member>
         <member name="F:ArcGIS_SLD_Converter.ValidateSLD.m_cResultSLD">
             <summary>
@@ -1229,6 +1935,48 @@
             <summary>
             打开文档
             </summary>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.XMLHandle.NavigateElement(System.String)">
+            <summary>
+            创建导航节点
+            </summary>
+            <param name="AliasTagName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.XMLHandle.CreateElement(System.String)">
+            <summary>
+             创建指定元素
+            </summary>
+            <param name="AliasTagName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.XMLHandle.SetElementText(System.String)">
+            <summary>
+            设置XML要素内容
+            </summary>
+            <param name="InnerText"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.XMLHandle.CreateAttribute(System.String)">
+            <summary>
+            创建指定属性
+            </summary>
+            <param name="AttributeName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.XMLHandle.SetAttributeValue(System.String)">
+            <summary>
+            设置属性值
+            </summary>
+            <param name="AttributeValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.XMLHandle.ParseDoc(System.Xml.XmlElement)">
+            <summary>
+            复制XML文档
+            </summary>
+            <param name="CurrentNode"></param>
+            <returns></returns>
         </member>
         <member name="M:ArcGIS_SLD_Converter.XMLHandle.CreateNewFile(System.Boolean,System.Boolean)">
             <summary>

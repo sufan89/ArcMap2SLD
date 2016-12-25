@@ -1137,11 +1137,10 @@ namespace ArcGIS_SLD_Converter
                 strRenderer.DatasetName = objDataset.Name;
                 //获取图层注记信息
                 strRenderer.Annotation = GetAnnotation(Layer);
+
                 #region 分析渲染的属性字段信息
                 //字段数量
                 int iFieldCount = Renderer.FieldCount;
-
-                strRenderer.FieldCount = iFieldCount;
 
                 if (iFieldCount > 1) 
                 {
@@ -1622,9 +1621,8 @@ namespace ArcGIS_SLD_Converter
         {
             StructMultilayerMarkerSymbol StructStorage = new StructMultilayerMarkerSymbol();
             StructStorage.MultiMarkerLayers = new ArrayList();
-            int i = 0;
             StructStorage.LayerCount = symbol.LayerCount;
-            for (i = 0; i <= symbol.LayerCount - 1; i++) 
+            for (int i = 0; i <= symbol.LayerCount - 1; i++) 
             {
                 switch (MarkerSymbolScan(symbol.Layer[i])) 
                 {
@@ -2652,9 +2650,7 @@ namespace ArcGIS_SLD_Converter
                 for (int i = 0; i <= iNumberLayers - 1; i++)
                 {
                     objLayer = m_ObjMap.Layer[i];
-
                     cLayerName = objLayer.Name;
-
                     if (frmMotherform.m_bAllLayers == false && objLayer.Visible == false)
                     {
                         frmMotherform.CHLabelBottom(string.Format("图层【{0}】不可见，不进行分析", cLayerName));
@@ -2662,7 +2658,6 @@ namespace ArcGIS_SLD_Converter
                     else
                     {
                         frmMotherform.CHLabelBottom(string.Format("正在分析图层【{0}】...", cLayerName));
-
                         SpreadLayerStructure(objLayer);
                     }
                     frmMotherform.CHLabelSmall("");
@@ -2681,7 +2676,6 @@ namespace ArcGIS_SLD_Converter
         /// <param name="objLayer"></param>
         private void SpreadLayerStructure(ILayer objLayer)
         {
-
             try
             {
                 //如果是图层组，则需要嵌套调用
@@ -2700,25 +2694,30 @@ namespace ArcGIS_SLD_Converter
                 {
                     if (objLayer is IGeoFeatureLayer)
                     {
-                        IGeoFeatureLayer objGFL = objLayer as IGeoFeatureLayer; 
+                        IGeoFeatureLayer objGFL = objLayer as IGeoFeatureLayer;
+                        ptRenderFactory renderFac = new ptRenderFactory(objGFL.Renderer, objLayer);
+                        m_StrProject.m_LayerRender.Add(objLayer.Name, renderFac.GetRenderLayer());
+
                         //唯一值渲染
                         if (objGFL.Renderer is IUniqueValueRenderer)
                         {
                             IUniqueValueRenderer objRenderer = objGFL.Renderer as IUniqueValueRenderer;
 
-                            m_StrProject.m_LayerRender.Add(objLayer.Name,StoreStructUVRenderer(objRenderer, objLayer as IFeatureLayer));
+                            //m_StrProject.m_LayerRender.Add(objLayer.Name,StoreStructUVRenderer(objRenderer, objLayer as IFeatureLayer));
                         }
                         //简单渲染
                         if (objGFL.Renderer is ISimpleRenderer)
                         {
                             ISimpleRenderer objRenderer = objGFL.Renderer as ISimpleRenderer;
+                            ISymbol pSymbol = objRenderer.Symbol;
+                            string tempStr = pSymbol.GetType().Name;
                             m_StrProject.m_LayerRender.Add(objLayer.Name,StoreStructSimpleRenderer(objRenderer, objLayer as IFeatureLayer));
                         }
                         //分类图表渲染
                         if (objGFL.Renderer is IClassBreaksRenderer)
                         {
                             IClassBreaksRenderer objRenderer = objGFL.Renderer as IClassBreaksRenderer;
-                            m_StrProject.m_LayerRender.Add(objLayer.Name,StoreStructCBRenderer(objRenderer, objLayer as IFeatureLayer));
+                            //m_StrProject.m_LayerRender.Add(objLayer.Name,StoreStructCBRenderer(objRenderer, objLayer as IFeatureLayer));
                             
                         }
                     }

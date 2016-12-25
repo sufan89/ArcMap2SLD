@@ -60,7 +60,7 @@ namespace ArcGIS_SLD_Converter
 			m_cFile = frmMotherForm.GetSLDFile;
 			m_cPath = frmMotherForm.GetSLDPath;
 			m_objData = Analize;
-            m_strDataSavings = (Analize_ArcMap_Symbols.StructProject)m_objData.GetProjectData;
+            //m_strDataSavings = (Analize_ArcMap_Symbols.StructProject)m_objData.GetProjectData;
 			m_bIncludeLayerNames = frmMotherForm.GetInfoIncludeLayerNames;
             //输出SLD文件
 			CentralProcessingFunc();
