@@ -830,7 +830,7 @@ namespace ArcGIS_SLD_Converter
                 for (int j = 0; j <= iNumberOfSymbols - 1; j++)
                 {
                     frmMotherform.CHLabelSmall("解析符号 " + (j + 1).ToString() + " 中 " + iNumberOfSymbols.ToString()); 
-                    objFstOrderSymbol = Renderer.Symbol[j]; 
+                    objFstOrderSymbol = Renderer.Symbol[j];
                     IClassBreaksUIProperties objClassBreaksProp = Renderer as IClassBreaksUIProperties;
                     double cLowerLimit = objClassBreaksProp.LowBreak[j];
                     double cUpperLimit = Renderer.Break[j];
@@ -863,7 +863,6 @@ namespace ArcGIS_SLD_Converter
                                 strSMS.UpperLimit = cUpperLimit;
                                 strRenderer.SymbolList.Add(strSMS);
                                 break;
-
                             case "ICharacterMarkerSymbol":
                                 ICharacterMarkerSymbol CMS = objSymbol as ICharacterMarkerSymbol;
                                 StructCharacterMarkerSymbol strCMS = new StructCharacterMarkerSymbol();
@@ -873,7 +872,6 @@ namespace ArcGIS_SLD_Converter
                                 strCMS.UpperLimit = cUpperLimit;
                                 strRenderer.SymbolList.Add(strCMS);
                                 break;
-
                             case "IPictureMarkerSymbol":
                                 IPictureMarkerSymbol PMS = objSymbol as IPictureMarkerSymbol;
                                 StructPictureMarkerSymbol strPMS = new StructPictureMarkerSymbol();
@@ -883,7 +881,6 @@ namespace ArcGIS_SLD_Converter
                                 strPMS.UpperLimit = cUpperLimit;
                                 strRenderer.SymbolList.Add(strPMS);
                                 break;
-
                             case "IArrowMarkerSymbol":
                                 IArrowMarkerSymbol AMS = objSymbol as IArrowMarkerSymbol;
                                 StructArrowMarkerSymbol strAMS = new StructArrowMarkerSymbol();
@@ -893,7 +890,6 @@ namespace ArcGIS_SLD_Converter
                                 strAMS.UpperLimit = cUpperLimit;
                                 strRenderer.SymbolList.Add(strAMS);
                                 break;
-
                             case "IMultiLayerMarkerSymbol":
                                 IMultiLayerMarkerSymbol MLMS = objSymbol as IMultiLayerMarkerSymbol;
                                 StructMultilayerMarkerSymbol strMLMS = new StructMultilayerMarkerSymbol();
@@ -903,14 +899,12 @@ namespace ArcGIS_SLD_Converter
                                 strMLMS.UpperLimit = cUpperLimit;
                                 strRenderer.SymbolList.Add(strMLMS);
                                 break;
-
                             case "false":
                                 InfoMsg("未知标记符号", "StoreStructLayer");
                                 break;
                         }
                     }
                     #endregion
-
                     #region  解析线符号
                     if (objFstOrderSymbol is ILineSymbol)
                     {
@@ -2550,6 +2544,7 @@ namespace ArcGIS_SLD_Converter
                 MyTermination();
                 return false;
             }
+
             if (string.IsNullOrEmpty(m_cFilename))
             {
                 frmMotherform.CHLabelTop(string.Format("ArcMap符号分析完成"));
@@ -2711,7 +2706,7 @@ namespace ArcGIS_SLD_Converter
                             ISimpleRenderer objRenderer = objGFL.Renderer as ISimpleRenderer;
                             ISymbol pSymbol = objRenderer.Symbol;
                             string tempStr = pSymbol.GetType().Name;
-                            m_StrProject.m_LayerRender.Add(objLayer.Name,StoreStructSimpleRenderer(objRenderer, objLayer as IFeatureLayer));
+                            //m_StrProject.m_LayerRender.Add(objLayer.Name,StoreStructSimpleRenderer(objRenderer, objLayer as IFeatureLayer));
                         }
                         //分类图表渲染
                         if (objGFL.Renderer is IClassBreaksRenderer)

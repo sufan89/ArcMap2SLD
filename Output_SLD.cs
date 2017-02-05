@@ -79,10 +79,12 @@ namespace ArcGIS_SLD_Converter
 			bool bSuccess = false;
             frmMotherForm.CHLabelTop(string.Format("输出SLD文件..."));
             frmMotherForm.CHLabelBottom(string.Format("正在输出SLD文件..."));
+
             if (WriteToSLD())
 			{
 				bSuccess = true;
 			}
+
             frmMotherForm.CHLabelTop(string.Format("开始..."));
             if (bSuccess)
 			{
@@ -178,6 +180,7 @@ namespace ArcGIS_SLD_Converter
 					{
 						CreateSLD(m_cFilename + "_" + cLayerName + ".sld", bool.Parse(m_bIncludeLayerNames));
 					}
+
                     #region 创建基础节点
                     if (Convert.ToBoolean(m_bIncludeLayerNames))
 					{
@@ -502,9 +505,9 @@ namespace ArcGIS_SLD_Converter
                             objStructSR = (Analize_ArcMap_Symbols.StructSimpleRenderer)m_strDataSavings.LayerList[i];
 							m_objXMLHandle.CreateElement("Rule");
 							m_objXMLHandle.CreateElement("RuleName");
-                            m_objXMLHandle.SetElementText(System.Convert.ToString(objStructSR.DatasetName));
+                            m_objXMLHandle.SetElementText(objStructSR.DatasetName);
 							m_objXMLHandle.CreateElement("Title");
-                            m_objXMLHandle.SetElementText(System.Convert.ToString(objStructSR.DatasetName));
+                            m_objXMLHandle.SetElementText(objStructSR.DatasetName);
 							switch (objStructSR.FeatureCls)
 							{
 								case Analize_ArcMap_Symbols.FeatureClass.PointFeature:
@@ -2048,6 +2051,7 @@ namespace ArcGIS_SLD_Converter
 						}
 					}
                     #endregion 
+
                     else if (ValueNameOfValueYouWant.ToUpper() == "PointColor".ToUpper())
 					{
 						if (objTempStruct.Filled)
@@ -2090,15 +2094,16 @@ namespace ArcGIS_SLD_Converter
 						switch (objTempStruct.Font.ToUpper())
 						{
 							case "ESRI DEFAULT MARKER":
-								if (((((((((((((((objTempStruct.CharacterIndex == 33) || (objTempStruct.CharacterIndex == 40)) || (objTempStruct.CharacterIndex == 46)) || (objTempStruct.CharacterIndex == 53)) || (objTempStruct.CharacterIndex >= 60 && objTempStruct.CharacterIndex <= 67)) || (objTempStruct.CharacterIndex == 72)) || (objTempStruct.CharacterIndex >= 79 && objTempStruct.CharacterIndex <= 82)) || (objTempStruct.CharacterIndex >= 90 && objTempStruct.CharacterIndex <= 93)) || (objTempStruct.CharacterIndex == 171)) || (objTempStruct.CharacterIndex == 172)) || (objTempStruct.CharacterIndex == 183)) || (objTempStruct.CharacterIndex == 196)) || (objTempStruct.CharacterIndex == 199)) || (objTempStruct.CharacterIndex == 200)) || (objTempStruct.CharacterIndex == 8729))
+                                if (CommStaticClass.EsriMarkcircleChartIndex.Contains(objTempStruct.CharacterIndex))
 								{
 									cReturn = "circle";
 								}
-								else if ((((((((((((((((objTempStruct.CharacterIndex == 34) || (objTempStruct.CharacterIndex == 41)) || (objTempStruct.CharacterIndex == 47)) || (objTempStruct.CharacterIndex == 54)) || (objTempStruct.CharacterIndex == 74)) || (objTempStruct.CharacterIndex == 83)) || (objTempStruct.CharacterIndex == 84)) || (objTempStruct.CharacterIndex == 104)) || (objTempStruct.CharacterIndex == 174)) || (objTempStruct.CharacterIndex == 175)) || (objTempStruct.CharacterIndex == 179)) || (objTempStruct.CharacterIndex == 190)) || (objTempStruct.CharacterIndex == 192)) || (objTempStruct.CharacterIndex == 194)) || (objTempStruct.CharacterIndex == 198)) || (objTempStruct.CharacterIndex == 201))
+
+                                else if (CommStaticClass.EsriMarksquareChartIndex.Contains(objTempStruct.CharacterIndex))
 								{
 									cReturn = "square";
 								}
-								else if ((((((((objTempStruct.CharacterIndex == 35) || (objTempStruct.CharacterIndex == 42)) || (objTempStruct.CharacterIndex == 48)) || (objTempStruct.CharacterIndex == 55)) || (objTempStruct.CharacterIndex == 73)) || (objTempStruct.CharacterIndex == 86)) || (objTempStruct.CharacterIndex == 184)) || (objTempStruct.CharacterIndex == 185))
+                                else if (CommStaticClass.EsriMarktriangleChartIndex.Contains(objTempStruct.CharacterIndex))
 								{
 									cReturn = "triangle";
 								}
@@ -2106,25 +2111,25 @@ namespace ArcGIS_SLD_Converter
 								{
 									cReturn = "X";
 								}
-								else if ((((objTempStruct.CharacterIndex == 69) || (objTempStruct.CharacterIndex == 70)) || (objTempStruct.CharacterIndex == 71)) || (objTempStruct.CharacterIndex >= 203 && objTempStruct.CharacterIndex <= 211))
+                                else if (CommStaticClass.EsriMarkcrossChartIndex.Contains(objTempStruct.CharacterIndex))
 								{
 									cReturn = "cross";
 								}
-								else if ((((((objTempStruct.CharacterIndex == 94) || (objTempStruct.CharacterIndex == 95)) || (objTempStruct.CharacterIndex == 96)) || (objTempStruct.CharacterIndex == 106)) || (objTempStruct.CharacterIndex == 107)) || (objTempStruct.CharacterIndex == 108))
+                                else if (CommStaticClass.EsriMarkstarChartIndex.Contains(objTempStruct.CharacterIndex))
 								{
 									cReturn = "star";
 								}
 								break;
 							case "ESRI IGL FONT22":
-								if (((((objTempStruct.CharacterIndex >= 65 && objTempStruct.CharacterIndex <= 69) || (objTempStruct.CharacterIndex >= 93 && objTempStruct.CharacterIndex <= 96)) || (objTempStruct.CharacterIndex == 103)) || (objTempStruct.CharacterIndex == 105)) || (objTempStruct.CharacterIndex == 106))
+                                if (CommStaticClass.ESRIIGLFONT22circleChartIndex.Contains(objTempStruct.CharacterIndex))
 								{
 									cReturn = "circle";
 								}
-								else if ((((objTempStruct.CharacterIndex == 70) || (objTempStruct.CharacterIndex == 71)) || (objTempStruct.CharacterIndex >= 88 && objTempStruct.CharacterIndex <= 92)) || (objTempStruct.CharacterIndex >= 118 && objTempStruct.CharacterIndex <= 121))
+                                else if (CommStaticClass.ESRIIGLFONT22squareChartIndex.Contains(objTempStruct.CharacterIndex))
 								{
 									cReturn = "square";
 								}
-								else if ((((((((objTempStruct.CharacterIndex == 72) || (objTempStruct.CharacterIndex == 73)) || (objTempStruct.CharacterIndex == 75)) || (objTempStruct.CharacterIndex == 81)) || (objTempStruct.CharacterIndex == 85)) || (objTempStruct.CharacterIndex == 86)) || (objTempStruct.CharacterIndex >= 99 && objTempStruct.CharacterIndex <= 102)) || (objTempStruct.CharacterIndex == 104))
+                                else if (CommStaticClass.ESRIIGLFONT22triangleChartIndex.Contains(objTempStruct.CharacterIndex))
 								{
 									cReturn = "triangle";
 								}
@@ -2134,19 +2139,19 @@ namespace ArcGIS_SLD_Converter
 								}
 								break;
 							case "ESRI GEOMETRIC SYMBOLS":
-								if ((((((((((((((((((((((objTempStruct.CharacterIndex >= 33 && objTempStruct.CharacterIndex <= 35) || (objTempStruct.CharacterIndex >= 39 && objTempStruct.CharacterIndex <= 41)) || (objTempStruct.CharacterIndex == 47)) || (objTempStruct.CharacterIndex == 48)) || (objTempStruct.CharacterIndex >= 56 && objTempStruct.CharacterIndex <= 58)) || (objTempStruct.CharacterIndex == 65)) || (objTempStruct.CharacterIndex >= 68 && objTempStruct.CharacterIndex <= 71)) || (objTempStruct.CharacterIndex >= 74 && objTempStruct.CharacterIndex <= 77)) || (objTempStruct.CharacterIndex == 82)) || (objTempStruct.CharacterIndex == 83)) || (objTempStruct.CharacterIndex >= 86 && objTempStruct.CharacterIndex <= 89)) || (objTempStruct.CharacterIndex >= 92 && objTempStruct.CharacterIndex <= 95)) || (objTempStruct.CharacterIndex >= 98 && objTempStruct.CharacterIndex <= 101)) || (objTempStruct.CharacterIndex >= 104 && objTempStruct.CharacterIndex <= 107)) || (objTempStruct.CharacterIndex >= 110 && objTempStruct.CharacterIndex <= 113)) || (objTempStruct.CharacterIndex >= 116 && objTempStruct.CharacterIndex <= 125)) || (objTempStruct.CharacterIndex == 161)) || (objTempStruct.CharacterIndex == 171)) || (objTempStruct.CharacterIndex >= 177 && objTempStruct.CharacterIndex <= 186)) || (objTempStruct.CharacterIndex == 244)) || (objTempStruct.CharacterIndex >= 246 && objTempStruct.CharacterIndex <= 249)) || (objTempStruct.CharacterIndex == 8729))
+                                if (CommStaticClass.SYMBOLScircleChartIndex.Contains(objTempStruct.CharacterIndex))
 								{
 									cReturn = "circle";
 								}
-								else if (((((((((((((((((((((((objTempStruct.CharacterIndex == 37) || (objTempStruct.CharacterIndex == 42)) || (objTempStruct.CharacterIndex == 43)) || (objTempStruct.CharacterIndex == 50)) || (objTempStruct.CharacterIndex == 55)) || (objTempStruct.CharacterIndex == 67)) || (objTempStruct.CharacterIndex == 73)) || (objTempStruct.CharacterIndex == 79)) || (objTempStruct.CharacterIndex == 85)) || (objTempStruct.CharacterIndex == 91)) || (objTempStruct.CharacterIndex == 97)) || (objTempStruct.CharacterIndex == 103)) || (objTempStruct.CharacterIndex == 109)) || (objTempStruct.CharacterIndex == 115)) || (objTempStruct.CharacterIndex == 170)) || (objTempStruct.CharacterIndex == 172)) || (objTempStruct.CharacterIndex >= 200 && objTempStruct.CharacterIndex <= 205)) || (objTempStruct.CharacterIndex == 208)) || (objTempStruct.CharacterIndex == 209)) || (objTempStruct.CharacterIndex == 210)) || (objTempStruct.CharacterIndex >= 226 && objTempStruct.CharacterIndex <= 241)) || (objTempStruct.CharacterIndex == 243)) || (objTempStruct.CharacterIndex == 250))
+                                else if (CommStaticClass.SYMBOLSsquareChartIndex.Contains(objTempStruct.CharacterIndex))
 								{
 									cReturn = "square";
 								}
-								else if ((((((((((((((((((((objTempStruct.CharacterIndex == 36) || (objTempStruct.CharacterIndex == 46)) || (objTempStruct.CharacterIndex == 49)) || (objTempStruct.CharacterIndex == 66)) || (objTempStruct.CharacterIndex == 72)) || (objTempStruct.CharacterIndex == 78)) || (objTempStruct.CharacterIndex == 84)) || (objTempStruct.CharacterIndex == 90)) || (objTempStruct.CharacterIndex == 96)) || (objTempStruct.CharacterIndex == 102)) || (objTempStruct.CharacterIndex == 108)) || (objTempStruct.CharacterIndex == 114)) || (objTempStruct.CharacterIndex == 162)) || (objTempStruct.CharacterIndex == 168)) || (objTempStruct.CharacterIndex == 169)) || (objTempStruct.CharacterIndex == 175)) || (objTempStruct.CharacterIndex == 176)) || (objTempStruct.CharacterIndex >= 186 && objTempStruct.CharacterIndex <= 190)) || (objTempStruct.CharacterIndex >= 213 && objTempStruct.CharacterIndex <= 220)) || (objTempStruct.CharacterIndex == 245))
+                                else if (CommStaticClass.SYMBOLStriangleChartIndex.Contains(objTempStruct.CharacterIndex))
 								{
 									cReturn = "triangle";
 								}
-								else if (((objTempStruct.CharacterIndex >= 195 && objTempStruct.CharacterIndex <= 199) || (objTempStruct.CharacterIndex == 206)) || (objTempStruct.CharacterIndex == 207))
+                                else if (CommStaticClass.SYMBOLSXChartIndex.Contains(objTempStruct.CharacterIndex))
 								{
 									cReturn = "X";
 								}
@@ -2160,7 +2165,7 @@ namespace ArcGIS_SLD_Converter
 						switch (objTempStruct.Font.ToUpper())
 						{
 							case "ESRI DEFAULT MARKER":
-								if ((((((((((((((((((((((((((objTempStruct.CharacterIndex >= 33 && objTempStruct.CharacterIndex <= 39) || (objTempStruct.CharacterIndex >= 67 && objTempStruct.CharacterIndex <= 69)) || (objTempStruct.CharacterIndex == 71)) || (objTempStruct.CharacterIndex == 81)) || (objTempStruct.CharacterIndex == 88)) || (objTempStruct.CharacterIndex >= 97 && objTempStruct.CharacterIndex <= 103)) || (objTempStruct.CharacterIndex == 107)) || (objTempStruct.CharacterIndex == 113)) || (objTempStruct.CharacterIndex == 116)) || (objTempStruct.CharacterIndex == 118)) || (objTempStruct.CharacterIndex == 161)) || (objTempStruct.CharacterIndex == 163)) || (objTempStruct.CharacterIndex == 165)) || (objTempStruct.CharacterIndex == 167)) || (objTempStruct.CharacterIndex == 168)) || (objTempStruct.CharacterIndex == 172)) || (objTempStruct.CharacterIndex == 174)) || (objTempStruct.CharacterIndex == 175)) || (objTempStruct.CharacterIndex == 179)) || (objTempStruct.CharacterIndex >= 182 && objTempStruct.CharacterIndex <= 186)) || (objTempStruct.CharacterIndex == 190)) || (objTempStruct.CharacterIndex >= 192 && objTempStruct.CharacterIndex <= 201)) || (objTempStruct.CharacterIndex >= 203 && objTempStruct.CharacterIndex <= 211)) || (objTempStruct.CharacterIndex == 215)) || (objTempStruct.CharacterIndex == 219)) || (objTempStruct.CharacterIndex == 8729))
+                                if (CommStaticClass.MarkChartIndex.Contains(objTempStruct.CharacterIndex))
 								{
 									cColor = objTempStruct.Color;
 									cOutlineColor = "";
@@ -2172,7 +2177,7 @@ namespace ArcGIS_SLD_Converter
 								}
 								break;
 							case "ESRI IGL FONT22":
-								if (((objTempStruct.CharacterIndex >= 72 && objTempStruct.CharacterIndex <= 80) || (objTempStruct.CharacterIndex == 100)) || (objTempStruct.CharacterIndex >= 118 && objTempStruct.CharacterIndex <= 121))
+                                if (CommStaticClass.FONT22ChartIndex.Contains(objTempStruct.CharacterIndex))
 								{
 									cColor = objTempStruct.Color;
 									cOutlineColor = "";
@@ -2184,7 +2189,7 @@ namespace ArcGIS_SLD_Converter
 								}
 								break;
 							case "ESRI GEOMETRIC SYMBOLS":
-								if (((((((((((objTempStruct.CharacterIndex >= 34 && objTempStruct.CharacterIndex <= 40) || (objTempStruct.CharacterIndex == 120)) || (objTempStruct.CharacterIndex >= 161 && objTempStruct.CharacterIndex <= 167)) || (objTempStruct.CharacterIndex == 187)) || (objTempStruct.CharacterIndex == 188)) || (objTempStruct.CharacterIndex >= 194 && objTempStruct.CharacterIndex <= 200)) || (objTempStruct.CharacterIndex >= 202 && objTempStruct.CharacterIndex <= 215)) || (objTempStruct.CharacterIndex == 217)) || (objTempStruct.CharacterIndex == 218)) || (objTempStruct.CharacterIndex >= 221 && objTempStruct.CharacterIndex <= 229)) || (objTempStruct.CharacterIndex >= 231 && objTempStruct.CharacterIndex <= 249))
+                                if (CommStaticClass.SYMBOLSColorChartIndex.Contains(objTempStruct.CharacterIndex))
 								{
 									cColor = objTempStruct.Color;
 									cOutlineColor = "";
@@ -2220,15 +2225,15 @@ namespace ArcGIS_SLD_Converter
 						switch (objTempStruct.Font.ToUpper())
 						{
 							case "ESRI GEOMETRIC SYMBOLS":
-								if (((((((((objTempStruct.CharacterIndex == 85) || (objTempStruct.CharacterIndex == 88)) || (objTempStruct.CharacterIndex == 89)) || (objTempStruct.CharacterIndex == 91)) || (objTempStruct.CharacterIndex == 94)) || (objTempStruct.CharacterIndex == 95)) || (objTempStruct.CharacterIndex == 97)) || (objTempStruct.CharacterIndex == 98)) || (objTempStruct.CharacterIndex == 100))
+                                if (CommStaticClass.SYMBOLS2ChartIndex.Contains(objTempStruct.CharacterIndex))
 								{
 									cReturn = "2";
 								}
-								else if ((((((((((objTempStruct.CharacterIndex == 41) || (objTempStruct.CharacterIndex >= 65 && objTempStruct.CharacterIndex <= 83)) || (objTempStruct.CharacterIndex >= 122 && objTempStruct.CharacterIndex <= 125)) || (objTempStruct.CharacterIndex == 168)) || (objTempStruct.CharacterIndex == 169)) || (objTempStruct.CharacterIndex == 188)) || (objTempStruct.CharacterIndex == 189)) || (objTempStruct.CharacterIndex == 216)) || (objTempStruct.CharacterIndex == 230)) || (objTempStruct.CharacterIndex == 250))
+                                else if (CommStaticClass.SYMBOLS3ChartIndex.Contains(objTempStruct.CharacterIndex))
 								{
 									cReturn = "3";
 								}
-								else if (((objTempStruct.CharacterIndex == 161) || (objTempStruct.CharacterIndex >= 170 && objTempStruct.CharacterIndex <= 178)) || (objTempStruct.CharacterIndex == 186))
+                                else if (CommStaticClass.SYMBOLS4ChartIndex.Contains(objTempStruct.CharacterIndex))
 								{
 									cReturn = "4";
 								}

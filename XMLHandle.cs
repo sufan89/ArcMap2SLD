@@ -78,7 +78,9 @@ namespace ArcGIS_SLD_Converter
 		private string m_cXMLEncoding;
 
 		private ArcGIS_SLD_Converter.Store2Fields m_objNamespaceURL; 
-
+        /// <summary>
+        /// XML命名管理
+        /// </summary>
 		private XmlNamespaceManager m_objNSManager; 
 
 		private string m_sLUTFile; 
@@ -89,7 +91,7 @@ namespace ArcGIS_SLD_Converter
 		
 #endregion
 
-#region Enums
+#region 枚举变量
 		/// <summary>
         /// XML文档状态
         /// </summary>
@@ -103,7 +105,7 @@ namespace ArcGIS_SLD_Converter
 		
 
 		
-#region Routinen
+#region 方法
         /// <summary>
         /// 构造函数
         /// </summary>
@@ -589,7 +591,7 @@ namespace ArcGIS_SLD_Converter
 			string cRightTag = "";
 			try
 			{
-				if (m_objNameDict.ContainsKey(Value) == true)
+				if (m_objNameDict.ContainsKey(Value))
 				{
 					cRightTag = m_objNameDict[Value];
 				}

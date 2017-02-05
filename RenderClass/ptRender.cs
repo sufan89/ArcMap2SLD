@@ -31,7 +31,7 @@ namespace ArcGIS_SLD_Converter
         /// <summary>
         /// 初始化符号信息
         /// </summary>
-        public virtual void InitialSymbol()
+        protected virtual void InitialSymbol()
         {
  
         }
@@ -90,8 +90,10 @@ namespace ArcGIS_SLD_Converter
         /// <summary>
         /// 初始化符号信息
         /// </summary>
-        public override void InitialSymbol()
+        protected override void InitialSymbol()
         {
+            base.InitialSymbol();
+
             if (m_pUniqueRender == null || m_pFeatureLayer == null) return;
             //是否是多个字段
             bool bNoSepFieldVal = false;
@@ -186,14 +188,52 @@ namespace ArcGIS_SLD_Converter
     /// </summary>
     public class ptClassBreaksRendererCalss : ptRender
     {
+        /// <summary>
+        /// 分类渲染
+        /// </summary>
+        /// <param name="pFeatureRender"></param>
+        /// <param name="pFeatureLayer"></param>
         public ptClassBreaksRendererCalss(IFeatureRenderer pFeatureRender, IFeatureLayer pFeatureLayer) : 
             base(pFeatureRender, pFeatureLayer)
         {
-
+            m_pClassBreaksRender = pFeatureRender as IClassBreaksRenderer;
+            m_pFeatureLayer = pFeatureLayer;
+            BreakCount = m_pClassBreaksRender.BreakCount;
+            FieldName = m_pClassBreaksRender.Field;
+            NormFieldName = m_pClassBreaksRender.NormField;
+            InitialSymbol();
         }
+        private IClassBreaksRenderer m_pClassBreaksRender;
+        private IFeatureLayer m_pFeatureLayer;
+
         public int BreakCount { get; set; }
         public string FieldName { get; set; }
         public string NormFieldName { get; set; }
+        /// <summary>
+        /// 初始化符号信息
+        /// </summary>
+        protected override void InitialSymbol()
+        {
+            base.InitialSymbol();
+            IClassBreaksUIProperties objClassBreaksProp = m_pClassBreaksRender as IClassBreaksUIProperties;
+            try
+            {
+                for (int i = 0; i < BreakCount; i++)
+                {
+                    double cLowerLimit = objClassBreaksProp.LowBreak[i];
+                    double cUpperLimit = m_pClassBreaksRender.Break[i];
+                    ISymbol pSymbol = m_pClassBreaksRender.get_Symbol(i);
+                    ptSymbolFactory pSymbolFac = new ptSymbolFactory(pSymbol);
+                    ptSymbolClass pSymbolClass = pSymbolFac.GetSymbolClass(m_pClassBreaksRender.Label[i], new List<string>()
+                        , cUpperLimit, cLowerLimit);
+                    SymbolList.Add(pSymbolClass);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
     }
     /// <summary>
     /// 简单渲染方式
@@ -208,7 +248,19 @@ namespace ArcGIS_SLD_Converter
         public ptSimpleRendererClass(IFeatureRenderer pFeatureRender, IFeatureLayer pFeatureLayer) : 
             base(pFeatureRender, pFeatureLayer)
         {
-            ISimpleRenderer pSimpleRender = pFeatureRender as ISimpleRenderer;
+             m_pSimpleRender = pFeatureRender as ISimpleRenderer;
+             m_pFeatureLayer = pFeatureLayer;
+        }
+        private ISimpleRenderer m_pSimpleRender;
+        IFeatureLayer m_pFeatureLayer;
+        protected override void InitialSymbol()
+        {
+            base.InitialSymbol();
+            ISymbol pSymbol = m_pSimpleRender.Symbol;
+            ptSymbolFactory pSymbolFac = new ptSymbolFactory(pSymbol);
+            ptSymbolClass pSymbolClass = pSymbolFac.GetSymbolClass(m_pSimpleRender.Label, new List<string>()
+                , 0, 0);
+            SymbolList.Add(pSymbolClass);
         }
     }
 }

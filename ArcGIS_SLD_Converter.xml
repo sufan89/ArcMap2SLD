@@ -487,6 +487,45 @@
             <param name="value"></param>
             <returns></returns>
         </member>
+        <member name="M:ArcGIS_SLD_Converter.CommStaticClass.GimmeUniqeValuesForFieldname(ESRI.ArcGIS.Geodatabase.ITable,System.String)">
+            <summary>
+            获取唯一值
+            </summary>
+            <param name="Table">数据表</param>
+            <param name="FieldName">字段名称</param>
+            <returns></returns>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.CommStaticClass.GimmeUniqeValuesForFieldname(ESRI.ArcGIS.Geodatabase.ITable,System.String,System.Collections.Generic.IList{System.String})">
+            <summary>
+            获取唯一值
+            </summary>
+            <param name="Table">数据表</param>
+            <param name="FieldName">字段名称</param>
+            <param name="JoinedTables">连接表</param>
+            <returns></returns>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.CommStaticClass.GimmeUniqueValuesFromShape(ESRI.ArcGIS.Geodatabase.ITable,System.Collections.Generic.IList{System.String})">
+            <summary>
+            从shape文件中获取唯一值
+            </summary>
+            <param name="Table"></param>
+            <param name="FieldNames"></param>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.CommStaticClass.getUVFieldValues(ESRI.ArcGIS.Carto.IUniqueValueRenderer,System.Int32)">
+            <summary>
+            获取唯一值渲染方式中指定序号中符号对应的值
+            </summary>
+            <param name="Renderer"></param>
+            <param name="Index"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.CommStaticClass.GimmeArrayListForColorRamp(ESRI.ArcGIS.Display.IColorRamp)">
+            <summary>
+            获取符号颜色数组
+            </summary>
+            <param name="ColorRamp"></param>
+            <returns></returns>
+        </member>
         <member name="M:ArcGIS_SLD_Converter.ptLayer.InitailGeneralInfo(ESRI.ArcGIS.Carto.ILayer)">
             <summary>
             根据图层初始化基本信息
@@ -1050,10 +1089,29 @@
             分类渲染
             </summary>
         </member>
+        <member name="M:ArcGIS_SLD_Converter.ptClassBreaksRendererCalss.#ctor(ESRI.ArcGIS.Carto.IFeatureRenderer,ESRI.ArcGIS.Carto.IFeatureLayer)">
+            <summary>
+            分类渲染
+            </summary>
+            <param name="pFeatureRender"></param>
+            <param name="pFeatureLayer"></param>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.ptClassBreaksRendererCalss.InitialSymbol">
+            <summary>
+            初始化符号信息
+            </summary>
+        </member>
         <member name="T:ArcGIS_SLD_Converter.ptSimpleRendererClass">
             <summary>
             简单渲染方式
             </summary>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.ptSimpleRendererClass.#ctor(ESRI.ArcGIS.Carto.IFeatureRenderer,ESRI.ArcGIS.Carto.IFeatureLayer)">
+            <summary>
+            简单渲染方式
+            </summary>
+            <param name="pFeatureRender">渲染方式</param>
+            <param name="pFeatureLayer">渲染的目标图层</param>
         </member>
         <member name="M:ArcGIS_SLD_Converter.ptRenderFactory.#ctor(ESRI.ArcGIS.Carto.IFeatureRenderer,ESRI.ArcGIS.Carto.ILayer)">
             <summary>
@@ -1357,6 +1415,12 @@
             简单线符号
             </summary>
         </member>
+        <member name="M:ArcGIS_SLD_Converter.ptSimpleLineSymbolClass.#ctor(ESRI.ArcGIS.Display.ISymbol)">
+            <summary>
+            简单线符号
+            </summary>
+            <param name="pSymbol"></param>
+        </member>
         <member name="P:ArcGIS_SLD_Converter.ptSimpleLineSymbolClass.publicStyle">
             <summary>
             样式类型
@@ -1378,6 +1442,12 @@
             混列线符号
             </summary>
         </member>
+        <member name="M:ArcGIS_SLD_Converter.ptHashLineSymbolClass.#ctor(ESRI.ArcGIS.Display.ISymbol)">
+            <summary>
+            混列线符号
+            </summary>
+            <param name="pSymbol"></param>
+        </member>
         <member name="P:ArcGIS_SLD_Converter.ptHashLineSymbolClass.Angle">
             <summary>
             角度
@@ -1393,6 +1463,12 @@
             标记线符号
             </summary>
         </member>
+        <member name="M:ArcGIS_SLD_Converter.ptMarkerLineSymbolClass.#ctor(ESRI.ArcGIS.Display.ISymbol)">
+            <summary>
+            标记线符号
+            </summary>
+            <param name="pSymbol"></param>
+        </member>
         <member name="P:ArcGIS_SLD_Converter.ptMarkerLineSymbolClass.MarkSymbol">
             <summary>
             标记符号
@@ -1402,6 +1478,12 @@
             <summary>
             图片线符号
             </summary>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.ptPictureLineSymbolClass.#ctor(ESRI.ArcGIS.Display.ISymbol)">
+            <summary>
+            图片线符号
+            </summary>
+            <param name="pSymbol"></param>
         </member>
         <member name="P:ArcGIS_SLD_Converter.ptPictureLineSymbolClass.BackgroundColor">
             <summary>
@@ -1583,26 +1665,6 @@
             Y比例
             </summary>
         </member>
-        <member name="P:ArcGIS_SLD_Converter.ptPictureFillSymbolClass.OffsetX">
-            <summary>
-            X偏移
-            </summary>
-        </member>
-        <member name="P:ArcGIS_SLD_Converter.ptPictureFillSymbolClass.OffsetY">
-            <summary>
-            Y偏移
-            </summary>
-        </member>
-        <member name="P:ArcGIS_SLD_Converter.ptPictureFillSymbolClass.SeparationX">
-            <summary>
-            间隔X
-            </summary>
-        </member>
-        <member name="P:ArcGIS_SLD_Converter.ptPictureFillSymbolClass.SeparationY">
-            <summary>
-            间隔Y
-            </summary>
-        </member>
         <member name="T:ArcGIS_SLD_Converter.ptGradientFillSymbolClass">
             <summary>
             渐变填充符号
@@ -1713,34 +1775,49 @@
             轮廓线符号
             </summary>
         </member>
-        <member name="T:ArcGIS_SLD_Converter.ptMultilayerSymbolClass">
-            <summary>
-            多图层符号
-            </summary>
-        </member>
-        <member name="P:ArcGIS_SLD_Converter.ptMultilayerSymbolClass.MultiMarkerLayers">
-            <summary>
-            符号列表
-            </summary>
-        </member>
-        <member name="P:ArcGIS_SLD_Converter.ptMultilayerSymbolClass.LayerCount">
-            <summary>
-            图层数量
-            </summary>
-        </member>
         <member name="T:ArcGIS_SLD_Converter.ptMultilayerMarkerSymbolClass">
              <summary>
             多图层标记符号
              </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptMultilayerMarkerSymbolClass.MultiMarkerLayers">
+            <summary>
+            符号列表
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptMultilayerMarkerSymbolClass.LayerCount">
+            <summary>
+            图层数量
+            </summary>
         </member>
         <member name="T:ArcGIS_SLD_Converter.ptMultilayerLineSymbolClass">
             <summary>
             多图层线符号
             </summary>
         </member>
+        <member name="P:ArcGIS_SLD_Converter.ptMultilayerLineSymbolClass.MultiMarkerLayers">
+            <summary>
+            符号列表
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptMultilayerLineSymbolClass.LayerCount">
+            <summary>
+            图层数量
+            </summary>
+        </member>
         <member name="T:ArcGIS_SLD_Converter.ptMultilayerFillSymbolClass">
             <summary>
             多图层填充符号
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptMultilayerFillSymbolClass.MultiMarkerLayers">
+            <summary>
+            符号列表
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptMultilayerFillSymbolClass.LayerCount">
+            <summary>
+            图层数量
             </summary>
         </member>
         <member name="M:ArcGIS_SLD_Converter.ptSymbolFactory.#ctor(ESRI.ArcGIS.Display.ISymbol)">
@@ -1749,7 +1826,7 @@
             </summary>
             <param name="pSymbol"></param>
         </member>
-        <member name="M:ArcGIS_SLD_Converter.ptSymbolFactory.GetSymbolClass">
+        <member name="M:ArcGIS_SLD_Converter.ptSymbolFactory.GetSymbolClass(System.String,System.Collections.Generic.IList{System.String},System.Double,System.Double)">
             <summary>
             解析符号信息
             </summary>

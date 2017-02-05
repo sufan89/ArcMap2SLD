@@ -215,5 +215,50 @@ namespace ArcGIS_SLD_Converter
             }
             return AL;
         }
+
+        public static IList<int> EsriMarkcircleChartIndex = new int[] { 33, 40, 46, 53, 60, 61, 62, 63, 64, 65, 66, 67, 72, 79, 80, 81, 82, 90, 91, 92, 93, 171, 172, 183, 196, 199, 200, 8729 };
+
+        public static IList<int> EsriMarksquareChartIndex = new int[] { 34, 41, 47, 54, 74, 83, 84, 104, 174, 175, 179, 190, 192, 194, 198, 201 };
+
+        public static IList<int> EsriMarktriangleChartIndex = new int[] { 35, 42, 48, 55, 73, 86, 184, 185 };
+
+        public static IList<int> EsriMarkcrossChartIndex = new int[] { 69, 70, 71, 203, 211 };
+
+        public static IList<int> EsriMarkstarChartIndex = new int[] { 94, 95, 96, 106, 107, 108 };
+
+        public static IList<int> ESRIIGLFONT22circleChartIndex = new int[] { 65, 66, 67, 68, 69, 108, 93, 94, 95, 96, 103, 105, 106 };
+
+        public static IList<int> ESRIIGLFONT22squareChartIndex = new int[] { 70, 71, 88, 89, 90, 91, 92, 118, 119, 120, 121};
+
+        public static IList<int> ESRIIGLFONT22triangleChartIndex = new int[] { 72, 73, 75, 81, 85, 86, 99, 100, 101, 102, 104 };
+
+        public static IList<int> SYMBOLScircleChartIndex = new int[] { 33, 34, 35, 41, 42, 43, 44, 45, 46, 47, 48, 56, 57, 
+            58, 65, 68, 69, 70, 71, 74, 75, 76, 77, 82, 83, 86, 87, 88, 89, 92, 93, 94, 95, 98, 99,100,101,104,105,106,107,
+            110,111,112,113,116,117,118,119,120,121,122,123,124,125,161,171,177,178,179,180,181,182,183,184,185,186,244,246,247,248,249,8729};
+
+        public static IList<int> SYMBOLSsquareChartIndex = new int[] { 37, 42, 43, 50, 55, 67, 73, 79, 85, 91, 97, 103, 109, 115, 170, 172, 200,
+            201, 202, 203, 204, 205, 208, 209, 210, 226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,243,250};
+
+        public static IList<int> SYMBOLStriangleChartIndex = new int[] { 36, 46, 49, 66, 72, 78, 84, 90, 96, 102, 108, 114, 162, 168,
+        169,175,176,186,187,188,189,190,213,214,215,216,217,218,219,220,245};
+
+        public static IList<int> SYMBOLSXChartIndex = new int[] { 195, 196, 197, 198, 199, 206, 207};
+
+        public static IList<int> MarkChartIndex = new int[] { 33, 34, 35, 36, 37, 38, 39, 67, 68, 69, 71, 81, 88, 97, 98, 99, 100, 101, 102, 103,
+        107,113,116,118,161,163,165,167,168,172,174,175,179,182,183,184,185,186,190,192,193,194,195,196,197,198,199,200,201,203,
+        204,205,206,207,208,209,210,211,215,219,8729};
+
+        public static IList<int> FONT22ChartIndex = new int[] { 72, 73, 74, 75, 76, 77, 78, 79, 80, 100, 118, 119, 120, 121};
+
+        public static IList<int> SYMBOLSColorChartIndex = new int[] { 34, 35, 36, 37, 38, 39, 40, 120, 161, 162, 163, 164, 165, 166,
+        167,187,188,194,195,196,197,198,199,200,202,203,204,205,206,207,208,209,210,211,212,213,214,215,217,218,221,222,223,224,225,
+        226,227,228,229,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249};
+
+        public static IList<int> SYMBOLS2ChartIndex = new int[] { 85, 88, 89, 91, 94, 95, 97, 98, 100};
+
+        public static IList<int> SYMBOLS3ChartIndex = new int[] { 41, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 122, 123,124,125,
+        168,169,188,189,216,230,250};
+
+        public static IList<int> SYMBOLS4ChartIndex = new int[] { 161, 170, 171, 172, 173, 174, 175, 176, 177, 178, 186};
     }
 }
