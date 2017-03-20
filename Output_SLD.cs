@@ -79,12 +79,8 @@ namespace ArcGIS_SLD_Converter
 			bool bSuccess = false;
             frmMotherForm.CHLabelTop(string.Format("输出SLD文件..."));
             frmMotherForm.CHLabelBottom(string.Format("正在输出SLD文件..."));
-
-            if (WriteToSLD())
-			{
-				bSuccess = true;
-			}
-
+            //输出SLD文件
+            bSuccess = WriteToSLD();
             frmMotherForm.CHLabelTop(string.Format("开始..."));
             if (bSuccess)
 			{
@@ -116,9 +112,16 @@ namespace ArcGIS_SLD_Converter
         /// <returns></returns>
 		private bool CreateSLD(string FileName, bool bIncludeLayerNames)
 		{
-			m_objXMLHandle = new XMLHandle(FileName, bIncludeLayerNames);
-			m_objXMLHandle.CreateNewFile(true, bIncludeLayerNames);
-			return default(bool);
+            try
+            {
+                m_objXMLHandle = new XMLHandle(FileName, bIncludeLayerNames);
+                m_objXMLHandle.CreateNewFile(true, bIncludeLayerNames);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
 		}
         /// <summary>
         /// 将分析的符号信息写入SLD

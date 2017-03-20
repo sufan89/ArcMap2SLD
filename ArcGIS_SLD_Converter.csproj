@@ -249,9 +249,6 @@
     </Compile>
     <Compile Include="RenderClass\ptRender.cs" />
     <Compile Include="RenderClass\ptRenderFactory.cs" />
-    <Compile Include="Store2Fields.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="SymbolClass\AnnotationClass.cs" />
     <Compile Include="SymbolClass\ptSymbolClass.cs" />
     <Compile Include="SymbolClass\ptSymbolFactory.cs" />

@@ -544,7 +544,7 @@ namespace ArcGIS_SLD_Converter
         }
         #endregion
 
-        #region 	
+        #region 符号解析
         /// <summary>
         /// 简单渲染方式
         /// </summary>

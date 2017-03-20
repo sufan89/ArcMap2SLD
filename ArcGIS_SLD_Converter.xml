@@ -1136,59 +1136,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="T:ArcGIS_SLD_Converter.Store2Fields">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="F:ArcGIS_SLD_Converter.Store2Fields.al1">
-            <summary>
-            数组1
-            </summary>
-        </member>
-        <member name="F:ArcGIS_SLD_Converter.Store2Fields.al2">
-            <summary>
-            数组2
-            </summary>
-        </member>
-        <member name="M:ArcGIS_SLD_Converter.Store2Fields.#ctor">
-            <summary>
-            初始化
-            </summary>
-        </member>
-        <member name="M:ArcGIS_SLD_Converter.Store2Fields.Add2Strings(System.String,System.String)">
-            <summary>
-            添加数组元素
-            </summary>
-            <param name="String1">数组1</param>
-            <param name="String2">数组2</param>
-        </member>
-        <member name="M:ArcGIS_SLD_Converter.Store2Fields.get_GetString1ByIndex(System.Int32)">
-            <summary>
-            根据数组1索引获取数组1的元素
-            </summary>
-            <param name="Index"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ArcGIS_SLD_Converter.Store2Fields.get_GetString2ByIndex(System.Int32)">
-            <summary>
-            根据数组2索引获取数组2的元素
-            </summary>
-            <param name="Index"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ArcGIS_SLD_Converter.Store2Fields.get_GetString2ForString1(System.String)">
-            <summary>
-            根据数组1的要素获取数组2相应索引的要素
-            </summary>
-            <param name="String1"></param>
-            <returns></returns>
-        </member>
-        <member name="P:ArcGIS_SLD_Converter.Store2Fields.Count">
-            <summary>
-            获取数组1的元素个数
-            </summary>
-        </member>
         <member name="P:ArcGIS_SLD_Converter.AnnotationClass.IsSingleProperty">
             <summary>
             是否是单个属性
@@ -1988,6 +1935,11 @@
         <member name="F:ArcGIS_SLD_Converter.XMLHandle.m_cXMLEncoding">
             <summary>
             XML编码规则
+            </summary>
+        </member>
+        <member name="F:ArcGIS_SLD_Converter.XMLHandle.m_objNSManager">
+            <summary>
+            XML命名管理
             </summary>
         </member>
         <member name="F:ArcGIS_SLD_Converter.XMLHandle.m_sRootNodeName">

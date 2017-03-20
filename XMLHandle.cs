@@ -10,12 +10,13 @@ using System.IO;
 using System.Collections.Specialized;
 using System.Xml.XPath;
 using Microsoft.VisualBasic.CompilerServices;
+using System.Collections.Generic;
 
 namespace ArcGIS_SLD_Converter
 {
 	public class XMLHandle
 	{
-#region Membervariablen
+        #region 全局变量
 		
 		private const string c_strLUT_Standard = "LUT_sld_mapping_file.xml";
 
@@ -41,11 +42,11 @@ namespace ArcGIS_SLD_Converter
         /// </summary>
 		private XmlDocument m_objDoc; 
 
-		private StringDictionary m_objNameDict;
+		private Dictionary<string,string> m_objNameDict;
 
-		private StringDictionary m_objNamespaceDict; 
+        private Dictionary<string, string> m_objNamespaceDict; 
 
-		private Hashtable m_objXPathDict; 
+		private Dictionary<string,IList<string>> m_objXPathDict; 
         /// <summary>
         /// 根节点要素
         /// </summary>
@@ -77,7 +78,9 @@ namespace ArcGIS_SLD_Converter
         /// </summary>
 		private string m_cXMLEncoding;
 
-		private ArcGIS_SLD_Converter.Store2Fields m_objNamespaceURL; 
+		//private ArcGIS_SLD_Converter.Store2Fields m_objNamespaceURL;
+
+        private Dictionary<string, string> m_objNamespaceURL;
         /// <summary>
         /// XML命名管理
         /// </summary>
@@ -89,9 +92,9 @@ namespace ArcGIS_SLD_Converter
         /// </summary>
 		private string m_sRootNodeName; 
 		
-#endregion
+        #endregion
 
-#region 枚举变量
+        #region 枚举变量
 		/// <summary>
         /// XML文档状态
         /// </summary>
@@ -100,12 +103,9 @@ namespace ArcGIS_SLD_Converter
 			xmlDocClosed = 0,
 			xmlDocOpen = 1
 		}
+        #endregion
 
-#endregion
-		
-
-		
-#region 方法
+        #region 方法
         /// <summary>
         /// 构造函数
         /// </summary>
@@ -156,8 +156,6 @@ namespace ArcGIS_SLD_Converter
 				{
 					if (File.Exists(m_cXMLFilename))
 					{
-						if (!string.IsNullOrEmpty(m_cXMLFilename))
-						{
 							m_objDoc = new XmlDocument();
 							m_objDoc.Load(m_cXMLFilename);
 							m_objRoot = m_objDoc.DocumentElement;
@@ -166,11 +164,6 @@ namespace ArcGIS_SLD_Converter
 								throw (new Exception("打开文档不正确！"));
 							}
 							m_enDocMode = XMLState.xmlDocOpen;
-						}
-						else
-						{
-							throw (new Exception("文件路径不正确"));
-						}
 					}
 				}
 				else
@@ -184,15 +177,8 @@ namespace ArcGIS_SLD_Converter
 				ErrorMsg("打开XML文档错误", ex.Message, ex.StackTrace, "OpenDoc");
 			}
 		}
-		
-#endregion
-		
-
-		
-
-
-		
-#region 读写函数
+        #endregion
+        #region 读写函数
         /// <summary>
         /// 创建导航节点
         /// </summary>
@@ -200,12 +186,12 @@ namespace ArcGIS_SLD_Converter
         /// <returns></returns>
 		public bool NavigateElement(string AliasTagName)
 		{
-			XPathNavigator objNav = default(XPathNavigator); 
-			StringCollection objXPathColl = default(StringCollection); 
-			XmlNodeList objNodelist = default(XmlNodeList);
-			XmlNode objEvalNode = default(XmlNode);
-			XmlNode objTempNode = default(XmlNode);
-			XmlNode objTempNode2 = default(XmlNode);
+			XPathNavigator objNav; 
+			StringCollection objXPathColl; 
+			XmlNodeList objNodelist;
+			XmlNode objEvalNode ;
+			XmlNode objTempNode ;
+			XmlNode objTempNode2 ;
 			int  iInsurance = 0;
 			bool bSwitch = false;
             try
@@ -448,10 +434,10 @@ namespace ArcGIS_SLD_Converter
 					SetAttributeValue(m_SLDXmlns);
 				}
 				//写入XML命名空间
-				for (int i = 0; i <= m_objNamespaceURL.Count - 1; i++)
+				foreach (string key in m_objNamespaceURL.Keys)
 				{
-					CreateAttribute("xmlns" + ":" + m_objNamespaceURL.get_GetString1ByIndex(i));
-					SetAttributeValue(m_objNamespaceURL.get_GetString2ByIndex(i));
+                    CreateAttribute("xmlns" + ":" + key);
+					SetAttributeValue(m_objNamespaceURL[key]);
 				}
 				
 				objDeclare = m_objDoc.CreateXmlDeclaration(m_cXMLVersion, m_cXMLEncoding, "yes"); //XML版本和XML编码规则
@@ -460,22 +446,22 @@ namespace ArcGIS_SLD_Converter
 				m_enDocMode = XMLState.xmlDocOpen;
 				//XML命名空间管理器
 				m_objNSManager = new XmlNamespaceManager(m_objDoc.NameTable);
-				for (int j = 0; j <= m_objNamespaceURL.Count - 1; j++)
+                foreach (string key in m_objNamespaceURL.Keys)
 				{
-					m_objNSManager.AddNamespace(m_objNamespaceURL.get_GetString1ByIndex(j), m_objNamespaceURL.get_GetString2ByIndex(j));
+                    m_objNSManager.AddNamespace(key, m_objNamespaceURL[key]);
 				}
 				return true;
 			}
 			catch (Exception ex)
 			{
-				ErrorMsg("新建XML文档失败 (" + ex.Message.ToString() + ")", ex.Message, ex.StackTrace, "CreateNewFile");
+				ErrorMsg("新建XML文档失败 (" + ex.Message + ")", ex.Message, ex.StackTrace, "CreateNewFile");
 				return false;
 			}
 		}
-#endregion
+        #endregion
 		
 		
-#region Hilfsfunktionen
+#region 公共方法
         /// <summary>
         /// 读取XML文档配置信息
         /// </summary>
@@ -483,20 +469,20 @@ namespace ArcGIS_SLD_Converter
 		private bool ReadLUT()
 		{
 			string cFilename = "";
-			XmlDocument objLUTDoc = default(XmlDocument); 
-			XmlElement objRoot = default(XmlElement);
-			XmlElement objNode = default(XmlElement);
-			XmlElement objNode2 = default(XmlElement);
-			XmlElement objNode3 = default(XmlElement);
-			StringCollection objXPathExp = default(StringCollection); 
-			m_objNameDict = new StringDictionary();
-			m_objNamespaceDict = new StringDictionary();
-			m_objXPathDict = new Hashtable();
+			XmlDocument objLUTDoc; 
+			XmlElement objRoot ;
+			XmlElement objNode ;
+			XmlElement objNode2;
+			XmlElement objNode3 ;
+			IList<string> objXPathExp; 
+			m_objNameDict = new Dictionary<string,string>();
+            m_objNamespaceDict = new Dictionary<string, string>();
+			m_objXPathDict = new Dictionary<string,IList<string>>();
             //命名空间
-			m_objNamespaceURL = new ArcGIS_SLD_Converter.Store2Fields();
-			
+			m_objNamespaceURL = new Dictionary<string,string>();
 			try
 			{
+                //获取程序集所在的文件夹
                 string tempStr = System.IO.Path.GetDirectoryName(GetType().Assembly.Location);
                 cFilename = tempStr +"\\"+ m_sLUTFile;
 				if (File.Exists(cFilename))
@@ -505,20 +491,18 @@ namespace ArcGIS_SLD_Converter
 					objLUTDoc.Load(cFilename);
 					objRoot = objLUTDoc.DocumentElement;
                     objNode = objRoot.FirstChild as XmlElement;
-					while (!(objNode == null))
+					while (objNode!= null)
 					{
-					
 						if (objNode.Name == "sldSyntax")
 						{
                             objNode2 = objNode.FirstChild as XmlElement;
-							while (!(objNode2 == null))
+							while (objNode2 != null)
 							{
 								m_objNameDict.Add(objNode2.Name, objNode2.GetAttribute("ogcTag"));
 								m_objNamespaceDict.Add(objNode2.Name, objNode2.GetAttribute("Namespace"));
-								objXPathExp = new StringCollection();
+								objXPathExp = new List<string>();
                                 objNode3 = objNode2.FirstChild as XmlElement;
-								
-								while (!(objNode3 == null))
+								while (objNode3 != null)
 								{
 									objXPathExp.Add(objNode3.InnerText);
                                     objNode3 = objNode3.NextSibling as XmlElement;
@@ -531,7 +515,7 @@ namespace ArcGIS_SLD_Converter
 						else if (objNode.Name == "sldConfiguration")
 						{
                             objNode2 = objNode.FirstChild as XmlElement;
-							while (!(objNode2 == null))
+							while (objNode2!= null)
 							{
 								switch (objNode2.Name)
 								{
@@ -543,9 +527,9 @@ namespace ArcGIS_SLD_Converter
 										break;
 									case "Namespaces":
                                         objNode3 = objNode2.FirstChild as XmlElement;
-										while (!(objNode3 == null))
+										while (objNode3 != null)
 										{
-											m_objNamespaceURL.Add2Strings(objNode3.Name, objNode3.InnerText);
+											m_objNamespaceURL.Add(objNode3.Name, objNode3.InnerText);
                                             objNode3 = objNode3.NextSibling as XmlElement;
 										}
 										break;
@@ -645,9 +629,10 @@ namespace ArcGIS_SLD_Converter
 			string cRightTag = "";
 			try
 			{
-				if (m_objNamespaceURL.get_ContainsString1(System.Convert.ToString(Value)))
+                if (Value == null) return cRightTag;
+                if (m_objNamespaceURL.ContainsKey(Value.ToString()))
 				{
-					cRightTag = m_objNamespaceURL.get_GetString2ForString1(System.Convert.ToString(Value));
+					cRightTag = m_objNamespaceURL[Value.ToString()];
 				}
 				else
 				{
@@ -690,14 +675,6 @@ namespace ArcGIS_SLD_Converter
 				ErrorMsg("文件保存失败", ex.Message, ex.StackTrace, "SaveDoc");
 			}
 			return true;
-		}
-        /// <summary>
-        /// 关闭程序
-        /// </summary>
-        /// <returns></returns>
-		private void MyTermination()
-		{
-			//ProjectData.EndApp();
 		}
 #endregion
 	}
