@@ -21,7 +21,7 @@ namespace ArcGIS_SLD_Converter
         /// <summary>
         /// 分析图层信息
         /// </summary>
-		private Analize_ArcMap_Symbols.StructProject m_strDataSavings;
+        private ProjectClass m_strDataSavings;
         /// <summary>
         /// XML处理对象
         /// </summary>
@@ -60,7 +60,8 @@ namespace ArcGIS_SLD_Converter
 			m_cFile = frmMotherForm.GetSLDFile;
 			m_cPath = frmMotherForm.GetSLDPath;
 			m_objData = Analize;
-            //m_strDataSavings = (Analize_ArcMap_Symbols.StructProject)m_objData.GetProjectData;
+            //图层分析信息
+            m_strDataSavings = m_objData.GetProjectData;
 			m_bIncludeLayerNames = frmMotherForm.GetInfoIncludeLayerNames;
             //输出SLD文件
 			CentralProcessingFunc();
@@ -146,7 +147,7 @@ namespace ArcGIS_SLD_Converter
 
 			try
 			{
-				for (int i = 0; i <= m_strDataSavings.LayerCount - 1; i++)
+				for (int i = 0; i <= m_strDataSavings.m_LayerRender.Count; i++)
                 {
                     #region 获取图层名称
                     string strDatasetName = "";//数据集名称

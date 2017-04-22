@@ -2732,8 +2732,6 @@ namespace ArcGIS_SLD_Converter
             }
         }
         #endregion
-
-
         #region 公共方法
         /// <summary>
         /// 获取标记符号名称
