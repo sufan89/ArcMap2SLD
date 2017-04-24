@@ -2692,31 +2692,7 @@ namespace ArcGIS_SLD_Converter
                         IGeoFeatureLayer objGFL = objLayer as IGeoFeatureLayer;
                         ptRenderFactory renderFac = new ptRenderFactory(objGFL.Renderer, objLayer);
                         m_StrProject.m_LayerRender.Add(objLayer.Name, renderFac.GetRenderLayer());
-
-                        //唯一值渲染
-                        if (objGFL.Renderer is IUniqueValueRenderer)
-                        {
-                            IUniqueValueRenderer objRenderer = objGFL.Renderer as IUniqueValueRenderer;
-
-                            //m_StrProject.m_LayerRender.Add(objLayer.Name,StoreStructUVRenderer(objRenderer, objLayer as IFeatureLayer));
-                        }
-                        //简单渲染
-                        if (objGFL.Renderer is ISimpleRenderer)
-                        {
-                            ISimpleRenderer objRenderer = objGFL.Renderer as ISimpleRenderer;
-                            ISymbol pSymbol = objRenderer.Symbol;
-                            string tempStr = pSymbol.GetType().Name;
-                            //m_StrProject.m_LayerRender.Add(objLayer.Name,StoreStructSimpleRenderer(objRenderer, objLayer as IFeatureLayer));
-                        }
-                        //分类图表渲染
-                        if (objGFL.Renderer is IClassBreaksRenderer)
-                        {
-                            IClassBreaksRenderer objRenderer = objGFL.Renderer as IClassBreaksRenderer;
-                            //m_StrProject.m_LayerRender.Add(objLayer.Name,StoreStructCBRenderer(objRenderer, objLayer as IFeatureLayer));
-                            
-                        }
                     }
-
                 }
                 //非要素图层和其他图层不分析
                 else
