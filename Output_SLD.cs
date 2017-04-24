@@ -8,6 +8,8 @@ using System.Windows.Forms;
 using System.Xml;
 using stdole;
 using Microsoft.VisualBasic.CompilerServices;
+using System.Collections.Generic;
+
 namespace ArcGIS_SLD_Converter
 {
 	public class Output_SLD
@@ -131,7 +133,7 @@ namespace ArcGIS_SLD_Converter
 		public bool WriteToSLD()
 		{
 			string cLayerName = "";//图层名称
-			ArrayList objFieldValues = default(ArrayList);//字段值列表
+			IList<string> objFieldValues = new List<string>();//字段值列表
 			bool bDoOneLayer = false;
 			double dummy = 0;
              
@@ -147,35 +149,16 @@ namespace ArcGIS_SLD_Converter
 
 			try
 			{
-				for (int i = 0; i <= m_strDataSavings.m_LayerRender.Count; i++)
+				foreach (string key in m_strDataSavings.m_LayerRender.Keys)
                 {
                     #region 获取图层名称
                     string strDatasetName = "";//数据集名称
-                    ArrayList objSymbols = default(ArrayList); //符号列表
-                    //唯一值渲染
-                    if (m_strDataSavings.LayerList[i] is Analize_ArcMap_Symbols.StructUniqueValueRenderer)
-                    {
-                        Analize_ArcMap_Symbols.StructUniqueValueRenderer temp = (Analize_ArcMap_Symbols.StructUniqueValueRenderer)m_strDataSavings.LayerList[i];
-                        strDatasetName = temp.DatasetName;
-                        objSymbols = temp.SymbolList;
-                        cLayerName = temp.LayerName;
-                    }
-                    //分类渲染
-                    else if (m_strDataSavings.LayerList[i] is Analize_ArcMap_Symbols.StructClassBreaksRenderer)
-                    {
-                        Analize_ArcMap_Symbols.StructClassBreaksRenderer temp = (Analize_ArcMap_Symbols.StructClassBreaksRenderer)m_strDataSavings.LayerList[i];
-                        strDatasetName = temp.DatasetName;
-                        objSymbols = temp.SymbolList;
-                        cLayerName = temp.LayerName;
-                    }
-                    //简单渲染
-                    else if (m_strDataSavings.LayerList[i] is Analize_ArcMap_Symbols.StructSimpleRenderer)
-                    {
-                        Analize_ArcMap_Symbols.StructSimpleRenderer temp = (Analize_ArcMap_Symbols.StructSimpleRenderer)m_strDataSavings.LayerList[i];
-                        strDatasetName = temp.DatasetName;
-                        objSymbols = temp.SymbolList;
-                        cLayerName = temp.LayerName;
-                    }
+                    IList<ptSymbolClass> objSymbols = new List<ptSymbolClass>(); //符号列表
+                    ptLayer pLayer = m_strDataSavings.m_LayerRender[key];
+                    strDatasetName = pLayer.m_LayerRender.m_DatasetName;
+                    cLayerName = pLayer.m_LayerRender.m_LayerName;
+                    objSymbols = pLayer.m_LayerRender.SymbolList;
+                    ptRender pRender = pLayer.m_LayerRender;
                     #endregion
 
                     frmMotherForm.CHLabelBottom(string.Format("正在处理图层【{0}】...", cLayerName));
@@ -212,194 +195,20 @@ namespace ArcGIS_SLD_Converter
 					{
 
 						frmMotherForm.CHLabelSmall("写入符号 " + (j + 1).ToString() + " 中 " + objSymbols.Count.ToString());
-                      
 
+                        ptSymbolClass pSymbolClass = objSymbols[j];
                         #region 读取符号基础信息
-                        string StrLabel = "";//标题
-                        double StrLowerLimit = 0.00;
-                        double StrUpperLimit = 0.00;
-                        if (objSymbols[j] is Analize_ArcMap_Symbols.StructSimpleMarkerSymbol)
-                        {
-                            Analize_ArcMap_Symbols.StructSimpleMarkerSymbol temp=(Analize_ArcMap_Symbols.StructSimpleMarkerSymbol)objSymbols[j];
-                            StrLabel = temp.Label;
-                            StrLowerLimit = temp.LowerLimit;
-                            StrUpperLimit = temp.UpperLimit;
-                            objFieldValues = temp.Fieldvalues;
-                        }
-                        else if (objSymbols[j] is Analize_ArcMap_Symbols.StructCharacterMarkerSymbol)
-                        {
-                            Analize_ArcMap_Symbols.StructCharacterMarkerSymbol temp = (Analize_ArcMap_Symbols.StructCharacterMarkerSymbol)objSymbols[j];
-                            StrLabel = temp.Label;
-                            StrLowerLimit = temp.LowerLimit;
-                            StrUpperLimit = temp.UpperLimit;
-                            objFieldValues = temp.Fieldvalues;
-                        }
-                        else if (objSymbols[j] is Analize_ArcMap_Symbols.StructPictureMarkerSymbol)
-                        {
-                            Analize_ArcMap_Symbols.StructPictureMarkerSymbol temp = (Analize_ArcMap_Symbols.StructPictureMarkerSymbol)objSymbols[j];
-                            StrLabel = temp.Label;
-                            StrLowerLimit = temp.LowerLimit;
-                            StrUpperLimit = temp.UpperLimit;
-                            objFieldValues = temp.Fieldvalues;
-                        }
-                        else if (objSymbols[j] is Analize_ArcMap_Symbols.StructArrowMarkerSymbol)
-                        {
-                            Analize_ArcMap_Symbols.StructArrowMarkerSymbol temp = (Analize_ArcMap_Symbols.StructArrowMarkerSymbol)objSymbols[j];
-                            StrLabel = temp.Label;
-                            StrLowerLimit = temp.LowerLimit;
-                            StrUpperLimit = temp.UpperLimit;
-                            objFieldValues = temp.Fieldvalues;
-                        }
-                        else if (objSymbols[j] is Analize_ArcMap_Symbols.StructSimpleLineSymbol)
-                        {
-                            Analize_ArcMap_Symbols.StructSimpleLineSymbol temp = (Analize_ArcMap_Symbols.StructSimpleLineSymbol)objSymbols[j];
-                            StrLabel = temp.Label;
-                            StrLowerLimit = temp.LowerLimit;
-                            StrUpperLimit = temp.UpperLimit;
-                            objFieldValues = temp.Fieldvalues;
-                        }
-                        else if (objSymbols[j] is Analize_ArcMap_Symbols.StructCartographicLineSymbol)
-                        {
-                            Analize_ArcMap_Symbols.StructCartographicLineSymbol temp = (Analize_ArcMap_Symbols.StructCartographicLineSymbol)objSymbols[j];
-                            StrLabel = temp.Label;
-                            StrLowerLimit = temp.LowerLimit;
-                            StrUpperLimit = temp.UpperLimit;
-                            objFieldValues = temp.Fieldvalues;
-                        }
-                        else if (objSymbols[j] is Analize_ArcMap_Symbols.StructHashLineSymbol)
-                        {
-                            Analize_ArcMap_Symbols.StructHashLineSymbol temp = (Analize_ArcMap_Symbols.StructHashLineSymbol)objSymbols[j];
-                            StrLabel = temp.Label;
-                            StrLowerLimit = temp.LowerLimit;
-                            StrUpperLimit = temp.UpperLimit;
-                            objFieldValues = temp.Fieldvalues;
-                        }
-                        else if (objSymbols[j] is Analize_ArcMap_Symbols.StructMarkerLineSymbol)
-                        {
-                            Analize_ArcMap_Symbols.StructMarkerLineSymbol temp = (Analize_ArcMap_Symbols.StructMarkerLineSymbol)objSymbols[j];
-                            StrLabel = temp.Label;
-                            StrLowerLimit = temp.LowerLimit;
-                            StrUpperLimit = temp.UpperLimit;
-                            objFieldValues = temp.Fieldvalues;
-                        }
-                        else if (objSymbols[j] is Analize_ArcMap_Symbols.StructPictureLineSymbol)
-                        {
-                            Analize_ArcMap_Symbols.StructPictureLineSymbol temp = (Analize_ArcMap_Symbols.StructPictureLineSymbol)objSymbols[j];
-                            StrLabel = temp.Label;
-                            StrLowerLimit = temp.LowerLimit;
-                            StrUpperLimit = temp.UpperLimit;
-                            objFieldValues = temp.Fieldvalues;
-                        }
-                        else if (objSymbols[j] is Analize_ArcMap_Symbols.StructSimpleFillSymbol)
-                        {
-                            Analize_ArcMap_Symbols.StructSimpleFillSymbol temp = (Analize_ArcMap_Symbols.StructSimpleFillSymbol)objSymbols[j];
-                            StrLabel = temp.Label;
-                            StrLowerLimit = temp.LowerLimit;
-                            StrUpperLimit = temp.UpperLimit;
-                            objFieldValues = temp.Fieldvalues;
-                        }
-                        else if (objSymbols[j] is Analize_ArcMap_Symbols.StructMarkerFillSymbol)
-                        {
-                            Analize_ArcMap_Symbols.StructMarkerFillSymbol temp = (Analize_ArcMap_Symbols.StructMarkerFillSymbol)objSymbols[j];
-                            StrLabel = temp.Label;
-                            StrLowerLimit = temp.LowerLimit;
-                            StrUpperLimit = temp.UpperLimit;
-                            objFieldValues = temp.Fieldvalues;
-                        }
-                        else if (objSymbols[j] is Analize_ArcMap_Symbols.StructLineFillSymbol)
-                        {
-                            Analize_ArcMap_Symbols.StructLineFillSymbol temp = (Analize_ArcMap_Symbols.StructLineFillSymbol)objSymbols[j];
-                            StrLabel = temp.Label;
-                            StrLowerLimit = temp.LowerLimit;
-                            StrUpperLimit = temp.UpperLimit;
-                            objFieldValues = temp.Fieldvalues;
-                        }
-                        else if (objSymbols[j] is Analize_ArcMap_Symbols.StructDotDensityFillSymbol)
-                        {
-                            Analize_ArcMap_Symbols.StructDotDensityFillSymbol temp = (Analize_ArcMap_Symbols.StructDotDensityFillSymbol)objSymbols[j];
-                            StrLabel = temp.Label;
-                            StrLowerLimit = temp.LowerLimit;
-                            StrUpperLimit = temp.UpperLimit;
-                            objFieldValues = temp.Fieldvalues;
-                        }
-                        else if (objSymbols[j] is Analize_ArcMap_Symbols.StructPictureFillSymbol)
-                        {
-                            Analize_ArcMap_Symbols.StructPictureFillSymbol temp = (Analize_ArcMap_Symbols.StructPictureFillSymbol)objSymbols[j];
-                            StrLabel = temp.Label;
-                            StrLowerLimit = temp.LowerLimit;
-                            StrUpperLimit = temp.UpperLimit;
-                            objFieldValues = temp.Fieldvalues;
-                        }
-                        else if (objSymbols[j] is Analize_ArcMap_Symbols.StructGradientFillSymbol)
-                        {
-                            Analize_ArcMap_Symbols.StructGradientFillSymbol temp = (Analize_ArcMap_Symbols.StructGradientFillSymbol)objSymbols[j];
-                            StrLabel = temp.Label;
-                            StrLowerLimit = temp.LowerLimit;
-                            StrUpperLimit = temp.UpperLimit;
-                            objFieldValues = temp.Fieldvalues;
-                        }
-                        else if (objSymbols[j] is Analize_ArcMap_Symbols.StructBarChartSymbol)
-                        {
-                            Analize_ArcMap_Symbols.StructBarChartSymbol temp = (Analize_ArcMap_Symbols.StructBarChartSymbol)objSymbols[j];
-                            StrLabel = temp.Label;
-                            StrLowerLimit = temp.LowerLimit;
-                            StrUpperLimit = temp.UpperLimit;
-                            objFieldValues = temp.Fieldvalues;
-                        }
-                        else if (objSymbols[j] is Analize_ArcMap_Symbols.StructPieChartSymbol)
-                        {
-                            Analize_ArcMap_Symbols.StructPieChartSymbol temp = (Analize_ArcMap_Symbols.StructPieChartSymbol)objSymbols[j];
-                            StrLabel = temp.Label;
-                            StrLowerLimit = temp.LowerLimit;
-                            StrUpperLimit = temp.UpperLimit;
-                            objFieldValues = temp.Fieldvalues;
-                        }
-                        else if (objSymbols[j] is Analize_ArcMap_Symbols.StructStackedChartSymbol)
-                        {
-                            Analize_ArcMap_Symbols.StructStackedChartSymbol temp = (Analize_ArcMap_Symbols.StructStackedChartSymbol)objSymbols[j];
-                            StrLabel = temp.Label;
-                            StrLowerLimit = temp.LowerLimit;
-                            StrUpperLimit = temp.UpperLimit;
-                            objFieldValues = temp.Fieldvalues;
-                        }
-                        else if (objSymbols[j] is Analize_ArcMap_Symbols.StructTextSymbol)
-                        {
-                            Analize_ArcMap_Symbols.StructTextSymbol temp = (Analize_ArcMap_Symbols.StructTextSymbol)objSymbols[j];
-                            StrLabel = temp.Label;
-                            StrLowerLimit = temp.LowerLimit;
-                            StrUpperLimit = temp.UpperLimit;
-                            objFieldValues = temp.Fieldvalues;
-                        }
-                        else if (objSymbols[j] is Analize_ArcMap_Symbols.StructMultilayerMarkerSymbol)
-                        {
-                            Analize_ArcMap_Symbols.StructMultilayerMarkerSymbol temp = (Analize_ArcMap_Symbols.StructMultilayerMarkerSymbol)objSymbols[j];
-                            StrLabel = temp.Label;
-                            StrLowerLimit = temp.LowerLimit;
-                            StrUpperLimit = temp.UpperLimit;
-                            objFieldValues = temp.Fieldvalues;
-                        }
-                        else if (objSymbols[j] is Analize_ArcMap_Symbols.StructMultilayerLineSymbol)
-                        {
-                            Analize_ArcMap_Symbols.StructMultilayerLineSymbol temp = (Analize_ArcMap_Symbols.StructMultilayerLineSymbol)objSymbols[j];
-                            StrLabel = temp.Label;
-                            StrLowerLimit = temp.LowerLimit;
-                            StrUpperLimit = temp.UpperLimit;
-                            objFieldValues = temp.Fieldvalues;
-                        }
-                        else if (objSymbols[j] is Analize_ArcMap_Symbols.StructMultilayerFillSymbol)
-                        {
-                            Analize_ArcMap_Symbols.StructMultilayerFillSymbol temp = (Analize_ArcMap_Symbols.StructMultilayerFillSymbol)objSymbols[j];
-                            StrLabel = temp.Label;
-                            StrLowerLimit = temp.LowerLimit;
-                            StrUpperLimit = temp.UpperLimit;
-                            objFieldValues = temp.Fieldvalues;
-                        }
+                        string StrLabel = pSymbolClass.Label;//标题
+                        double StrLowerLimit = pSymbolClass.LowerLimit;
+                        double StrUpperLimit = pSymbolClass.UpperLimit;
+                        objFieldValues = pSymbolClass.Fieldvalues;
                         #endregion
 
                         #region 唯一值渲染
-                        if (m_strDataSavings.LayerList[i] is Analize_ArcMap_Symbols.StructUniqueValueRenderer)
+                        if (pRender is ptUniqueValueRendererClass)
 						{
-							Analize_ArcMap_Symbols.StructUniqueValueRenderer objStructUVR = (Analize_ArcMap_Symbols.StructUniqueValueRenderer)m_strDataSavings.LayerList[i];
+                            //Analize_ArcMap_Symbols.StructUniqueValueRenderer objStructUVR = (Analize_ArcMap_Symbols.StructUniqueValueRenderer)m_strDataSavings.LayerList[i];
+                            ptUniqueValueRendererClass pUniqueRender = pRender as ptUniqueValueRendererClass;
 							m_objXMLHandle.CreateElement("Rule");
 							m_objXMLHandle.CreateElement("RuleName");
                             m_objXMLHandle.SetElementText(StrLabel);
@@ -407,28 +216,29 @@ namespace ArcGIS_SLD_Converter
                             m_objXMLHandle.SetElementText(StrLabel);
 							m_objXMLHandle.CreateElement("Filter");
                             //设置显示比例尺
-							//if (frmMotherForm.chkScale.Checked == true)
-							//{
-							//	m_objXMLHandle.CreateElement("MinScale");
-							//	m_objXMLHandle.SetElementText(frmMotherForm.cboLowScale.Text);
-							//	m_objXMLHandle.CreateElement("MaxScale");
-							//	m_objXMLHandle.SetElementText(frmMotherForm.cboHighScale.Text);
-							//}
+                            if (!double.IsNaN(pLayer.m_MaxScale) && !double.IsNaN(pLayer.m_MinScale))
+                            {
+                                m_objXMLHandle.CreateElement("MinScale");
+                                m_objXMLHandle.SetElementText(pLayer.m_MinScale.ToString());
+                                m_objXMLHandle.CreateElement("MaxScale");
+                                m_objXMLHandle.SetElementText(pLayer.m_MaxScale.ToString());
+                            }
+                         
                             //多字段多值组合符号
-							if (objStructUVR.FieldCount > 1) 
+                            if (pUniqueRender.FieldCount > 1) 
 							{
 								m_objXMLHandle.CreateElement("And");
-								for (int l = 0; l <= objStructUVR.FieldCount - 1; l++) 
+								for (int l = 0; l <= pUniqueRender.FieldCount - 1; l++) 
 								{
 									m_objXMLHandle.CreateElement("PropertyIsEqualTo"); 
 									m_objXMLHandle.CreateElement("PropertyName");
-									m_objXMLHandle.SetElementText(System.Convert.ToString(objStructUVR.FieldNames[l]));
+									m_objXMLHandle.SetElementText(System.Convert.ToString(pUniqueRender.FieldNames[l]));
 									m_objXMLHandle.CreateElement("Fieldvalue");
 									m_objXMLHandle.SetElementText(System.Convert.ToString(objFieldValues[l]));
 								}
 							}
                             //单字段多值同一符号
-							else if (objStructUVR.FieldCount == 1)
+							else if (pUniqueRender.FieldCount == 1)
 							{
 								if (objFieldValues.Count > 1)
 								{
@@ -438,24 +248,24 @@ namespace ArcGIS_SLD_Converter
 								{
 									m_objXMLHandle.CreateElement("PropertyIsEqualTo"); 
 									m_objXMLHandle.CreateElement("PropertyName");
-									m_objXMLHandle.SetElementText(System.Convert.ToString(objStructUVR.FieldNames[0]));
+									m_objXMLHandle.SetElementText(System.Convert.ToString(pUniqueRender.FieldNames[0]));
 									m_objXMLHandle.CreateElement("Fieldvalue");
 									m_objXMLHandle.SetElementText(System.Convert.ToString(objFieldValues[l]));
 								}
 							}
 
-							switch (objStructUVR.FeatureCls)
-							{
-								case Analize_ArcMap_Symbols.FeatureClass.PointFeature:
-									WritePointFeatures(objSymbols[j]);
-									break;
-								case Analize_ArcMap_Symbols.FeatureClass.LineFeature:
-									WriteLineFeatures(objSymbols[j]);
-									break;
-								case Analize_ArcMap_Symbols.FeatureClass.PolygonFeature:
-									WritePolygonFeatures(objSymbols[j]);
-									break;
-							}
+                            if (pSymbolClass is ptMarkerSymbolClass)
+                            {
+                                WritePointFeatures(pSymbolClass as ptMarkerSymbolClass);
+                            }
+                            else if (pSymbolClass is ptLineSymbolClass)
+                            {
+                                WriteLineFeatures(pSymbolClass);
+                            }
+                            else if(pSymbolClass is ptFillSymbolClass)
+                            {
+                                WritePolygonFeatures(pSymbolClass);
+                            }
 						}
                         #endregion
 
@@ -600,17 +410,17 @@ namespace ArcGIS_SLD_Converter
         /// </summary>
         /// <param name="Symbol"></param>
         /// <returns></returns>
-		private bool WritePointFeatures(object Symbol)
+		private bool WritePointFeatures(ptMarkerSymbolClass Symbol)
 		{
 			try
 			{
 				int layerIdx = 0;
 				int maxLayerIdx = 1;
 				
-				if (Symbol is Analize_ArcMap_Symbols.StructMultilayerMarkerSymbol)
+				if (Symbol is ptMultilayerMarkerSymbolClass)
 				{
-					Analize_ArcMap_Symbols.StructMultilayerMarkerSymbol objTempStruct = (Analize_ArcMap_Symbols.StructMultilayerMarkerSymbol)Symbol;
-					maxLayerIdx = objTempStruct.LayerCount;
+                    ptMultilayerMarkerSymbolClass pMultiMarkerSymbol = Symbol as ptMultilayerMarkerSymbolClass;
+                    maxLayerIdx = pMultiMarkerSymbol.LayerCount;
 				}
 				for (layerIdx = 0; layerIdx <= maxLayerIdx - 1; layerIdx++)
 				{
