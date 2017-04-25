@@ -657,7 +657,7 @@ namespace ArcGIS_SLD_Converter
 		private object ErrorMsg(string message, string exMessage, string stack, string functionname)
 		{
 			MessageBox.Show(message + "." + "\r\n" + exMessage + "\r\n" + stack, functionname, MessageBoxButtons.OK, MessageBoxIcon.Error);
-			MyTermination();
+			//MyTermination();
 			return null;
 		}
         /// <summary>
