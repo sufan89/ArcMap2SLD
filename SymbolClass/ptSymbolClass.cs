@@ -124,6 +124,7 @@ namespace ArcGIS_SLD_Converter
             Size = pMarkerSymbol.Size;
             XOffset = pMarkerSymbol.XOffset;
             YOffset = pMarkerSymbol.YOffset;
+            Filled = pMarkerSymbol.Color.Transparency != 0;
         }
         /// <summary>
         /// 角度
@@ -145,6 +146,10 @@ namespace ArcGIS_SLD_Converter
         /// Y偏移量
         /// </summary>
         public double YOffset { get; set; }
+        /// <summary>
+        /// 是否填充
+        /// </summary>
+        public bool Filled { get; set; }
     }
     /// <summary>
     /// 简单标记符号
@@ -176,6 +181,7 @@ namespace ArcGIS_SLD_Converter
         /// 样式
         /// </summary>
         public string Style;
+
     }
     /// <summary>
     ///字符标记符号
@@ -524,7 +530,7 @@ namespace ArcGIS_SLD_Converter
         /// <summary>
         /// 轮廓符号
         /// </summary>
-        public ptSymbolClass OutlineSymbol { get; set; }
+        public ptLineSymbolClass OutlineSymbol { get; set; }
     }
     /// <summary>
     /// 简单填充符号
@@ -557,7 +563,7 @@ namespace ArcGIS_SLD_Converter
             IMarkerFillSymbol pMarkerFillSymbol = pSymbol as IMarkerFillSymbol;
             GridAngle = pMarkerFillSymbol.GridAngle;
             IMarkerSymbol pMarkerSymbol = pMarkerFillSymbol.MarkerSymbol;
-            ptSymbolClass pSymbolClass = null ;
+            ptMarkerSymbolClass pSymbolClass = null ;
             if (pMarkerSymbol is ISimpleMarkerSymbol)
             {
                 pSymbolClass = new ptSimpleMarkerSymbolClass(pMarkerSymbol as ISymbol);
@@ -587,7 +593,7 @@ namespace ArcGIS_SLD_Converter
         /// <summary>
         /// 标记符号
         /// </summary>
-        public ptSymbolClass MarkerSymbol { get; set; }
+        public ptMarkerSymbolClass MarkerSymbol { get; set; }
     }
     /// <summary>
     /// 线填充符号
@@ -1049,11 +1055,11 @@ namespace ArcGIS_SLD_Converter
         {
             IMultiLayerLineSymbol pMultiLayerLineSymbol = pSymbol as IMultiLayerLineSymbol;
             LayerCount = pMultiLayerLineSymbol.LayerCount;
-            MultiMarkerLayers = new List<ptSymbolClass>();
+            MultiLineSymbol = new List<ptLineSymbolClass>();
             for (int i = 0; i <= pMultiLayerLineSymbol.LayerCount - 1; i++)
             {
                 ILineSymbol pLineSymbol = pMultiLayerLineSymbol.get_Layer(i);
-                ptSymbolClass tempSymbol = null;
+                ptLineSymbolClass tempSymbol = null;
                 if (pLineSymbol is ISimpleLineSymbol)
                 {
                     tempSymbol = new ptSimpleLineSymbolClass(pLineSymbol as ISymbol);
@@ -1080,13 +1086,13 @@ namespace ArcGIS_SLD_Converter
                 {
                     tempSymbol = new ptMultilayerLineSymbolClass(pLineSymbol as ISymbol);
                 }
-                MultiMarkerLayers.Add(tempSymbol);
+                MultiLineSymbol.Add(tempSymbol);
             }
         }
         /// <summary>
         /// 符号列表
         /// </summary>
-        public IList<ptSymbolClass> MultiMarkerLayers { get; set; }
+        public IList<ptLineSymbolClass> MultiLineSymbol { get; set; }
         /// <summary>
         /// 图层数量
         /// </summary>
@@ -1102,7 +1108,7 @@ namespace ArcGIS_SLD_Converter
         {
             IMultiLayerFillSymbol pMultiLayerFillSymbol = pSymbol as IMultiLayerFillSymbol;
             LayerCount = pMultiLayerFillSymbol.LayerCount;
-            MultiMarkerLayers = new List<ptFillSymbolClass>();
+            MultiFillSymbol = new List<ptFillSymbolClass>();
             for (int i = 0; i <= LayerCount - 1; i++)
             {
                 ptFillSymbolClass pPtSymbolClass=null;
@@ -1137,14 +1143,14 @@ namespace ArcGIS_SLD_Converter
                 }
                 if (pPtSymbolClass != null)
                 {
-                    MultiMarkerLayers.Add(pPtSymbolClass);
+                    MultiFillSymbol.Add(pPtSymbolClass);
                 }
             }
         }
         /// <summary>
         /// 符号列表
         /// </summary>
-        public IList<ptFillSymbolClass> MultiMarkerLayers { get; set; }
+        public IList<ptFillSymbolClass> MultiFillSymbol { get; set; }
         /// <summary>
         /// 图层数量
         /// </summary>

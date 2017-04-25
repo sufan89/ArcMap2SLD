@@ -207,7 +207,6 @@ namespace ArcGIS_SLD_Converter
                         #region 唯一值渲染
                         if (pRender is ptUniqueValueRendererClass)
 						{
-                            //Analize_ArcMap_Symbols.StructUniqueValueRenderer objStructUVR = (Analize_ArcMap_Symbols.StructUniqueValueRenderer)m_strDataSavings.LayerList[i];
                             ptUniqueValueRendererClass pUniqueRender = pRender as ptUniqueValueRendererClass;
 							m_objXMLHandle.CreateElement("Rule");
 							m_objXMLHandle.CreateElement("RuleName");
@@ -223,7 +222,6 @@ namespace ArcGIS_SLD_Converter
                                 m_objXMLHandle.CreateElement("MaxScale");
                                 m_objXMLHandle.SetElementText(pLayer.m_MaxScale.ToString());
                             }
-                         
                             //多字段多值组合符号
                             if (pUniqueRender.FieldCount > 1) 
 							{
@@ -260,33 +258,33 @@ namespace ArcGIS_SLD_Converter
                             }
                             else if (pSymbolClass is ptLineSymbolClass)
                             {
-                                WriteLineFeatures(pSymbolClass);
+                                WriteLineFeatures(pSymbolClass as ptLineSymbolClass);
                             }
                             else if(pSymbolClass is ptFillSymbolClass)
                             {
-                                WritePolygonFeatures(pSymbolClass);
+                                WritePolygonFeatures(pSymbolClass as ptFillSymbolClass);
                             }
 						}
                         #endregion
 
                         #region 分类值渲染方式
-                        else if (m_strDataSavings.LayerList[i] is Analize_ArcMap_Symbols.StructClassBreaksRenderer)
+                        else if (pRender is ptClassBreaksRendererCalss)
 						{
-							Analize_ArcMap_Symbols.StructClassBreaksRenderer objStructCBR = (Analize_ArcMap_Symbols.StructClassBreaksRenderer)m_strDataSavings.LayerList[i];
+							ptClassBreaksRendererCalss objStructCBR = pRender as ptClassBreaksRendererCalss;
 							m_objXMLHandle.CreateElement("Rule");
 							m_objXMLHandle.CreateElement("RuleName");
                             m_objXMLHandle.SetElementText(StrLabel);
 							m_objXMLHandle.CreateElement("Title");
                             m_objXMLHandle.SetElementText(StrLabel);
 							m_objXMLHandle.CreateElement("Filter");
-							//if (frmMotherForm.chkScale.Checked == true)
-							//{
-							//	m_objXMLHandle.CreateElement("MinScale");
-							//	m_objXMLHandle.SetElementText(frmMotherForm.cboLowScale.Text);
-							//	m_objXMLHandle.CreateElement("MaxScale");
-							//	m_objXMLHandle.SetElementText(frmMotherForm.cboHighScale.Text);
-							//}
-							m_objXMLHandle.CreateElement("PropertyIsBetween");
+                            if (!double.IsNaN(pLayer.m_MaxScale) && !double.IsNaN(pLayer.m_MinScale))
+                            {
+                                m_objXMLHandle.CreateElement("MinScale");
+                                m_objXMLHandle.SetElementText(pLayer.m_MinScale.ToString());
+                                m_objXMLHandle.CreateElement("MaxScale");
+                                m_objXMLHandle.SetElementText(pLayer.m_MaxScale.ToString());
+                            }
+                            m_objXMLHandle.CreateElement("PropertyIsBetween");
 							m_objXMLHandle.CreateElement("PropertyName");
 							m_objXMLHandle.SetElementText(objStructCBR.FieldName);
 							m_objXMLHandle.CreateElement("LowerBoundary");
@@ -297,44 +295,43 @@ namespace ArcGIS_SLD_Converter
 							m_objXMLHandle.CreateElement("Fieldvalue");
                             dummy = StrUpperLimit; 
 							m_objXMLHandle.SetElementText(CommaToPoint(dummy));
-							switch (objStructCBR.FeatureCls)
-							{
-								case Analize_ArcMap_Symbols.FeatureClass.PointFeature:
-									WritePointFeatures(objSymbols[j]);
-									break;
-								case Analize_ArcMap_Symbols.FeatureClass.LineFeature:
-									WriteLineFeatures(objSymbols[j]);
-									break;
-								case Analize_ArcMap_Symbols.FeatureClass.PolygonFeature:
-									WritePolygonFeatures(objSymbols[j]);
-									break;
-							}
-						}
+                            if (pSymbolClass is ptMarkerSymbolClass)
+                            {
+                                WritePointFeatures(pSymbolClass as ptMarkerSymbolClass);
+                            }
+                            else if (pSymbolClass is ptLineSymbolClass)
+                            {
+                                WriteLineFeatures(pSymbolClass as ptLineSymbolClass);
+                            }
+                            else if (pSymbolClass is ptFillSymbolClass)
+                            {
+                                WritePolygonFeatures(pSymbolClass as ptFillSymbolClass);
+                            }
+                        }
                         #endregion
 
                         #region 简单渲染方式
-                        else if (m_strDataSavings.LayerList[i] is Analize_ArcMap_Symbols.StructSimpleRenderer)
+                        else if (pRender is ptSimpleRendererClass)
 						{
-							Analize_ArcMap_Symbols.StructSimpleRenderer objStructSR = new Analize_ArcMap_Symbols.StructSimpleRenderer();
-                            objStructSR = (Analize_ArcMap_Symbols.StructSimpleRenderer)m_strDataSavings.LayerList[i];
+                            ptSimpleRendererClass objStructSR = pRender as ptSimpleRendererClass;
 							m_objXMLHandle.CreateElement("Rule");
 							m_objXMLHandle.CreateElement("RuleName");
-                            m_objXMLHandle.SetElementText(objStructSR.DatasetName);
+                            m_objXMLHandle.SetElementText(objStructSR.m_DatasetName);
 							m_objXMLHandle.CreateElement("Title");
-                            m_objXMLHandle.SetElementText(objStructSR.DatasetName);
-							switch (objStructSR.FeatureCls)
-							{
-								case Analize_ArcMap_Symbols.FeatureClass.PointFeature:
-									WritePointFeatures(objSymbols[j]);
-									break;
-								case Analize_ArcMap_Symbols.FeatureClass.LineFeature:
-									WriteLineFeatures(objSymbols[j]);
-									break;
-								case Analize_ArcMap_Symbols.FeatureClass.PolygonFeature:
-									WritePolygonFeatures(objSymbols[j]);
-									break;
-							}
-                            WriteAnnotation(objStructSR.Annotation);
+                            m_objXMLHandle.SetElementText(objStructSR.m_DatasetName);
+                            if (pSymbolClass is ptMarkerSymbolClass)
+                            {
+                                WritePointFeatures(pSymbolClass as ptMarkerSymbolClass);
+                            }
+                            else if (pSymbolClass is ptLineSymbolClass)
+                            {
+                                WriteLineFeatures(pSymbolClass as ptLineSymbolClass);
+                            }
+                            else if (pSymbolClass is ptFillSymbolClass)
+                            {
+                                WritePolygonFeatures(pSymbolClass as ptFillSymbolClass);
+                            }
+                            WriteAnnotation(objStructSR.AnnotationClass);
 						}
                         #endregion
                     }
@@ -361,7 +358,7 @@ namespace ArcGIS_SLD_Converter
         /// </summary>
         /// <param name="Annotation"></param>
         /// <returns></returns>
-		private bool WriteAnnotation(Analize_ArcMap_Symbols.StructAnnotation Annotation)
+		private bool WriteAnnotation(AnnotationClass Annotation)
 		{
 			if (Annotation.IsSingleProperty && Annotation.PropertyName != "")
 			{
@@ -476,14 +473,14 @@ namespace ArcGIS_SLD_Converter
         /// </summary>
         /// <param name="Symbol"></param>
         /// <returns></returns>
-		private bool WriteLineFeatures(object Symbol)
+		private bool WriteLineFeatures(ptLineSymbolClass Symbol)
 		{
 			try
 			{
 				int maxLayerIdx = 1;
-				if (Symbol is Analize_ArcMap_Symbols.StructMultilayerLineSymbol)
+				if (Symbol is ptMultilayerLineSymbolClass)
 				{
-                    Analize_ArcMap_Symbols.StructMultilayerLineSymbol objTempStruct = (Analize_ArcMap_Symbols.StructMultilayerLineSymbol)Symbol;
+                    ptMultilayerLineSymbolClass objTempStruct = Symbol as ptMultilayerLineSymbolClass;
 					maxLayerIdx = objTempStruct.LayerCount;
 				}
 				for (int layerIdx = 0; layerIdx <= maxLayerIdx - 1; layerIdx++)
@@ -526,22 +523,22 @@ namespace ArcGIS_SLD_Converter
         /// </summary>
         /// <param name="Symbol"></param>
         /// <returns></returns>
-		private bool WritePolygonFeatures(object Symbol)
+		private bool WritePolygonFeatures(ptFillSymbolClass Symbol)
 		{
             int iSecure = 0;
 			try
 			{
-				if (Symbol is Analize_ArcMap_Symbols.StructSimpleFillSymbol)
+				if (Symbol is ptSimpleFillSymbolClass)
 				{
 					WriteSolidFill(Symbol);
 				}
-				else if (Symbol is Analize_ArcMap_Symbols.StructMarkerFillSymbol)
+				else if (Symbol is ptMarkerFillSymbolClass)
 				{
 					WriteMarkerFill(Symbol);
 				}
-				else if (Symbol is Analize_ArcMap_Symbols.StructLineFillSymbol)
+				else if (Symbol is ptLineFillSymbolClass)
 				{
-                    Analize_ArcMap_Symbols.StructLineFillSymbol tempSymbol = (Analize_ArcMap_Symbols.StructLineFillSymbol)Symbol;
+                    ptLineFillSymbolClass tempSymbol = Symbol as ptLineFillSymbolClass;
                     if (tempSymbol.Angle > 22.5 && tempSymbol.Angle < 67.5)
 					{
                         WriteSlopedHatching(tempSymbol);
@@ -575,32 +572,32 @@ namespace ArcGIS_SLD_Converter
                         WritePerpendicularHatching(tempSymbol);
 					}
 				}
-				else if (Symbol is Analize_ArcMap_Symbols.StructDotDensityFillSymbol)
+				else if (Symbol is ptDotDensityFillSymbolClass)
 				{
 					WriteMarkerFill(Symbol); 
 				}
-				else if (Symbol is Analize_ArcMap_Symbols.StructPictureFillSymbol)
+				else if (Symbol is ptPictureLineSymbolClass)
 				{
 					
 				}
-				else if (Symbol is Analize_ArcMap_Symbols.StructGradientFillSymbol)
+				else if (Symbol is ptGradientFillSymbolClass)
 				{
 					
 				}
-				else if (Symbol is Analize_ArcMap_Symbols.StructMultilayerFillSymbol)
+				else if (Symbol is ptMultilayerFillSymbolClass)
 				{
-					Analize_ArcMap_Symbols.StructMultilayerFillSymbol MFS = MFS = (Analize_ArcMap_Symbols.StructMultilayerFillSymbol)Symbol;
+                    ptMultilayerFillSymbolClass MFS = Symbol as ptMultilayerFillSymbolClass;
                     bool bSwitch; 
 					bSwitch = false;
 					if (MFS.LayerCount == 1)
 					{
-						WritePolygonFeatures(MFS.MultiFillLayers[0]);
+						WritePolygonFeatures(MFS.MultiFillSymbol[0]);
 					}
 					else if (MFS.LayerCount == 2)
 					{
 						for (int i = MFS.LayerCount - 1; i >= 0; i--)
 						{
-							WritePolygonFeatures(MFS.MultiFillLayers[i]); 
+							WritePolygonFeatures(MFS.MultiFillSymbol[i]); 
 						}
 					}
 					else if (MFS.LayerCount > 2)
@@ -609,7 +606,7 @@ namespace ArcGIS_SLD_Converter
 						{
 							if (iSecure <= 1)
 							{
-								WritePolygonFeatures(MFS.MultiFillLayers[i]);
+								WritePolygonFeatures(MFS.MultiFillSymbol[i]);
 							}
 							iSecure++;
 						}
@@ -628,7 +625,7 @@ namespace ArcGIS_SLD_Converter
         /// </summary>
         /// <param name="Symbol"></param>
         /// <returns></returns>
-		private bool WriteSolidFill(object Symbol)
+		private bool WriteSolidFill(ptSymbolClass Symbol)
 		{
 			try
 			{
@@ -675,7 +672,7 @@ namespace ArcGIS_SLD_Converter
         /// </summary>
         /// <param name="Symbol"></param>
         /// <returns></returns>
-		private bool WriteMarkerFill(object Symbol)
+		private bool WriteMarkerFill(ptSymbolClass Symbol)
 		{
 			try
 			{
@@ -730,7 +727,7 @@ namespace ArcGIS_SLD_Converter
         /// </summary>
         /// <param name="Symbol"></param>
         /// <returns></returns>
-        private bool WriteSlopedHatching(Analize_ArcMap_Symbols.StructLineFillSymbol Symbol)
+        private bool WriteSlopedHatching(ptLineFillSymbolClass Symbol)
 		{
 			double dDummy = 0;
 			try
@@ -786,7 +783,7 @@ namespace ArcGIS_SLD_Converter
         /// </summary>
         /// <param name="Symbol"></param>
         /// <returns></returns>
-        private bool WritePerpendicularHatching(Analize_ArcMap_Symbols.StructLineFillSymbol Symbol)
+        private bool WritePerpendicularHatching(ptLineFillSymbolClass Symbol)
 		{
 			double dDummy = 0;
 			try
@@ -840,7 +837,7 @@ namespace ArcGIS_SLD_Converter
 #endregion
 
 #region 符号转换
-		private string GetValueFromSymbolstruct(string ValueNameOfValueYouWant, object SymbolStructure)
+		private string GetValueFromSymbolstruct(string ValueNameOfValueYouWant, ptSymbolClass SymbolStructure)
 		{
 			return GetValueFromSymbolstruct(ValueNameOfValueYouWant, SymbolStructure, 0);
 		}
@@ -851,39 +848,24 @@ namespace ArcGIS_SLD_Converter
         /// <param name="SymbolStructure"></param>
         /// <param name="LayerIdx"></param>
         /// <returns></returns>
-		private string GetValueFromSymbolstruct(string ValueNameOfValueYouWant, object SymbolStructure, int LayerIdx)
+		private string GetValueFromSymbolstruct(string ValueNameOfValueYouWant, ptSymbolClass SymbolStructure, int LayerIdx)
 		{
 			string cReturn = "0";
 			bool bSwitch = false;
 			try
 			{
                 #region  处理点符号
-                if (SymbolStructure is Analize_ArcMap_Symbols.StructSimpleMarkerSymbol)
+                if (SymbolStructure is ptMarkerSymbolClass)
 				{
-					cReturn = GetMarkerValue(ValueNameOfValueYouWant, SymbolStructure);
-					return cReturn;
-				}
-				else if (SymbolStructure is Analize_ArcMap_Symbols.StructCharacterMarkerSymbol)
-				{
-					cReturn = GetMarkerValue(ValueNameOfValueYouWant, SymbolStructure);
-					return cReturn;
-				}
-				else if (SymbolStructure is Analize_ArcMap_Symbols.StructPictureMarkerSymbol)
-				{
-					cReturn = GetMarkerValue(ValueNameOfValueYouWant, SymbolStructure);
-					return cReturn;
-				}
-				else if (SymbolStructure is Analize_ArcMap_Symbols.StructArrowMarkerSymbol)
-				{
-					cReturn = GetMarkerValue(ValueNameOfValueYouWant, SymbolStructure);
+					cReturn = GetMarkerValue(ValueNameOfValueYouWant, SymbolStructure as ptMarkerSymbolClass);
 					return cReturn;
 				}
                 #endregion
 
                 #region 处理线符号
-                else if (SymbolStructure is Analize_ArcMap_Symbols.StructSimpleLineSymbol)
+                else if (SymbolStructure is ptSimpleLineSymbolClass)
 				{
-                    Analize_ArcMap_Symbols.StructSimpleLineSymbol objTempStruct = (Analize_ArcMap_Symbols.StructSimpleLineSymbol)SymbolStructure;
+                    ptSimpleLineSymbolClass objTempStruct = SymbolStructure as ptSimpleLineSymbolClass;
 					if (ValueNameOfValueYouWant.ToUpper() == "LineWidth".ToUpper())
 					{
 						cReturn = CommaToPoint(objTempStruct.Width);
@@ -920,9 +902,9 @@ namespace ArcGIS_SLD_Converter
 					}
 					return cReturn;
 				}
-				else if (SymbolStructure is Analize_ArcMap_Symbols.StructCartographicLineSymbol)
+				else if (SymbolStructure is ptCartographicLineSymbol)
 				{
-                    Analize_ArcMap_Symbols.StructCartographicLineSymbol  objTempStruct = (Analize_ArcMap_Symbols.StructCartographicLineSymbol)SymbolStructure;
+                    ptCartographicLineSymbol objTempStruct = SymbolStructure as ptCartographicLineSymbol;
 					if (ValueNameOfValueYouWant.ToUpper() == "LineWidth".ToUpper())
 					{
 						cReturn = CommaToPoint(objTempStruct.Width);
@@ -950,29 +932,12 @@ namespace ArcGIS_SLD_Converter
 						}
 					}
 				}
-				else if (SymbolStructure is Analize_ArcMap_Symbols.StructHashLineSymbol)
+				else if (SymbolStructure is ptHashLineSymbolClass)
 				{
-                    Analize_ArcMap_Symbols.StructHashLineSymbol objTempStruct = (Analize_ArcMap_Symbols.StructHashLineSymbol)SymbolStructure;
+                    ptHashLineSymbolClass objTempStruct = SymbolStructure as ptHashLineSymbolClass;
 					if ((ValueNameOfValueYouWant.ToUpper() == "LineWidth".ToUpper()) || (ValueNameOfValueYouWant.ToUpper() == "LineDashArray".ToUpper()))
 					{
-						switch (objTempStruct.kindOfLineStruct)
-						{
-							case Analize_ArcMap_Symbols.LineStructs.StructCartographicLineSymbol:
-								cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, objTempStruct.HashSymbol_CartographicLine);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMarkerLineSymbol:
-								cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, objTempStruct.HashSymbol_MarkerLine);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMultilayerLineSymbol:
-								cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, objTempStruct.HashSymbol_MultiLayerLines, LayerIdx);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructPictureLineSymbol:
-								cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, objTempStruct.HashSymbol_PictureLine);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructSimpleLineSymbol:
-								cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, objTempStruct.HashSymbol_SimpleLine);
-								break;
-						}
+                        cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, objTempStruct.HashSymbol);
 					}
 					else if (ValueNameOfValueYouWant.ToUpper() == "LineColor".ToUpper())
 					{
@@ -985,9 +950,9 @@ namespace ArcGIS_SLD_Converter
 					}
 					return cReturn;
 				}
-				else if (SymbolStructure is Analize_ArcMap_Symbols.StructMarkerLineSymbol)
+				else if (SymbolStructure is ptMarkerLineSymbolClass)
 				{
-                    Analize_ArcMap_Symbols.StructMarkerLineSymbol objTempStruct = (Analize_ArcMap_Symbols.StructMarkerLineSymbol)SymbolStructure;
+                    ptMarkerLineSymbolClass objTempStruct = SymbolStructure as ptMarkerLineSymbolClass;
 					if (ValueNameOfValueYouWant.ToUpper() == "LineWidth".ToUpper())
 					{
 						InfoMsg("无线宽", "GetValueFromSymbolstruct");
@@ -1003,9 +968,9 @@ namespace ArcGIS_SLD_Converter
 					}
 					return cReturn;
 				}
-				else if (SymbolStructure is Analize_ArcMap_Symbols.StructPictureLineSymbol)
+				else if (SymbolStructure is ptPictureLineSymbolClass)
 				{
-                    Analize_ArcMap_Symbols.StructPictureLineSymbol objTempStruct = (Analize_ArcMap_Symbols.StructPictureLineSymbol)SymbolStructure;
+                    ptPictureLineSymbolClass objTempStruct = SymbolStructure as ptPictureLineSymbolClass;
 					if (ValueNameOfValueYouWant.ToUpper() == "LineWidth".ToUpper())
 					{
 						cReturn = CommaToPoint(objTempStruct.Width);
@@ -1024,9 +989,9 @@ namespace ArcGIS_SLD_Converter
                 #endregion
 
                 #region 处理面符号
-                else if (SymbolStructure is Analize_ArcMap_Symbols.StructSimpleFillSymbol)
+                else if (SymbolStructure is ptSimpleFillSymbolClass)
 				{
-                    Analize_ArcMap_Symbols.StructSimpleFillSymbol objTempStruct = (Analize_ArcMap_Symbols.StructSimpleFillSymbol)SymbolStructure;
+                    ptSimpleFillSymbolClass objTempStruct = SymbolStructure as ptSimpleFillSymbolClass;
 					if (ValueNameOfValueYouWant.ToUpper() == "PolygonColor".ToUpper())
 					{
 						cReturn = objTempStruct.Color;
@@ -1038,74 +1003,44 @@ namespace ArcGIS_SLD_Converter
 					}
 					else if (ValueNameOfValueYouWant.ToUpper() == "PolygonBorderWidth".ToUpper())
 					{
-						switch (objTempStruct.kindOfOutlineStruct)
-						{
-							case Analize_ArcMap_Symbols.LineStructs.StructHashLineSymbol:
-								cReturn = CommaToPoint(objTempStruct.Outline_HashLine.Width);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMarkerLineSymbol:
-								cReturn = CommaToPoint(objTempStruct.Outline_MarkerLine.Width);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMultilayerLineSymbol:
-								cReturn = GetValueFromSymbolstruct("LineWidth", objTempStruct.Outline_MultiLayerLines);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructPictureLineSymbol:
-								cReturn = CommaToPoint(objTempStruct.Outline_PictureLine.Width);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructSimpleLineSymbol:
-								cReturn = CommaToPoint(objTempStruct.Outline_SimpleLine.Width);
-								break;
-						}
+                        if (objTempStruct.OutlineSymbol is ptMultilayerLineSymbolClass)
+                        {
+                            cReturn = GetValueFromSymbolstruct("LineWidth", objTempStruct.OutlineSymbol);
+                        }
+                        else
+                        {
+                            cReturn = CommaToPoint(objTempStruct.OutlineSymbol.Width);
+                        }
 					}
 					else if (ValueNameOfValueYouWant.ToUpper() == "PolygonBorderColor".ToUpper())
 					{
-						switch (objTempStruct.kindOfOutlineStruct)
-						{
-							case Analize_ArcMap_Symbols.LineStructs.StructHashLineSymbol:
-								cReturn = objTempStruct.Outline_HashLine.Color;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMarkerLineSymbol:
-								cReturn = objTempStruct.Outline_MarkerLine.Color;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMultilayerLineSymbol:
-								cReturn = GetValueFromSymbolstruct("LineColor", objTempStruct.Outline_MultiLayerLines);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructPictureLineSymbol:
-								cReturn = objTempStruct.Outline_PictureLine.Color;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructSimpleLineSymbol:
-								cReturn = objTempStruct.Outline_SimpleLine.Color;
-								break;
-						}
+                        if (objTempStruct.OutlineSymbol is ptMultilayerLineSymbolClass)
+                        {
+                            cReturn = GetValueFromSymbolstruct("LineColor", objTempStruct.OutlineSymbol);
+                        }
+                        else
+                        {
+                            cReturn = objTempStruct.OutlineSymbol.Color;
+                        }
 					}
 					else if (ValueNameOfValueYouWant.ToUpper() == "PolygonBorderOpacity".ToUpper())
 					{
 						double tmpTransparency = 255.0;
-						switch (objTempStruct.kindOfOutlineStruct)
-						{
-							case Analize_ArcMap_Symbols.LineStructs.StructHashLineSymbol:
-								tmpTransparency = objTempStruct.Outline_HashLine.Transparency;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMarkerLineSymbol:
-								tmpTransparency = objTempStruct.Outline_MarkerLine.Transparency;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMultilayerLineSymbol:
-								tmpTransparency = System.Convert.ToDouble(255 * double.Parse(GetValueFromSymbolstruct("LineOpacity", objTempStruct.Outline_MultiLayerLines)));
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructPictureLineSymbol:
-								tmpTransparency = objTempStruct.Outline_PictureLine.Transparency;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructSimpleLineSymbol:
-								tmpTransparency = objTempStruct.Outline_SimpleLine.Transparency;
-								break;
-						}
+                        if (objTempStruct.OutlineSymbol is ptMultilayerLineSymbolClass)
+                        {
+                            tmpTransparency = System.Convert.ToDouble(255 * double.Parse(GetValueFromSymbolstruct("LineOpacity", objTempStruct.OutlineSymbol)));
+                        }
+                        else
+                        {
+                            tmpTransparency = objTempStruct.OutlineSymbol.Transparency;
+                        }
 						cReturn = CommaToPoint(tmpTransparency / 255.0);
 					}
 					return cReturn;
 				}
-				else if (SymbolStructure is Analize_ArcMap_Symbols.StructMarkerFillSymbol)
+				else if (SymbolStructure is ptMarkerFillSymbolClass)
 				{
-                    Analize_ArcMap_Symbols.StructMarkerFillSymbol objTempStruct = (Analize_ArcMap_Symbols.StructMarkerFillSymbol)SymbolStructure;
+                    ptMarkerFillSymbolClass objTempStruct = SymbolStructure as ptMarkerFillSymbolClass;
 					if (ValueNameOfValueYouWant.ToUpper() == "PolygonColor".ToUpper())
 					{
 						cReturn = objTempStruct.Color;
@@ -1117,116 +1052,66 @@ namespace ArcGIS_SLD_Converter
 					}
 					else if (ValueNameOfValueYouWant.ToUpper() == "PolygonBorderWidth".ToUpper())
 					{
-						switch (objTempStruct.kindOfOutlineStruct)
-						{
-							case Analize_ArcMap_Symbols.LineStructs.StructHashLineSymbol:
-								cReturn = CommaToPoint(objTempStruct.Outline_HashLine.Width);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMarkerLineSymbol:
-								cReturn = CommaToPoint(objTempStruct.Outline_MarkerLine.Width);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMultilayerLineSymbol:
-								cReturn = GetValueFromSymbolstruct("LineWidth", objTempStruct.Outline_MultiLayerLines);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructPictureLineSymbol:
-								cReturn = CommaToPoint(objTempStruct.Outline_PictureLine.Width);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructSimpleLineSymbol:
-								cReturn = CommaToPoint(objTempStruct.Outline_SimpleLine.Width);
-								break;
-						}
-					}
+                        if (objTempStruct.OutlineSymbol is ptMultilayerLineSymbolClass)
+                        {
+                            cReturn = GetValueFromSymbolstruct("LineWidth", objTempStruct.OutlineSymbol);
+                        }
+                        else
+                        {
+                            cReturn = CommaToPoint(objTempStruct.OutlineSymbol.Width);
+                        }
+                    }
 					else if (ValueNameOfValueYouWant.ToUpper() == "PolygonBorderColor".ToUpper())
 					{
-						switch (objTempStruct.kindOfOutlineStruct)
-						{
-							case Analize_ArcMap_Symbols.LineStructs.StructHashLineSymbol:
-								cReturn = objTempStruct.Outline_HashLine.Color;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMarkerLineSymbol:
-								cReturn = objTempStruct.Outline_MarkerLine.Color;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMultilayerLineSymbol:
-								cReturn = GetValueFromSymbolstruct("LineColor", objTempStruct.Outline_MultiLayerLines);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructPictureLineSymbol:
-								cReturn = objTempStruct.Outline_PictureLine.Color;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructSimpleLineSymbol:
-								cReturn = objTempStruct.Outline_SimpleLine.Color;
-								break;
-						}
-					}
+                        if (objTempStruct.OutlineSymbol is ptMultilayerLineSymbolClass)
+                        {
+                            cReturn = GetValueFromSymbolstruct("LineColor", objTempStruct.OutlineSymbol);
+                        }
+                        else
+                        {
+                            cReturn = objTempStruct.OutlineSymbol.Color;
+                        }
+                    }
 					else if (ValueNameOfValueYouWant.ToUpper() == "PolygonBorderOpacity".ToUpper())
 					{
 						double tmpTransparency = 255.0;
-						switch (objTempStruct.kindOfOutlineStruct)
-						{
-							case Analize_ArcMap_Symbols.LineStructs.StructHashLineSymbol:
-								tmpTransparency = objTempStruct.Outline_HashLine.Transparency;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMarkerLineSymbol:
-								tmpTransparency = objTempStruct.Outline_MarkerLine.Transparency;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMultilayerLineSymbol:
-								tmpTransparency = System.Convert.ToDouble(255 * double.Parse(GetValueFromSymbolstruct("LineOpacity", objTempStruct.Outline_MultiLayerLines)));
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructPictureLineSymbol:
-								tmpTransparency = objTempStruct.Outline_PictureLine.Transparency;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructSimpleLineSymbol:
-								tmpTransparency = objTempStruct.Outline_SimpleLine.Transparency;
-								break;
-						}
-						cReturn = CommaToPoint(tmpTransparency / 255.0);
+                        if (objTempStruct.OutlineSymbol is ptMultilayerLineSymbolClass)
+                        {
+                            tmpTransparency = System.Convert.ToDouble(255 * double.Parse(GetValueFromSymbolstruct("LineOpacity", objTempStruct.OutlineSymbol)));
+                        }
+                        else
+                        {
+                            tmpTransparency = objTempStruct.OutlineSymbol.Transparency;
+                        }
+                        cReturn = CommaToPoint(tmpTransparency / 255.0);
 					}
 					else if (ValueNameOfValueYouWant.ToUpper() == "PointSize".ToUpper())
 					{
-						switch (objTempStruct.kindOfMarkerStruct)
-						{
-							case Analize_ArcMap_Symbols.MarkerStructs.StructArrowMarkerSymbol:
-								cReturn = CommaToPoint(objTempStruct.MarkerSymbol_ArrowMarker.Size);
-								break;
-							case Analize_ArcMap_Symbols.MarkerStructs.StructCharacterMarkerSymbol:
-								cReturn = CommaToPoint(objTempStruct.MarkerSymbol_CharacterMarker.Size);
-								break;
-							case Analize_ArcMap_Symbols.MarkerStructs.StructMultilayerMarkerSymbol:
-								cReturn = GetValueFromSymbolstruct("PointSize", objTempStruct.MarkerSymbol_MultilayerMarker);
-								break;
-							case Analize_ArcMap_Symbols.MarkerStructs.StructPictureMarkerSymbol:
-								cReturn = CommaToPoint(objTempStruct.MarkerSymbol_PictureMarker.Size);
-								break;
-							case Analize_ArcMap_Symbols.MarkerStructs.StructSimpleMarkerSymbol:
-								cReturn = CommaToPoint(objTempStruct.MarkerSymbol_SimpleMarker.Size);
-								break;
-						}
+                        if (objTempStruct.MarkerSymbol is ptMultilayerMarkerSymbolClass)
+                        {
+                            cReturn = GetValueFromSymbolstruct("PointSize", objTempStruct.MarkerSymbol);
+                        }
+                        else
+                        {
+                            cReturn = CommaToPoint(objTempStruct.MarkerSymbol.Size);
+                        }
 					}
 					else if (ValueNameOfValueYouWant.ToUpper() == "PointColor".ToUpper())
 					{
-						switch (objTempStruct.kindOfMarkerStruct)
-						{
-							case Analize_ArcMap_Symbols.MarkerStructs.StructArrowMarkerSymbol:
-								cReturn = objTempStruct.MarkerSymbol_ArrowMarker.Color;
-								break;
-							case Analize_ArcMap_Symbols.MarkerStructs.StructCharacterMarkerSymbol:
-								cReturn = objTempStruct.MarkerSymbol_CharacterMarker.Color;
-								break;
-							case Analize_ArcMap_Symbols.MarkerStructs.StructMultilayerMarkerSymbol:
-								cReturn = GetValueFromSymbolstruct("PointColor", objTempStruct.MarkerSymbol_MultilayerMarker);
-								break;
-							case Analize_ArcMap_Symbols.MarkerStructs.StructPictureMarkerSymbol:
-								cReturn = objTempStruct.MarkerSymbol_PictureMarker.Color;
-								break;
-							case Analize_ArcMap_Symbols.MarkerStructs.StructSimpleMarkerSymbol:
-								cReturn = objTempStruct.MarkerSymbol_SimpleMarker.Color;
-								break;
-						}
+                        if (objTempStruct.MarkerSymbol is ptMultilayerMarkerSymbolClass)
+                        {
+                            cReturn = GetValueFromSymbolstruct("PointColor", objTempStruct.MarkerSymbol);
+                        }
+                        else
+                        {
+                            cReturn = objTempStruct.MarkerSymbol.Color;
+                        }
 					}
 					return cReturn;
 				}
-				else if (SymbolStructure is Analize_ArcMap_Symbols.StructLineFillSymbol)
+				else if (SymbolStructure is ptLineFillSymbolClass)
 				{
-                    Analize_ArcMap_Symbols.StructLineFillSymbol objTempStruct = (Analize_ArcMap_Symbols.StructLineFillSymbol)SymbolStructure;
+                    ptLineFillSymbolClass objTempStruct = SymbolStructure as ptLineFillSymbolClass;
 					if (ValueNameOfValueYouWant.ToUpper() == "PolygonColor".ToUpper())
 					{
 						cReturn = objTempStruct.Color;
@@ -1238,148 +1123,79 @@ namespace ArcGIS_SLD_Converter
 					}
 					else if (ValueNameOfValueYouWant.ToUpper() == "PolygonBorderWidth".ToUpper())
 					{
-						switch (objTempStruct.kindOfOutlineStruct)
-						{
-							case Analize_ArcMap_Symbols.LineStructs.StructHashLineSymbol:
-								cReturn = CommaToPoint(objTempStruct.Outline_HashLine.Width);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMarkerLineSymbol:
-								cReturn = CommaToPoint(objTempStruct.Outline_MarkerLine.Width);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMultilayerLineSymbol:
-								cReturn = GetValueFromSymbolstruct("LineWidth", objTempStruct.Outline_MultiLayerLines);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructPictureLineSymbol:
-								cReturn = CommaToPoint(objTempStruct.Outline_PictureLine.Width);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructSimpleLineSymbol:
-								cReturn = CommaToPoint(objTempStruct.Outline_SimpleLine.Width);
-								break;
-						}
+                        if (objTempStruct.OutlineSymbol is ptMultilayerLineSymbolClass)
+                        {
+                            cReturn = GetValueFromSymbolstruct("LineWidth", objTempStruct.OutlineSymbol);
+                        }
+                        else
+                        {
+                            cReturn = CommaToPoint(objTempStruct.OutlineSymbol.Width);
+                        }
 					}
 					else if (ValueNameOfValueYouWant.ToUpper() == "PolygonBorderColor".ToUpper())
 					{
-						switch (objTempStruct.kindOfOutlineStruct)
-						{
-							case Analize_ArcMap_Symbols.LineStructs.StructHashLineSymbol:
-								cReturn = objTempStruct.Outline_HashLine.Color;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMarkerLineSymbol:
-								cReturn = objTempStruct.Outline_MarkerLine.Color;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMultilayerLineSymbol:
-								cReturn = GetValueFromSymbolstruct("LineColor", objTempStruct.Outline_MultiLayerLines);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructPictureLineSymbol:
-								cReturn = objTempStruct.Outline_PictureLine.Color;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructSimpleLineSymbol:
-								cReturn = objTempStruct.Outline_SimpleLine.Color;
-								break;
-						}
+                        if (objTempStruct.OutlineSymbol is ptMultilayerLineSymbolClass)
+                        {
+                            cReturn = GetValueFromSymbolstruct("LineColor", objTempStruct.OutlineSymbol);
+                        }
+                        else
+                        {
+                            cReturn = objTempStruct.OutlineSymbol.Color;
+                        }
 					}
 					else if (ValueNameOfValueYouWant.ToUpper() == "PolygonBorderOpacity".ToUpper())
 					{
 						double tmpTransparency = 255.0;
-						switch (objTempStruct.kindOfOutlineStruct)
-						{
-							case Analize_ArcMap_Symbols.LineStructs.StructHashLineSymbol:
-								tmpTransparency = objTempStruct.Outline_HashLine.Transparency;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMarkerLineSymbol:
-								tmpTransparency = objTempStruct.Outline_MarkerLine.Transparency;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMultilayerLineSymbol:
-								tmpTransparency = System.Convert.ToDouble(255 * double.Parse(GetValueFromSymbolstruct("LineOpacity", objTempStruct.Outline_MultiLayerLines)));
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructPictureLineSymbol:
-								tmpTransparency = objTempStruct.Outline_PictureLine.Transparency;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructSimpleLineSymbol:
-								tmpTransparency = objTempStruct.Outline_SimpleLine.Transparency;
-								break;
-						}
+                        if (objTempStruct.OutlineSymbol is ptMultilayerLineSymbolClass)
+                        {
+                            tmpTransparency = System.Convert.ToDouble(255 * double.Parse(GetValueFromSymbolstruct("LineOpacity", objTempStruct.OutlineSymbol)));
+                        }
+                        else
+                        {
+                            tmpTransparency = objTempStruct.OutlineSymbol.Transparency;
+                        }
 						cReturn = CommaToPoint(tmpTransparency / 255.0);
 					}
 					else if (ValueNameOfValueYouWant.ToUpper() == "LineWidth".ToUpper())
 					{
-						switch (objTempStruct.kindOfLineStruct)
-						{
-							case Analize_ArcMap_Symbols.LineStructs.StructCartographicLineSymbol:
-								cReturn = CommaToPoint(objTempStruct.LineSymbol_CartographicLine.Width);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructHashLineSymbol:
-								cReturn = CommaToPoint(objTempStruct.LineSymbol_HashLine.Width);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMarkerLineSymbol:
-								cReturn = CommaToPoint(objTempStruct.LineSymbol_MarkerLine.Width);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMultilayerLineSymbol:
-								cReturn = GetValueFromSymbolstruct("LineWidth", objTempStruct.LineSymbol_MultiLayerLines);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructPictureLineSymbol:
-								cReturn = CommaToPoint(objTempStruct.LineSymbol_PictureLine.Width);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructSimpleLineSymbol:
-								cReturn = CommaToPoint(objTempStruct.LineSymbol_SimpleLine.Width);
-								break;
-						}
+                        if (objTempStruct.LineSymbol is ptMultilayerLineSymbolClass)
+                        {
+                            cReturn = GetValueFromSymbolstruct("LineWidth", objTempStruct.LineSymbol);
+                        }
+                        else
+                        {
+                            cReturn = CommaToPoint(objTempStruct.LineSymbol.Width);
+                        }
 					}
 					else if (ValueNameOfValueYouWant.ToUpper() == "LineColor".ToUpper())
 					{
-						switch (objTempStruct.kindOfLineStruct)
-						{
-							case Analize_ArcMap_Symbols.LineStructs.StructCartographicLineSymbol:
-								cReturn = objTempStruct.LineSymbol_CartographicLine.Color;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructHashLineSymbol:
-								cReturn = objTempStruct.LineSymbol_HashLine.Color;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMarkerLineSymbol:
-								cReturn = objTempStruct.LineSymbol_MarkerLine.Color;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMultilayerLineSymbol:
-								cReturn = GetValueFromSymbolstruct("LineColor", objTempStruct.LineSymbol_MultiLayerLines);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructPictureLineSymbol:
-								cReturn = objTempStruct.LineSymbol_PictureLine.Color;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructSimpleLineSymbol:
-								cReturn = objTempStruct.LineSymbol_SimpleLine.Color;
-								break;
-						}
+                        if (objTempStruct.LineSymbol is ptMultilayerLineSymbolClass)
+                        {
+                            cReturn = GetValueFromSymbolstruct("LineColor", objTempStruct.LineSymbol);
+                        }
+                        else
+                        {
+                            cReturn = objTempStruct.LineSymbol.Color;
+                        }
 					}
 					else if (ValueNameOfValueYouWant.ToUpper() == "LineOpacity".ToUpper())
 					{
 						double tmpTransparency = 255.0;
-						switch (objTempStruct.kindOfLineStruct)
-						{
-							case Analize_ArcMap_Symbols.LineStructs.StructCartographicLineSymbol:
-								tmpTransparency = objTempStruct.LineSymbol_CartographicLine.Transparency;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructHashLineSymbol:
-								tmpTransparency = objTempStruct.LineSymbol_HashLine.Transparency;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMarkerLineSymbol:
-								tmpTransparency = objTempStruct.LineSymbol_MarkerLine.Transparency;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMultilayerLineSymbol:
-								tmpTransparency = System.Convert.ToDouble(255 * double.Parse(GetValueFromSymbolstruct("LineOpacity", objTempStruct.LineSymbol_MultiLayerLines)));
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructPictureLineSymbol:
-								tmpTransparency = objTempStruct.LineSymbol_PictureLine.Transparency;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructSimpleLineSymbol:
-								tmpTransparency = objTempStruct.LineSymbol_SimpleLine.Transparency;
-								break;
-						}
+                        if (objTempStruct.LineSymbol is ptMultilayerLineSymbolClass)
+                        {
+                            tmpTransparency = System.Convert.ToDouble(255 * double.Parse(GetValueFromSymbolstruct("LineOpacity", objTempStruct.LineSymbol)));
+                        }
+                        else
+                        {
+                            tmpTransparency = objTempStruct.LineSymbol.Transparency;
+                        }
 						cReturn = CommaToPoint(tmpTransparency / 255.0);
 					}
 					return cReturn;
 				}
-				else if (SymbolStructure is Analize_ArcMap_Symbols.StructDotDensityFillSymbol)
+				else if (SymbolStructure is ptDotDensityFillSymbolClass)
 				{
-                    Analize_ArcMap_Symbols.StructDotDensityFillSymbol objTempStruct = (Analize_ArcMap_Symbols.StructDotDensityFillSymbol)SymbolStructure;
+                    ptDotDensityFillSymbolClass objTempStruct = SymbolStructure as ptDotDensityFillSymbolClass;
 					if (ValueNameOfValueYouWant.ToUpper() == "PolygonColor".ToUpper())
 					{
 						cReturn = objTempStruct.BackgroundColor;
@@ -1391,67 +1207,37 @@ namespace ArcGIS_SLD_Converter
 					}
 					else if (ValueNameOfValueYouWant.ToUpper() == "PolygonBorderWidth".ToUpper())
 					{
-						switch (objTempStruct.kindOfOutlineStruct)
-						{
-							case Analize_ArcMap_Symbols.LineStructs.StructHashLineSymbol:
-								cReturn = CommaToPoint(objTempStruct.Outline_HashLine.Width);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMarkerLineSymbol:
-								cReturn = CommaToPoint(objTempStruct.Outline_MarkerLine.Width);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMultilayerLineSymbol:
-								cReturn = GetValueFromSymbolstruct("LineWidth", objTempStruct.Outline_MultiLayerLines);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructPictureLineSymbol:
-								cReturn = CommaToPoint(objTempStruct.Outline_PictureLine.Width);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructSimpleLineSymbol:
-								cReturn = CommaToPoint(objTempStruct.Outline_SimpleLine.Width);
-								break;
-						}
+                        if (objTempStruct.OutlineSymbol is ptMultilayerLineSymbolClass)
+                        {
+                            cReturn = GetValueFromSymbolstruct("LineWidth", objTempStruct.OutlineSymbol);
+                        }
+                        else
+                        {
+                            cReturn = CommaToPoint(objTempStruct.OutlineSymbol.Width);
+                        }
 					}
 					else if (ValueNameOfValueYouWant.ToUpper() == "PolygonBorderColor".ToUpper())
 					{
-						switch (objTempStruct.kindOfOutlineStruct)
-						{
-							case Analize_ArcMap_Symbols.LineStructs.StructHashLineSymbol:
-								cReturn = objTempStruct.Outline_HashLine.Color;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMarkerLineSymbol:
-								cReturn = objTempStruct.Outline_MarkerLine.Color;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMultilayerLineSymbol:
-								cReturn = GetValueFromSymbolstruct("LineColor", objTempStruct.Outline_MultiLayerLines);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructPictureLineSymbol:
-								cReturn = objTempStruct.Outline_PictureLine.Color;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructSimpleLineSymbol:
-								cReturn = objTempStruct.Outline_SimpleLine.Color;
-								break;
-						}
+                        if (objTempStruct.OutlineSymbol is ptMultilayerLineSymbolClass)
+                        {
+                            cReturn = GetValueFromSymbolstruct("LineColor", objTempStruct.OutlineSymbol);
+                        }
+                        else
+                        {
+                            cReturn = objTempStruct.OutlineSymbol.Color;
+                        }
 					}
 					else if (ValueNameOfValueYouWant.ToUpper() == "PolygonBorderOpacity".ToUpper())
 					{
 						double tmpTransparency = 255.0;
-						switch (objTempStruct.kindOfOutlineStruct)
-						{
-							case Analize_ArcMap_Symbols.LineStructs.StructHashLineSymbol:
-								tmpTransparency = objTempStruct.Outline_HashLine.Transparency;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMarkerLineSymbol:
-								tmpTransparency = objTempStruct.Outline_MarkerLine.Transparency;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMultilayerLineSymbol:
-								tmpTransparency = System.Convert.ToDouble(255 * double.Parse(GetValueFromSymbolstruct("LineOpacity", objTempStruct.Outline_MultiLayerLines)));
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructPictureLineSymbol:
-								tmpTransparency = objTempStruct.Outline_PictureLine.Transparency;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructSimpleLineSymbol:
-								tmpTransparency = objTempStruct.Outline_SimpleLine.Transparency;
-								break;
-						}
+                        if (objTempStruct.OutlineSymbol is ptMultilayerLineSymbolClass)
+                        {
+                            tmpTransparency = System.Convert.ToDouble(255 * double.Parse(GetValueFromSymbolstruct("LineOpacity", objTempStruct.OutlineSymbol)));
+                        }
+                        else
+                        {
+                            tmpTransparency = objTempStruct.OutlineSymbol.Transparency;
+                        }
 						cReturn = CommaToPoint(tmpTransparency / 255.0);
 					}
 					else if (ValueNameOfValueYouWant.ToUpper() == "PointSize".ToUpper())
@@ -1464,9 +1250,9 @@ namespace ArcGIS_SLD_Converter
 					}
 					return cReturn;
 				}
-				else if (SymbolStructure is Analize_ArcMap_Symbols.StructPictureFillSymbol)
+				else if (SymbolStructure is ptPictureFillSymbolClass)
 				{
-                    Analize_ArcMap_Symbols.StructPictureFillSymbol objTempStruct = (Analize_ArcMap_Symbols.StructPictureFillSymbol)SymbolStructure;
+                    ptPictureFillSymbolClass objTempStruct = SymbolStructure as ptPictureFillSymbolClass;
 					if (ValueNameOfValueYouWant.ToUpper() == "PolygonColor".ToUpper())
 					{
 						cReturn = objTempStruct.BackgroundColor;
@@ -1476,76 +1262,46 @@ namespace ArcGIS_SLD_Converter
 						double tmpTransparency = objTempStruct.BackgroundTransparency;
 						cReturn = CommaToPoint(tmpTransparency / 255.0);
 					}
-					else if (ValueNameOfValueYouWant.ToUpper() == "PolygonBorderWidth".ToUpper())
-					{
-						switch (objTempStruct.kindOfOutlineStruct)
-						{
-							case Analize_ArcMap_Symbols.LineStructs.StructHashLineSymbol:
-								cReturn = CommaToPoint(objTempStruct.Outline_HashLine.Width);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMarkerLineSymbol:
-								cReturn = CommaToPoint(objTempStruct.Outline_MarkerLine.Width);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMultilayerLineSymbol:
-								cReturn = GetValueFromSymbolstruct("LineWidth", objTempStruct.Outline_MultiLayerLines);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructPictureLineSymbol:
-								cReturn = CommaToPoint(objTempStruct.Outline_PictureLine.Width);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructSimpleLineSymbol:
-								cReturn = CommaToPoint(objTempStruct.Outline_SimpleLine.Width);
-								break;
-						}
-					}
-					else if (ValueNameOfValueYouWant.ToUpper() == "PolygonBorderColor".ToUpper())
-					{
-						switch (objTempStruct.kindOfOutlineStruct)
-						{
-							case Analize_ArcMap_Symbols.LineStructs.StructHashLineSymbol:
-								cReturn = objTempStruct.Outline_HashLine.Color;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMarkerLineSymbol:
-								cReturn = objTempStruct.Outline_MarkerLine.Color;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMultilayerLineSymbol:
-								cReturn = GetValueFromSymbolstruct("LineColor", objTempStruct.Outline_MultiLayerLines);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructPictureLineSymbol:
-								cReturn = objTempStruct.Outline_PictureLine.Color;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructSimpleLineSymbol:
-								cReturn = objTempStruct.Outline_SimpleLine.Color;
-								break;
-						}
-					}
-					else if (ValueNameOfValueYouWant.ToUpper() == "PolygonBorderOpacity".ToUpper())
-					{
-						double tmpTransparency = 255.0;
-						switch (objTempStruct.kindOfOutlineStruct)
-						{
-							case Analize_ArcMap_Symbols.LineStructs.StructHashLineSymbol:
-								tmpTransparency = objTempStruct.Outline_HashLine.Transparency;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMarkerLineSymbol:
-								tmpTransparency = objTempStruct.Outline_MarkerLine.Transparency;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMultilayerLineSymbol:
-								tmpTransparency = System.Convert.ToDouble(255 * double.Parse(GetValueFromSymbolstruct("LineOpacity", objTempStruct.Outline_MultiLayerLines)));
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructPictureLineSymbol:
-								tmpTransparency = objTempStruct.Outline_PictureLine.Transparency;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructSimpleLineSymbol:
-								tmpTransparency = objTempStruct.Outline_SimpleLine.Transparency;
-								break;
-						}
-						cReturn = CommaToPoint(tmpTransparency / 255.0);
-					}
-					return cReturn;
+                    else if (ValueNameOfValueYouWant.ToUpper() == "PolygonBorderWidth".ToUpper())
+                    {
+                        if (objTempStruct.OutlineSymbol is ptMultilayerLineSymbolClass)
+                        {
+                            cReturn = GetValueFromSymbolstruct("LineWidth", objTempStruct.OutlineSymbol);
+                        }
+                        else
+                        {
+                            cReturn = CommaToPoint(objTempStruct.OutlineSymbol.Width);
+                        }
+                    }
+                    else if (ValueNameOfValueYouWant.ToUpper() == "PolygonBorderColor".ToUpper())
+                    {
+                        if (objTempStruct.OutlineSymbol is ptMultilayerLineSymbolClass)
+                        {
+                            cReturn = GetValueFromSymbolstruct("LineColor", objTempStruct.OutlineSymbol);
+                        }
+                        else
+                        {
+                            cReturn = objTempStruct.OutlineSymbol.Color;
+                        }
+                    }
+                    else if (ValueNameOfValueYouWant.ToUpper() == "PolygonBorderOpacity".ToUpper())
+                    {
+                        double tmpTransparency = 255.0;
+                        if (objTempStruct.OutlineSymbol is ptMultilayerLineSymbolClass)
+                        {
+                            tmpTransparency = System.Convert.ToDouble(255 * double.Parse(GetValueFromSymbolstruct("LineOpacity", objTempStruct.OutlineSymbol)));
+                        }
+                        else
+                        {
+                            tmpTransparency = objTempStruct.OutlineSymbol.Transparency;
+                        }
+                        cReturn = CommaToPoint(tmpTransparency / 255.0);
+                    }
+                    return cReturn;
 				}
-				else if (SymbolStructure is Analize_ArcMap_Symbols.StructGradientFillSymbol)
+				else if (SymbolStructure is ptGradientFillSymbolClass)
 				{
-                    Analize_ArcMap_Symbols.StructGradientFillSymbol objTempStruct = (Analize_ArcMap_Symbols.StructGradientFillSymbol)SymbolStructure;
+                    ptGradientFillSymbolClass objTempStruct = SymbolStructure as ptGradientFillSymbolClass;
 					if (ValueNameOfValueYouWant.ToUpper() == "PolygonColor".ToUpper())
 					{
 						cReturn = objTempStruct.Color;
@@ -1555,79 +1311,49 @@ namespace ArcGIS_SLD_Converter
 						double tmpTransparency = objTempStruct.Transparency;
 						cReturn = CommaToPoint(tmpTransparency / 255.0);
 					}
-					else if (ValueNameOfValueYouWant.ToUpper() == "PolygonBorderWidth".ToUpper())
-					{
-						switch (objTempStruct.kindOfOutlineStruct)
-						{
-							case Analize_ArcMap_Symbols.LineStructs.StructHashLineSymbol:
-								cReturn = CommaToPoint(objTempStruct.Outline_HashLine.Width);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMarkerLineSymbol:
-								cReturn = CommaToPoint(objTempStruct.Outline_MarkerLine.Width);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMultilayerLineSymbol:
-								cReturn = GetValueFromSymbolstruct("LineWidth", objTempStruct.Outline_MultiLayerLines);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructPictureLineSymbol:
-								cReturn = CommaToPoint(objTempStruct.Outline_PictureLine.Width);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructSimpleLineSymbol:
-								cReturn = CommaToPoint(objTempStruct.Outline_SimpleLine.Width);
-								break;
-						}
-					}
-					else if (ValueNameOfValueYouWant.ToUpper() == "PolygonBorderColor".ToUpper())
-					{
-						switch (objTempStruct.kindOfOutlineStruct)
-						{
-							case Analize_ArcMap_Symbols.LineStructs.StructHashLineSymbol:
-								cReturn = objTempStruct.Outline_HashLine.Color;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMarkerLineSymbol:
-								cReturn = objTempStruct.Outline_MarkerLine.Color;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMultilayerLineSymbol:
-								cReturn = GetValueFromSymbolstruct("LineColor", objTempStruct.Outline_MultiLayerLines);
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructPictureLineSymbol:
-								cReturn = objTempStruct.Outline_PictureLine.Color;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructSimpleLineSymbol:
-								cReturn = objTempStruct.Outline_SimpleLine.Color;
-								break;
-						}
-					}
-					else if (ValueNameOfValueYouWant.ToUpper() == "PolygonBorderOpacity".ToUpper())
-					{
-						double tmpTransparency = 255.0;
-						switch (objTempStruct.kindOfOutlineStruct)
-						{
-							case Analize_ArcMap_Symbols.LineStructs.StructHashLineSymbol:
-								tmpTransparency = objTempStruct.Outline_HashLine.Transparency;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMarkerLineSymbol:
-								tmpTransparency = objTempStruct.Outline_MarkerLine.Transparency;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructMultilayerLineSymbol:
-								tmpTransparency = System.Convert.ToDouble(255 * double.Parse(GetValueFromSymbolstruct("LineOpacity", objTempStruct.Outline_MultiLayerLines)));
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructPictureLineSymbol:
-								tmpTransparency = objTempStruct.Outline_PictureLine.Transparency;
-								break;
-							case Analize_ArcMap_Symbols.LineStructs.StructSimpleLineSymbol:
-								tmpTransparency = objTempStruct.Outline_SimpleLine.Transparency;
-								break;
-						}
-						cReturn = CommaToPoint(tmpTransparency / 255.0);
-					}
+                    else if (ValueNameOfValueYouWant.ToUpper() == "PolygonBorderWidth".ToUpper())
+                    {
+                        if (objTempStruct.OutlineSymbol is ptMultilayerLineSymbolClass)
+                        {
+                            cReturn = GetValueFromSymbolstruct("LineWidth", objTempStruct.OutlineSymbol);
+                        }
+                        else
+                        {
+                            cReturn = CommaToPoint(objTempStruct.OutlineSymbol.Width);
+                        }
+                    }
+                    else if (ValueNameOfValueYouWant.ToUpper() == "PolygonBorderColor".ToUpper())
+                    {
+                        if (objTempStruct.OutlineSymbol is ptMultilayerLineSymbolClass)
+                        {
+                            cReturn = GetValueFromSymbolstruct("LineColor", objTempStruct.OutlineSymbol);
+                        }
+                        else
+                        {
+                            cReturn = objTempStruct.OutlineSymbol.Color;
+                        }
+                    }
+                    else if (ValueNameOfValueYouWant.ToUpper() == "PolygonBorderOpacity".ToUpper())
+                    {
+                        double tmpTransparency = 255.0;
+                        if (objTempStruct.OutlineSymbol is ptMultilayerLineSymbolClass)
+                        {
+                            tmpTransparency = System.Convert.ToDouble(255 * double.Parse(GetValueFromSymbolstruct("LineOpacity", objTempStruct.OutlineSymbol)));
+                        }
+                        else
+                        {
+                            tmpTransparency = objTempStruct.OutlineSymbol.Transparency;
+                        }
+                        cReturn = CommaToPoint(tmpTransparency / 255.0);
+                    }
 					return cReturn;
 				}
                 #endregion
 
                 #region 统计图符号（不支持）
-                else if (SymbolStructure is Analize_ArcMap_Symbols.StructBarChartSymbol)
+                else if (SymbolStructure is ptBarChartSymbolClass)
 				{
-                    Analize_ArcMap_Symbols.StructBarChartSymbol objTempStruct = (Analize_ArcMap_Symbols.StructBarChartSymbol)SymbolStructure;
+                    ptBarChartSymbolClass objTempStruct = SymbolStructure as ptBarChartSymbolClass;
 					switch (ValueNameOfValueYouWant.ToUpper())
 					{
 						case "":
@@ -1642,10 +1368,9 @@ namespace ArcGIS_SLD_Converter
 					}
 					return cReturn;
 				}
-				else if (SymbolStructure is Analize_ArcMap_Symbols.StructPieChartSymbol)
+				else if (SymbolStructure is ptPieChartSymbolClass)
 				{
-					Analize_ArcMap_Symbols.StructPieChartSymbol objTempStruct;
-                    objTempStruct = (Analize_ArcMap_Symbols.StructPieChartSymbol)SymbolStructure;
+                    ptPieChartSymbolClass objTempStruct= SymbolStructure as ptPieChartSymbolClass;
 					switch (ValueNameOfValueYouWant.ToUpper())
 					{
 						case "":
@@ -1660,10 +1385,9 @@ namespace ArcGIS_SLD_Converter
 					}
 					return cReturn;
 				}
-				else if (SymbolStructure is Analize_ArcMap_Symbols.StructStackedChartSymbol)
+				else if (SymbolStructure is ptStackedChartSymbolClass)
 				{
-					Analize_ArcMap_Symbols.StructStackedChartSymbol objTempStruct;
-                    objTempStruct = (Analize_ArcMap_Symbols.StructStackedChartSymbol)SymbolStructure;
+                    ptStackedChartSymbolClass objTempStruct =SymbolStructure as ptStackedChartSymbolClass;
 					switch (ValueNameOfValueYouWant.ToUpper())
 					{
 						case "":
@@ -1681,9 +1405,9 @@ namespace ArcGIS_SLD_Converter
                 #endregion
 
                 #region 文本符号
-                else if (SymbolStructure is Analize_ArcMap_Symbols.StructTextSymbol)
+                else if (SymbolStructure is TextSymbolClass)
 				{
-                    Analize_ArcMap_Symbols.StructTextSymbol objTempStruct = (Analize_ArcMap_Symbols.StructTextSymbol)SymbolStructure;
+                    TextSymbolClass objTempStruct = SymbolStructure as TextSymbolClass;
 					if (ValueNameOfValueYouWant.ToUpper() == "TextColor".ToUpper())
 					{
 						cReturn = objTempStruct.Color;
@@ -1734,67 +1458,67 @@ namespace ArcGIS_SLD_Converter
                 #endregion
 
                 #region 多图层符号
-                else if (SymbolStructure is Analize_ArcMap_Symbols.StructMultilayerMarkerSymbol)
+                else if (SymbolStructure is ptMultilayerMarkerSymbolClass)
 				{
-                    Analize_ArcMap_Symbols.StructMultilayerMarkerSymbol objTempStruct = (Analize_ArcMap_Symbols.StructMultilayerMarkerSymbol)SymbolStructure;
+                    ptMultilayerMarkerSymbolClass objTempStruct = SymbolStructure as ptMultilayerMarkerSymbolClass;
 					cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, objTempStruct.MultiMarkerLayers[LayerIdx]);
 					return cReturn;
 				}
-				else if (SymbolStructure is Analize_ArcMap_Symbols.StructMultilayerLineSymbol)
+				else if (SymbolStructure is ptMultilayerLineSymbolClass)
 				{
-                    Analize_ArcMap_Symbols.StructMultilayerLineSymbol objTempStruct = (Analize_ArcMap_Symbols.StructMultilayerLineSymbol)SymbolStructure;
+                    ptMultilayerLineSymbolClass objTempStruct = SymbolStructure as ptMultilayerLineSymbolClass;
 					if (objTempStruct.LayerCount > 1)
 					{
 						for (int i = 0; i <= objTempStruct.LayerCount - 1; i++)
 						{
-							if (objTempStruct.MultiLineLayers[i] is Analize_ArcMap_Symbols.StructSimpleLineSymbol)
+							if (objTempStruct.MultiLineSymbol[i] is ptSimpleLineSymbolClass)
 							{
-                                Analize_ArcMap_Symbols.StructSimpleLineSymbol SLFS  = (Analize_ArcMap_Symbols.StructSimpleLineSymbol)objTempStruct.MultiLineLayers[i];
+                                ptSimpleLineSymbolClass SLFS  = objTempStruct.MultiLineSymbol[i] as ptSimpleLineSymbolClass;
 								cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, SLFS);
 								bSwitch = true;
 							}
 						}
 						if (bSwitch == false)
 						{
-							cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, objTempStruct.MultiLineLayers[LayerIdx]);
+							cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, objTempStruct.MultiLineSymbol[LayerIdx]);
 						}
 					}
 					else
 					{
-						cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, objTempStruct.MultiLineLayers[LayerIdx]);
+						cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, objTempStruct.MultiLineSymbol[LayerIdx]);
 					}
 					return cReturn;
 				}
-				else if (SymbolStructure is Analize_ArcMap_Symbols.StructMultilayerFillSymbol)
+				else if (SymbolStructure is ptMultilayerFillSymbolClass)
 				{
-                    Analize_ArcMap_Symbols.StructMultilayerFillSymbol objTempStruct = (Analize_ArcMap_Symbols.StructMultilayerFillSymbol)SymbolStructure;
+                    ptMultilayerFillSymbolClass objTempStruct = SymbolStructure as ptMultilayerFillSymbolClass;
 					if (objTempStruct.LayerCount > 1)
 					{
 						for (int i = 0; i <= objTempStruct.LayerCount - 1; i++)
 						{
 							if (((((ValueNameOfValueYouWant.ToUpper() == "PolygonColor".ToUpper()) || (ValueNameOfValueYouWant.ToUpper() == "PolygonOpacity".ToUpper())) || (ValueNameOfValueYouWant.ToUpper() == "PolygonBorderWidth".ToUpper())) || (ValueNameOfValueYouWant.ToUpper() == "PolygonBorderColor".ToUpper())) || (ValueNameOfValueYouWant.ToUpper() == "PolygonBorderOpacity".ToUpper()))
 							{
-								if (objTempStruct.MultiFillLayers[i] is Analize_ArcMap_Symbols.StructSimpleFillSymbol)
+								if (objTempStruct.MultiFillSymbol[i] is ptSimpleFillSymbolClass)
 								{
-                                    Analize_ArcMap_Symbols.StructSimpleFillSymbol SSFS = (Analize_ArcMap_Symbols.StructSimpleFillSymbol)objTempStruct.MultiFillLayers[i];
+                                    ptSimpleFillSymbolClass SSFS = objTempStruct.MultiFillSymbol[i] as ptSimpleFillSymbolClass;
 									cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, SSFS);
 									bSwitch = true;
 								}
 							}
 							else if ((ValueNameOfValueYouWant.ToUpper() == "PointColor".ToUpper()) || (ValueNameOfValueYouWant.ToUpper() == "PointSize".ToUpper()))
 							{
-								if (objTempStruct.MultiFillLayers[i] is Analize_ArcMap_Symbols.StructMarkerFillSymbol)
+								if (objTempStruct.MultiFillSymbol[i] is ptMarkerFillSymbolClass)
 								{
-                                    Analize_ArcMap_Symbols.StructMarkerFillSymbol SMFS = (Analize_ArcMap_Symbols.StructMarkerFillSymbol)objTempStruct.MultiFillLayers[i];
+                                    ptMarkerFillSymbolClass SMFS = objTempStruct.MultiFillSymbol[i] as ptMarkerFillSymbolClass;
 									cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, SMFS);
 									bSwitch = true;
 								}
 							}
 							else if (((ValueNameOfValueYouWant.ToUpper() == "LineWidth".ToUpper()) || (ValueNameOfValueYouWant.ToUpper() == "LineColor".ToUpper())) || (ValueNameOfValueYouWant.ToUpper() == "LineOpacity".ToUpper()))
 							{
-								if (objTempStruct.MultiFillLayers[i] is Analize_ArcMap_Symbols.StructLineFillSymbol)
+								if (objTempStruct.MultiFillSymbol[i] is ptLineFillSymbolClass)
 								{
-                                    Analize_ArcMap_Symbols.StructLineFillSymbol SLFS = (Analize_ArcMap_Symbols.StructLineFillSymbol)objTempStruct.MultiFillLayers[i];
+                                    ptLineFillSymbolClass SLFS = objTempStruct.MultiFillSymbol[i] as ptLineFillSymbolClass;
 									cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, SLFS);
 									bSwitch = true;
 								}
@@ -1802,12 +1526,12 @@ namespace ArcGIS_SLD_Converter
 						}
 						if (bSwitch == false)
 						{
-							cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, objTempStruct.MultiFillLayers[LayerIdx]);
+							cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, objTempStruct.MultiFillSymbol[LayerIdx]);
 						}
 					}
 					else
 					{
-						cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, objTempStruct.MultiFillLayers[LayerIdx]);
+						cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, objTempStruct.MultiFillSymbol[LayerIdx]);
 					}
 					return cReturn;
 				}
@@ -1827,7 +1551,7 @@ namespace ArcGIS_SLD_Converter
         /// <param name="ValueNameOfValueYouWant"></param>
         /// <param name="SymbolStructure"></param>
         /// <returns></returns>
-		private string GetMarkerValue(string ValueNameOfValueYouWant, object SymbolStructure)
+		private string GetMarkerValue(string ValueNameOfValueYouWant, ptMarkerSymbolClass SymbolStructure)
 		{
 			string cReturn = "0";
 			string cColor = "";
@@ -1836,9 +1560,9 @@ namespace ArcGIS_SLD_Converter
 			try
 			{
                 #region 简单标记符号
-                if (SymbolStructure is Analize_ArcMap_Symbols.StructSimpleMarkerSymbol)
+                if (SymbolStructure is ptSimpleMarkerSymbolClass)
 				{
-                    Analize_ArcMap_Symbols.StructSimpleMarkerSymbol objTempStruct = objTempStruct = (Analize_ArcMap_Symbols.StructSimpleMarkerSymbol)SymbolStructure;
+                    ptSimpleMarkerSymbolClass objTempStruct = objTempStruct =SymbolStructure as ptSimpleMarkerSymbolClass;
                     #region WellKnownName
                     if (ValueNameOfValueYouWant.ToUpper() == "WellKnownName".ToUpper())
 					{
@@ -1899,9 +1623,9 @@ namespace ArcGIS_SLD_Converter
                 #endregion
 
                 #region 字符集标记符号
-                else if (SymbolStructure is Analize_ArcMap_Symbols.StructCharacterMarkerSymbol)
+                else if (SymbolStructure is ptCharacterMarkerSymbolClass)
 				{
-                    Analize_ArcMap_Symbols.StructCharacterMarkerSymbol objTempStruct = (Analize_ArcMap_Symbols.StructCharacterMarkerSymbol)SymbolStructure;
+                    ptCharacterMarkerSymbolClass objTempStruct = SymbolStructure as ptCharacterMarkerSymbolClass;
 					if (ValueNameOfValueYouWant.ToUpper() == "WellKnownName".ToUpper())
 					{
 						cReturn = "circle";
@@ -2059,9 +1783,9 @@ namespace ArcGIS_SLD_Converter
                 #endregion
 
                 #region 图片标记符号
-                else if (SymbolStructure is Analize_ArcMap_Symbols.StructPictureMarkerSymbol)
+                else if (SymbolStructure is ptPictureMarkerSymbolClass)
 				{
-                    Analize_ArcMap_Symbols.StructPictureMarkerSymbol objTempStruct = (Analize_ArcMap_Symbols.StructPictureMarkerSymbol)SymbolStructure;
+                    ptPictureMarkerSymbolClass objTempStruct = SymbolStructure as ptPictureMarkerSymbolClass;
 					if (ValueNameOfValueYouWant.ToUpper() == "WellKnownName".ToUpper())
 					{
 						cReturn = "circle"; 
@@ -2091,10 +1815,9 @@ namespace ArcGIS_SLD_Converter
                 #endregion
 
                 #region 箭头标记符号
-                else if (SymbolStructure is Analize_ArcMap_Symbols.StructArrowMarkerSymbol)
+                else if (SymbolStructure is ptArrowMarkerSymbolClass)
 				{
-					Analize_ArcMap_Symbols.StructArrowMarkerSymbol objTempStruct = new Analize_ArcMap_Symbols.StructArrowMarkerSymbol();
-                    objTempStruct = (Analize_ArcMap_Symbols.StructArrowMarkerSymbol)SymbolStructure;
+                    ptArrowMarkerSymbolClass objTempStruct = SymbolStructure as ptArrowMarkerSymbolClass; 
 					if (ValueNameOfValueYouWant.ToUpper() == "WellKnownName".ToUpper())
 					{
 						cReturn = "triangle";
