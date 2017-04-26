@@ -65,13 +65,6 @@
             </summary>
             <param name="objLayer"></param>
         </member>
-        <member name="M:ArcGIS_SLD_Converter.Analize_ArcMap_Symbols.CheckDigits(System.String)">
-            <summary>
-            16进制颜色补位
-            </summary>
-            <param name="value"></param>
-            <returns></returns>
-        </member>
         <member name="M:ArcGIS_SLD_Converter.Analize_ArcMap_Symbols.ErrorMsg(System.String,System.String,System.String,System.String)">
             <summary>
             错误消息处理
@@ -88,12 +81,6 @@
             </summary>
             <param name="Message"></param>
             <param name="FunctionName"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ArcGIS_SLD_Converter.Analize_ArcMap_Symbols.MyTermination">
-            <summary>
-            退出程序
-            </summary>
             <returns></returns>
         </member>
         <member name="T:ArcGIS_SLD_Converter.Annotation">
@@ -344,6 +331,11 @@
             获取当前活动节点内容
             </summary>
             <returns></returns>
+        </member>
+        <member name="T:ArcGIS_SLD_Converter.ptLogManager">
+            <summary>
+            记录日志信息
+            </summary>
         </member>
         <member name="M:ArcGIS_SLD_Converter.Motherform.#ctor(ESRI.ArcGIS.ArcMapUI.IMxDocument)">
             <summary>
@@ -704,12 +696,6 @@
             </summary>
             <param name="message"></param>
             <param name="functionname"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ArcGIS_SLD_Converter.Output_SLD.MyTermination">
-            <summary>
-            关闭程序
-            </summary>
             <returns></returns>
         </member>
         <member name="T:ArcGIS_SLD_Converter.ptRender">

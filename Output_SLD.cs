@@ -853,9 +853,90 @@ namespace ArcGIS_SLD_Converter
 			string cReturn = "0";
 			bool bSwitch = false;
 			try
-			{
+            {
+
+                #region 多图层符号
+                if (SymbolStructure is ptMultilayerMarkerSymbolClass)
+                {
+                    ptMultilayerMarkerSymbolClass objTempStruct = SymbolStructure as ptMultilayerMarkerSymbolClass;
+                    cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, objTempStruct.MultiMarkerLayers[LayerIdx]);
+                    return cReturn;
+                }
+                else if (SymbolStructure is ptMultilayerLineSymbolClass)
+                {
+                    ptMultilayerLineSymbolClass objTempStruct = SymbolStructure as ptMultilayerLineSymbolClass;
+                    if (objTempStruct.LayerCount > 1)
+                    {
+                        for (int i = 0; i <= objTempStruct.LayerCount - 1; i++)
+                        {
+                            if (objTempStruct.MultiLineSymbol[i] is ptSimpleLineSymbolClass)
+                            {
+                                ptSimpleLineSymbolClass SLFS = objTempStruct.MultiLineSymbol[i] as ptSimpleLineSymbolClass;
+                                cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, SLFS);
+                                bSwitch = true;
+                            }
+                        }
+                        if (bSwitch == false)
+                        {
+                            cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, objTempStruct.MultiLineSymbol[LayerIdx]);
+                        }
+                    }
+                    else
+                    {
+                        cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, objTempStruct.MultiLineSymbol[LayerIdx]);
+                    }
+                    return cReturn;
+                }
+                else if (SymbolStructure is ptMultilayerFillSymbolClass)
+                {
+                    ptMultilayerFillSymbolClass objTempStruct = SymbolStructure as ptMultilayerFillSymbolClass;
+                    if (objTempStruct.LayerCount > 1)
+                    {
+                        for (int i = 0; i <= objTempStruct.LayerCount - 1; i++)
+                        {
+                            if (((((ValueNameOfValueYouWant.ToUpper() == "PolygonColor".ToUpper()) || (ValueNameOfValueYouWant.ToUpper() == "PolygonOpacity".ToUpper())) || (ValueNameOfValueYouWant.ToUpper() == "PolygonBorderWidth".ToUpper())) || (ValueNameOfValueYouWant.ToUpper() == "PolygonBorderColor".ToUpper())) || (ValueNameOfValueYouWant.ToUpper() == "PolygonBorderOpacity".ToUpper()))
+                            {
+                                if (objTempStruct.MultiFillSymbol[i] is ptSimpleFillSymbolClass)
+                                {
+                                    ptSimpleFillSymbolClass SSFS = objTempStruct.MultiFillSymbol[i] as ptSimpleFillSymbolClass;
+                                    cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, SSFS);
+                                    bSwitch = true;
+                                }
+                            }
+                            else if ((ValueNameOfValueYouWant.ToUpper() == "PointColor".ToUpper()) || (ValueNameOfValueYouWant.ToUpper() == "PointSize".ToUpper()))
+                            {
+                                if (objTempStruct.MultiFillSymbol[i] is ptMarkerFillSymbolClass)
+                                {
+                                    ptMarkerFillSymbolClass SMFS = objTempStruct.MultiFillSymbol[i] as ptMarkerFillSymbolClass;
+                                    cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, SMFS);
+                                    bSwitch = true;
+                                }
+                            }
+                            else if (((ValueNameOfValueYouWant.ToUpper() == "LineWidth".ToUpper()) || (ValueNameOfValueYouWant.ToUpper() == "LineColor".ToUpper())) || (ValueNameOfValueYouWant.ToUpper() == "LineOpacity".ToUpper()))
+                            {
+                                if (objTempStruct.MultiFillSymbol[i] is ptLineFillSymbolClass)
+                                {
+                                    ptLineFillSymbolClass SLFS = objTempStruct.MultiFillSymbol[i] as ptLineFillSymbolClass;
+                                    cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, SLFS);
+                                    bSwitch = true;
+                                }
+                            }
+                        }
+                        if (bSwitch == false)
+                        {
+                            cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, objTempStruct.MultiFillSymbol[LayerIdx]);
+                        }
+                    }
+                    else
+                    {
+                        cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, objTempStruct.MultiFillSymbol[LayerIdx]);
+                    }
+                    return cReturn;
+                }
+                #endregion
+
                 #region  处理点符号
-                if (SymbolStructure is ptMarkerSymbolClass)
+                else if (SymbolStructure is ptMarkerSymbolClass)
 				{
 					cReturn = GetMarkerValue(ValueNameOfValueYouWant, SymbolStructure as ptMarkerSymbolClass);
 					return cReturn;
@@ -1457,85 +1538,7 @@ namespace ArcGIS_SLD_Converter
 				}
                 #endregion
 
-                #region 多图层符号
-                else if (SymbolStructure is ptMultilayerMarkerSymbolClass)
-				{
-                    ptMultilayerMarkerSymbolClass objTempStruct = SymbolStructure as ptMultilayerMarkerSymbolClass;
-					cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, objTempStruct.MultiMarkerLayers[LayerIdx]);
-					return cReturn;
-				}
-				else if (SymbolStructure is ptMultilayerLineSymbolClass)
-				{
-                    ptMultilayerLineSymbolClass objTempStruct = SymbolStructure as ptMultilayerLineSymbolClass;
-					if (objTempStruct.LayerCount > 1)
-					{
-						for (int i = 0; i <= objTempStruct.LayerCount - 1; i++)
-						{
-							if (objTempStruct.MultiLineSymbol[i] is ptSimpleLineSymbolClass)
-							{
-                                ptSimpleLineSymbolClass SLFS  = objTempStruct.MultiLineSymbol[i] as ptSimpleLineSymbolClass;
-								cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, SLFS);
-								bSwitch = true;
-							}
-						}
-						if (bSwitch == false)
-						{
-							cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, objTempStruct.MultiLineSymbol[LayerIdx]);
-						}
-					}
-					else
-					{
-						cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, objTempStruct.MultiLineSymbol[LayerIdx]);
-					}
-					return cReturn;
-				}
-				else if (SymbolStructure is ptMultilayerFillSymbolClass)
-				{
-                    ptMultilayerFillSymbolClass objTempStruct = SymbolStructure as ptMultilayerFillSymbolClass;
-					if (objTempStruct.LayerCount > 1)
-					{
-						for (int i = 0; i <= objTempStruct.LayerCount - 1; i++)
-						{
-							if (((((ValueNameOfValueYouWant.ToUpper() == "PolygonColor".ToUpper()) || (ValueNameOfValueYouWant.ToUpper() == "PolygonOpacity".ToUpper())) || (ValueNameOfValueYouWant.ToUpper() == "PolygonBorderWidth".ToUpper())) || (ValueNameOfValueYouWant.ToUpper() == "PolygonBorderColor".ToUpper())) || (ValueNameOfValueYouWant.ToUpper() == "PolygonBorderOpacity".ToUpper()))
-							{
-								if (objTempStruct.MultiFillSymbol[i] is ptSimpleFillSymbolClass)
-								{
-                                    ptSimpleFillSymbolClass SSFS = objTempStruct.MultiFillSymbol[i] as ptSimpleFillSymbolClass;
-									cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, SSFS);
-									bSwitch = true;
-								}
-							}
-							else if ((ValueNameOfValueYouWant.ToUpper() == "PointColor".ToUpper()) || (ValueNameOfValueYouWant.ToUpper() == "PointSize".ToUpper()))
-							{
-								if (objTempStruct.MultiFillSymbol[i] is ptMarkerFillSymbolClass)
-								{
-                                    ptMarkerFillSymbolClass SMFS = objTempStruct.MultiFillSymbol[i] as ptMarkerFillSymbolClass;
-									cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, SMFS);
-									bSwitch = true;
-								}
-							}
-							else if (((ValueNameOfValueYouWant.ToUpper() == "LineWidth".ToUpper()) || (ValueNameOfValueYouWant.ToUpper() == "LineColor".ToUpper())) || (ValueNameOfValueYouWant.ToUpper() == "LineOpacity".ToUpper()))
-							{
-								if (objTempStruct.MultiFillSymbol[i] is ptLineFillSymbolClass)
-								{
-                                    ptLineFillSymbolClass SLFS = objTempStruct.MultiFillSymbol[i] as ptLineFillSymbolClass;
-									cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, SLFS);
-									bSwitch = true;
-								}
-							}
-						}
-						if (bSwitch == false)
-						{
-							cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, objTempStruct.MultiFillSymbol[LayerIdx]);
-						}
-					}
-					else
-					{
-						cReturn = GetValueFromSymbolstruct(ValueNameOfValueYouWant, objTempStruct.MultiFillSymbol[LayerIdx]);
-					}
-					return cReturn;
-				}
-                #endregion
+       
 
                 return cReturn;
 			}
@@ -1877,9 +1880,7 @@ namespace ArcGIS_SLD_Converter
         /// <returns></returns>
 		private object ErrorMsg(string message, string exMessage, string stack, string functionname)
 		{
-			MessageBox.Show(string.Format("{0}.{1}{2}{3}{4}",message,Environment.NewLine,
-                exMessage,Environment.NewLine,stack),string.Format( "{0}" , functionname), MessageBoxButtons.OK, MessageBoxIcon.Error);
-			MyTermination();
+            ptLogManager.WriteMessage(string.Format("{0}{1}{2}{3}{4} 方法名称:{5}",message,Environment.NewLine,exMessage,Environment.NewLine,stack,functionname));
 			return null;
 		}
         /// <summary>
@@ -1890,18 +1891,8 @@ namespace ArcGIS_SLD_Converter
         /// <returns></returns>
 		private object InfoMsg(string message, string functionname)
 		{
-			MessageBox.Show(message, functionname, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            ptLogManager.WriteMessage(string.Format("{0} 方法名称:{1}", message, functionname));
 			return null;
-		}
-        /// <summary>
-        /// 关闭程序
-        /// </summary>
-        /// <returns></returns>
-		public void MyTermination()
-		{
-			ProjectData.EndApp();
-			m_objData.MyTermination();
-			
 		}
 #endregion
 	}

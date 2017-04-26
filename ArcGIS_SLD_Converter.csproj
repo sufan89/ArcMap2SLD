@@ -130,6 +130,7 @@
   <ItemGroup>
     <Reference Include="ESRI.ArcGIS.ADF.Local, Version=10.3.0.0, Culture=neutral, PublicKeyToken=8fc3cc631e44ad86, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="mscorlib" />
@@ -241,6 +242,7 @@
     <Compile Include="CommonXMLHandle.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="LogManager\ptLogManager.cs" />
     <Compile Include="Motherform.cs">
       <SubType>Form</SubType>
     </Compile>

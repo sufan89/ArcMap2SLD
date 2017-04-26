@@ -82,12 +82,10 @@ namespace ArcGIS_SLD_Converter
 
             if (GetMap() == false)//获取地图文档
             {
-                MyTermination();
                 return false;
             }
             if (AnalyseLayerSymbology() == false)//分析地图文档中的图层符号信息
             {
-                MyTermination();
                 return false;
             }
 
@@ -118,14 +116,6 @@ namespace ArcGIS_SLD_Converter
                         }
                         objOutputSLD = new Output_SLD(frmMotherform, this, m_cFilename); //输出SLD文件
                     }
-                    else
-                    {
-                        MyTermination();
-                    }
-                }
-                else
-                {
-                    MyTermination();
                 }
             }
             else
@@ -243,31 +233,15 @@ namespace ArcGIS_SLD_Converter
                 else
                 {
                     InfoMsg(string.Format("图层符号类型不支持"), "SpreadLayerStructure");
-                    //关闭程序
-                    MyTermination();
                 }
             }
             catch (Exception)
             {
-                InfoMsg(string.Format("图层转换出错"), "SpreadLayerStructure");
+                InfoMsg(string.Format("图层转换出错:图层名称{0}", objLayer.Name), "SpreadLayerStructure");
             }
         }
         #endregion
         #region 公共方法
-        /// <summary>
-        /// 16进制颜色补位
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-		private string CheckDigits(string value)
-        {
-            string cReturn = value;
-            if (cReturn.Length == 1)
-            {
-                cReturn = cReturn.Insert(0, "0");
-            }
-            return cReturn;
-        }
         /// <summary>
         /// 错误消息处理
         /// </summary>
@@ -278,8 +252,7 @@ namespace ArcGIS_SLD_Converter
         /// <returns></returns>
 		private object ErrorMsg(string Message, string ExMessage, string Stack, string FunctionName)
         {
-            MessageBox.Show(Message + "\r\n" + ExMessage + "\r\n" + Stack,FunctionName, MessageBoxButtons.OK, MessageBoxIcon.Error);
-            MyTermination();
+            ptLogManager.WriteMessage(string.Format("{0}{1}{2}{3}{4} 方法名称:{5}",Message,Environment.NewLine,ExMessage,Environment.NewLine,Stack,FunctionName));
             return null;
         }
         /// <summary>
@@ -290,20 +263,13 @@ namespace ArcGIS_SLD_Converter
         /// <returns></returns>
 		private object InfoMsg(string Message, string FunctionName)
         {
-            MessageBox.Show(Message, FunctionName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            ptLogManager.WriteMessage(string.Format("{0} 方法名称:{1}", Message, FunctionName));
             return null;
         }
         /// <summary>
         /// 退出程序
         /// </summary>
         /// <returns></returns>
-		public void MyTermination()
-        {
-            if (frmMotherform != null)
-            {
-                frmMotherform.Close();
-            }
-        }
         #endregion
     }
 }

@@ -29,6 +29,10 @@ namespace ArcGIS_SLD_Converter
             SetSizeOpen();
             InitCommonXML();
             m_MianDocument = mainDocument;
+            string tempStr = System.IO.Path.GetDirectoryName(GetType().Assembly.Location);
+            string LogFileName = tempStr +"\\"+ DateTime.Now.ToString("yyyyMMddHHmmss")+".log";
+            ptLogManager.Create_LogFile(LogFileName);
+
         }
 		
 #region  窗体设计代码
@@ -492,7 +496,7 @@ namespace ArcGIS_SLD_Converter
         /// <param name="FunctionName"></param>
 		private void ErrorMsg(string Message, string ExMessage, string FunctionName)
 		{
-			MessageBox.Show(Message + "\r\n" + ExMessage, FunctionName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            ptLogManager.WriteMessage(string.Format("{0}{1}{2} 方法名称:{3}", Message, Environment.NewLine, ExMessage, FunctionName));
 		}
         /// <summary>
         /// 显示提示信息
@@ -501,8 +505,9 @@ namespace ArcGIS_SLD_Converter
         /// <param name="functionname"></param>
 		private void InfoMsg(string message, string functionname)
 		{
-			MessageBox.Show(message, functionname, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-		}
+            ptLogManager.WriteMessage(string.Format("{0} 方法名称:{1}",message,functionname));
+
+        }
         /// <summary>
         /// 显示图片
         /// </summary>

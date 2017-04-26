@@ -187,7 +187,7 @@ namespace ArcGIS_SLD_Converter
 		public bool NavigateElement(string AliasTagName)
 		{
 			XPathNavigator objNav; 
-			StringCollection objXPathColl; 
+			IList<string> objXPathColl; 
 			XmlNodeList objNodelist;
 			XmlNode objEvalNode ;
 			XmlNode objTempNode ;
@@ -198,7 +198,7 @@ namespace ArcGIS_SLD_Converter
 			{
 				if (m_objXPathDict.ContainsKey(AliasTagName))
 				{
-                    objXPathColl = (StringCollection)m_objXPathDict[AliasTagName];
+                    objXPathColl = m_objXPathDict[AliasTagName];
 					objTempNode = m_objActiveNode; 
 					objNav = objTempNode.CreateNavigator();
 					while (!bSwitch)
@@ -484,7 +484,7 @@ namespace ArcGIS_SLD_Converter
 			{
                 //获取程序集所在的文件夹
                 string tempStr = System.IO.Path.GetDirectoryName(GetType().Assembly.Location);
-                cFilename = tempStr +"\\"+ m_sLUTFile;
+                cFilename = tempStr + "\\TempXmlDoc\\" + m_sLUTFile;
 				if (File.Exists(cFilename))
 				{
 					objLUTDoc = new XmlDocument();
@@ -656,8 +656,7 @@ namespace ArcGIS_SLD_Converter
         /// <returns></returns>
 		private object ErrorMsg(string message, string exMessage, string stack, string functionname)
 		{
-			MessageBox.Show(message + "." + "\r\n" + exMessage + "\r\n" + stack, functionname, MessageBoxButtons.OK, MessageBoxIcon.Error);
-			//MyTermination();
+            ptLogManager.WriteMessage(string.Format("{0}{1}{2}{3}{4}方法名称:{5}", message,Environment.NewLine,exMessage,Environment.NewLine,stack,functionname));
 			return null;
 		}
         /// <summary>
