@@ -413,6 +413,7 @@ namespace ArcGIS_SLD_Converter
 			{
 				int layerIdx = 0;
 				int maxLayerIdx = 1;
+                string imagefile = m_cPath +"\\"+ Guid.NewGuid() + ".png";
 				
 				if (Symbol is ptMultilayerMarkerSymbolClass)
 				{
@@ -423,10 +424,43 @@ namespace ArcGIS_SLD_Converter
 				{
 					m_objXMLHandle.CreateElement("PointSymbolizer");
 					m_objXMLHandle.CreateElement("PointGraphic");
-					m_objXMLHandle.CreateElement("Mark");
-					m_objXMLHandle.CreateElement("PointWellKnownName");
-					m_objXMLHandle.SetElementText(GetValueFromSymbolstruct("WellKnownName", Symbol, layerIdx));
+                    XmlNode pTempNode = m_objXMLHandle.m_objActiveNode.Clone();
+                    if (Symbol is ptMultilayerMarkerSymbolClass)
+                    {
+                        ptMultilayerMarkerSymbolClass pMMS = Symbol as ptMultilayerMarkerSymbolClass;
 
+                        if (pMMS.MultiMarkerLayers[layerIdx] is ptPictureMarkerSymbolClass)
+                        {
+                            m_objXMLHandle.CreateElement("PointExternalGraphic");
+                            m_objXMLHandle.CreateElement("PointOnlineResource");
+                            //先保存图片到SLD文件夹
+                            ptPictureMarkerSymbolClass picSymbole = pMMS.MultiMarkerLayers[layerIdx] as ptPictureMarkerSymbolClass;
+                            Image pimage = IPictureConverter.IPictureToImage(picSymbole.Picture);
+                            pimage.Save(imagefile,System.Drawing.Imaging.ImageFormat.Png);
+                            //设置当前就节点属性
+                            m_objXMLHandle.CreateAttribute("xmlns:xlink");
+                            m_objXMLHandle.SetAttributeValue("http://www.w3.org/1999/xlink");
+                            m_objXMLHandle.CreateAttribute("xlink:type");
+                            m_objXMLHandle.SetAttributeValue("simple");
+                            m_objXMLHandle.CreateAttribute("xlink:href");
+                            m_objXMLHandle.SetAttributeValue(imagefile);
+                            m_objXMLHandle.CreateElement("PointFormat");
+                            m_objXMLHandle.SetElementText("image/png");
+                            m_objXMLHandle.m_objActiveNode = pTempNode;
+                        }
+                        else
+                        {
+                            m_objXMLHandle.CreateElement("Mark");
+                            m_objXMLHandle.CreateElement("PointWellKnownName");
+                            m_objXMLHandle.SetElementText(GetValueFromSymbolstruct("WellKnownName", Symbol, layerIdx));
+                        }
+                    }
+                    else
+                    {
+                        m_objXMLHandle.CreateElement("Mark");
+                        m_objXMLHandle.CreateElement("PointWellKnownName");
+                        m_objXMLHandle.SetElementText(GetValueFromSymbolstruct("WellKnownName", Symbol, layerIdx));
+                    }
 					if (GetValueFromSymbolstruct("PointColor", Symbol, layerIdx) != "")
 					{
 						m_objXMLHandle.CreateElement("PointFill");
@@ -1631,73 +1665,7 @@ namespace ArcGIS_SLD_Converter
                     ptCharacterMarkerSymbolClass objTempStruct = SymbolStructure as ptCharacterMarkerSymbolClass;
 					if (ValueNameOfValueYouWant.ToUpper() == "WellKnownName".ToUpper())
 					{
-						cReturn = "circle";
-						switch (objTempStruct.Font.ToUpper())
-						{
-							case "ESRI DEFAULT MARKER":
-                                if (CommStaticClass.EsriMarkcircleChartIndex.Contains(objTempStruct.CharacterIndex))
-								{
-									cReturn = "circle";
-								}
-
-                                else if (CommStaticClass.EsriMarksquareChartIndex.Contains(objTempStruct.CharacterIndex))
-								{
-									cReturn = "square";
-								}
-                                else if (CommStaticClass.EsriMarktriangleChartIndex.Contains(objTempStruct.CharacterIndex))
-								{
-									cReturn = "triangle";
-								}
-								else if (objTempStruct.CharacterIndex == 68)
-								{
-									cReturn = "X";
-								}
-                                else if (CommStaticClass.EsriMarkcrossChartIndex.Contains(objTempStruct.CharacterIndex))
-								{
-									cReturn = "cross";
-								}
-                                else if (CommStaticClass.EsriMarkstarChartIndex.Contains(objTempStruct.CharacterIndex))
-								{
-									cReturn = "star";
-								}
-								break;
-							case "ESRI IGL FONT22":
-                                if (CommStaticClass.ESRIIGLFONT22circleChartIndex.Contains(objTempStruct.CharacterIndex))
-								{
-									cReturn = "circle";
-								}
-                                else if (CommStaticClass.ESRIIGLFONT22squareChartIndex.Contains(objTempStruct.CharacterIndex))
-								{
-									cReturn = "square";
-								}
-                                else if (CommStaticClass.ESRIIGLFONT22triangleChartIndex.Contains(objTempStruct.CharacterIndex))
-								{
-									cReturn = "triangle";
-								}
-								else if (objTempStruct.CharacterIndex >= 114 && objTempStruct.CharacterIndex <= 117)
-								{
-									cReturn = "X";
-								}
-								break;
-							case "ESRI GEOMETRIC SYMBOLS":
-                                if (CommStaticClass.SYMBOLScircleChartIndex.Contains(objTempStruct.CharacterIndex))
-								{
-									cReturn = "circle";
-								}
-                                else if (CommStaticClass.SYMBOLSsquareChartIndex.Contains(objTempStruct.CharacterIndex))
-								{
-									cReturn = "square";
-								}
-                                else if (CommStaticClass.SYMBOLStriangleChartIndex.Contains(objTempStruct.CharacterIndex))
-								{
-									cReturn = "triangle";
-								}
-                                else if (CommStaticClass.SYMBOLSXChartIndex.Contains(objTempStruct.CharacterIndex))
-								{
-									cReturn = "X";
-								}
-								break;
-						}
+						cReturn =string.Format("{0}#{1}",objTempStruct.Font,objTempStruct.CharacterIndex);
 					}
 					else if ((ValueNameOfValueYouWant.ToUpper() == "PointColor".ToUpper()) || (ValueNameOfValueYouWant.ToUpper() == "PointOutlineColor".ToUpper()))
 					{
@@ -1896,5 +1864,34 @@ namespace ArcGIS_SLD_Converter
 		}
 #endregion
 	}
-	
+
+    public sealed class IPictureConverter : AxHost
+    {
+        private IPictureConverter() : base("") { }
+
+        #region IPictureDisp
+        public static stdole.IPictureDisp ImageToIPictureDisp(Image image)
+        {
+            return (stdole.IPictureDisp)GetIPictureDispFromPicture(image);
+        }
+
+        public static Image IPictureDispToImage(stdole.IPictureDisp pictureDisp)
+        {
+            return GetPictureFromIPictureDisp(pictureDisp);
+        }
+        #endregion
+
+        #region IPicture
+        public static stdole.IPicture ImageToIPicture(Image image)
+        {
+            return (stdole.IPicture)GetIPictureFromPicture(image);
+        }
+
+        public static Image IPictureToImage(stdole.IPicture picture)
+        {
+            return GetPictureFromIPicture(picture);
+        }
+        #endregion
+    }
+
 }

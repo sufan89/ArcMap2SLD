@@ -2,7 +2,7 @@
 	<sldConfiguration>
 		<xmlVersion>1.0</xmlVersion>
 		<sldVersion>1.0.0</sldVersion>
-		<xmlEncoding>ISO-8859-1</xmlEncoding>
+		<xmlEncoding>UTF-8</xmlEncoding>
 		<Namespaces>
 			<sld>http://www.opengis.net/sld</sld>
 			<ogc>http://www.opengis.net/ogc</ogc>
@@ -122,6 +122,15 @@
 		<Mark ogcTag="Mark" Namespace="sld">
 			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic</XPath>
 		</Mark>
+		<PointExternalGraphic ogcTag="ExternalGraphic" Namespace="sld">
+			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic</XPath>
+		</PointExternalGraphic>
+		<PointOnlineResource ogcTag="OnlineResource" Namespace="sld">
+		<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic/sld:OnlineResource</XPath>
+		</PointOnlineResource>
+		<PointFormat ogcTag="Format" Namespace="sld">
+		<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic/sld:Format</XPath>
+		</PointFormat>
 		<PointOpacity ogcTag="Opacity" Namespace="sld">
 			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic</XPath>
 		</PointOpacity>
