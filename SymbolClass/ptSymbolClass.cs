@@ -124,7 +124,10 @@ namespace ArcGIS_SLD_Converter
             Size = pMarkerSymbol.Size;
             XOffset = pMarkerSymbol.XOffset;
             YOffset = pMarkerSymbol.YOffset;
-            Filled = pMarkerSymbol.Color.Transparency != 0;
+            if (!string.IsNullOrEmpty(Color))
+            {
+                Filled = pMarkerSymbol.Color.Transparency != 0;
+            }
         }
         /// <summary>
         /// 角度
@@ -215,6 +218,7 @@ namespace ArcGIS_SLD_Converter
             IPictureMarkerSymbol pPictureMarkerSymbol = pSymbol as IPictureMarkerSymbol;
             BackgroundColor = CommStaticClass.GimmeStringForColor(pPictureMarkerSymbol.BackgroundColor);
             Picture = pPictureMarkerSymbol.Picture as IPicture;
+            
         }
         /// <summary>
         /// 背景颜色

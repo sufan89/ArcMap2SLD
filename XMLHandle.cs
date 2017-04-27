@@ -58,7 +58,7 @@ namespace ArcGIS_SLD_Converter
         /// <summary>
         /// 当前活动节点
         /// </summary>
-		private XmlNode m_objActiveNode; 
+		public XmlNode m_objActiveNode { get; set; }
         /// <summary>
         /// 当前活动节点属性
         /// </summary>
@@ -78,14 +78,11 @@ namespace ArcGIS_SLD_Converter
         /// </summary>
 		private string m_cXMLEncoding;
 
-		//private ArcGIS_SLD_Converter.Store2Fields m_objNamespaceURL;
-
         private Dictionary<string, string> m_objNamespaceURL;
         /// <summary>
         /// XML命名管理
         /// </summary>
 		private XmlNamespaceManager m_objNSManager; 
-
 		private string m_sLUTFile; 
         /// <summary>
         /// 跟节点名称

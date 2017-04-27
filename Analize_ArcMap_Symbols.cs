@@ -235,7 +235,7 @@ namespace ArcGIS_SLD_Converter
                     InfoMsg(string.Format("图层符号类型不支持"), "SpreadLayerStructure");
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 InfoMsg(string.Format("图层转换出错:图层名称{0}", objLayer.Name), "SpreadLayerStructure");
             }

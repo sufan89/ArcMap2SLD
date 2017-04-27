@@ -2,7 +2,7 @@
 	<sldConfiguration>
 		<xmlVersion>1.0</xmlVersion>
 		<sldXMLNS>http://www.opengis.net/sld</sldXMLNS>
-		<xmlEncoding>ISO-8859-1</xmlEncoding>
+		<xmlEncoding>UTF-8</xmlEncoding>
 		<Namespaces>
 			<sld>http://www.opengis.net/sld</sld>
 			<ogc>http://www.opengis.net/ogc</ogc>

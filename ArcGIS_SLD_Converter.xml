@@ -1591,7 +1591,7 @@
             节点级别
             </summary>
         </member>
-        <member name="F:ArcGIS_SLD_Converter.XMLHandle.m_objActiveNode">
+        <member name="P:ArcGIS_SLD_Converter.XMLHandle.m_objActiveNode">
             <summary>
             当前活动节点
             </summary>

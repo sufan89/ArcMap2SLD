@@ -84,6 +84,11 @@ namespace ArcGIS_SLD_Converter
                 tempSymbol = new ptArrowMarkerSymbolClass(Symbol);
                 return tempSymbol;
             }
+            else if (Symbol is IPictureMarkerSymbol)
+            {
+                tempSymbol = new ptPictureMarkerSymbolClass(Symbol);
+                return tempSymbol;
+            }
             else if (Symbol is IMultiLayerMarkerSymbol)
             {
                 tempSymbol = new ptMultilayerMarkerSymbolClass(Symbol);

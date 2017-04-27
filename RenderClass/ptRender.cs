@@ -122,7 +122,7 @@ namespace ArcGIS_SLD_Converter
                     {
                         for (int i = 1; i <= FieldCount; i++)
                         {
-                            FieldNames.Add(m_pUniqueRender.Field[i - 1]);
+                            FieldNames.Add(m_pUniqueRender.Field[i - 1].ToLower());
                         }
 
                         CommStaticClass.GimmeUniqueValuesFromShape(m_FeatureClass as ITable, FieldNames);
@@ -132,7 +132,7 @@ namespace ArcGIS_SLD_Converter
                     {
                         for (int i = 1; i <= FieldCount; i++)
                         {
-                            FieldNames.Add(m_pUniqueRender.Field[i - 1]);
+                            FieldNames.Add(m_pUniqueRender.Field[i - 1].ToLower());
                             //属性表有连接表                                        
                             if (pTable is IRelQueryTable)
                             {
@@ -163,7 +163,7 @@ namespace ArcGIS_SLD_Converter
                 //唯一值字段只有一个
                 else
                 {
-                    FieldNames.Add(m_pUniqueRender.Field[FieldCount - 1]);
+                    FieldNames.Add(m_pUniqueRender.Field[FieldCount - 1].ToLower());
                 }
                 
                 //开始解析符号
@@ -178,7 +178,7 @@ namespace ArcGIS_SLD_Converter
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                ptLogManager.WriteMessage(ex.Message);
             }
 
         }
@@ -250,6 +250,7 @@ namespace ArcGIS_SLD_Converter
         {
              m_pSimpleRender = pFeatureRender as ISimpleRenderer;
              m_pFeatureLayer = pFeatureLayer;
+            InitialSymbol();
         }
         private ISimpleRenderer m_pSimpleRender;
         IFeatureLayer m_pFeatureLayer;
