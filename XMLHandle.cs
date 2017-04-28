@@ -41,11 +41,17 @@ namespace ArcGIS_SLD_Converter
         /// 全局处理XML文档对象
         /// </summary>
 		private XmlDocument m_objDoc; 
-
+        /// <summary>
+        /// OGC节点名称
+        /// </summary>
 		private Dictionary<string,string> m_objNameDict;
-
+        /// <summary>
+        /// XML命名空间
+        /// </summary>
         private Dictionary<string, string> m_objNamespaceDict; 
-
+        /// <summary>
+        /// 各个节点路径
+        /// </summary>
 		private Dictionary<string,IList<string>> m_objXPathDict; 
         /// <summary>
         /// 根节点要素
