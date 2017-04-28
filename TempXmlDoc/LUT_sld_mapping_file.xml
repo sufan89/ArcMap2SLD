@@ -6,7 +6,7 @@
 		<Namespaces>
 			<sld>http://www.opengis.net/sld</sld>
 			<ogc>http://www.opengis.net/ogc</ogc>
-			<xlink>http://www.w3.org/1999/xlink</xlink>
+			<gml>http://www.opengis.net/gml</gml>
 		</Namespaces>
 	</sldConfiguration>
 	<sldSyntax>
@@ -126,10 +126,10 @@
 			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic</XPath>
 		</PointExternalGraphic>
 		<PointOnlineResource ogcTag="OnlineResource" Namespace="sld">
-		<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic/sld:OnlineResource</XPath>
+		<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic/sld:ExternalGraphic</XPath>
 		</PointOnlineResource>
 		<PointFormat ogcTag="Format" Namespace="sld">
-		<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic/sld:Format</XPath>
+		<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic/sld:ExternalGraphic</XPath>
 		</PointFormat>
 		<PointOpacity ogcTag="Opacity" Namespace="sld">
 			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic</XPath>

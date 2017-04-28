@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml;
 
 namespace ArcGIS_SLD_Converter
 {
@@ -30,6 +31,10 @@ namespace ArcGIS_SLD_Converter
         /// 最小限制
         /// </summary>
         public double LowerLimit { get; set; }
+        public virtual XmlNode GetSymbolNode(XmlDocument xmlDoc)
+        {
+            return null;
+        }
     }
     /// <summary>
     /// 文本符号
@@ -66,47 +71,46 @@ namespace ArcGIS_SLD_Converter
                 VerticalAlignment = pTextSymbol.VerticalAlignment.ToString();
             }
         }
-
         /// <summary>
         /// 角度
         /// </summary>
-        public double Angle { get; set; }
+        public double Angle { get;  }
         /// <summary>
         /// 颜色
         /// </summary>
-        public string Color { get; set; }
+        public string Color { get; }
         /// <summary>
         /// 字体
         /// </summary>
-        public string Font { get; set; }
+        public string Font { get; }
         /// <summary>
         /// 样式
         /// </summary>
-        public string Style { get; set; }
+        public string Style { get; }
         /// <summary>
         /// 粗细
         /// </summary>
-        public string Weight { get; set; }
+        public string Weight { get;}
         /// <summary>
         /// 水平对齐
         /// </summary>
-        public string HorizontalAlignment { get; set; }
+        public string HorizontalAlignment { get;}
         /// <summary>
         /// 是否对齐
         /// </summary>
-        public bool RightToLeft { get; set; }
+        public bool RightToLeft { get; }
         /// <summary>
         ///大小 
         /// </summary>
-        public double Size { get; set; }
+        public double Size { get; }
         /// <summary>
         /// 文本
         /// </summary>
-        public string Text { get; set; }
+        public string Text { get;}
         /// <summary>
         /// 垂直对齐
         /// </summary>
-        public string VerticalAlignment { get; set; }
+        public string VerticalAlignment { get;}
     }
 
     #region 点符号
@@ -132,27 +136,27 @@ namespace ArcGIS_SLD_Converter
         /// <summary>
         /// 角度
         /// </summary>
-        public double Angle { get; set; }
+        public double Angle { get;  }
         /// <summary>
         /// 颜色
         /// </summary>
-        public string Color { get; set; }
+        public string Color { get;  }
         /// <summary>
         /// 大小
         /// </summary>
-        public double Size { get; set; }
+        public double Size { get;  }
         /// <summary>
         /// X偏移量
         /// </summary>
-        public double XOffset { get; set; }
+        public double XOffset { get; }
         /// <summary>
         /// Y偏移量
         /// </summary>
-        public double YOffset { get; set; }
+        public double YOffset { get; }
         /// <summary>
         /// 是否填充
         /// </summary>
-        public bool Filled { get; set; }
+        public bool Filled { get;}
     }
     /// <summary>
     /// 简单标记符号
@@ -171,19 +175,19 @@ namespace ArcGIS_SLD_Converter
         /// <summary>
         /// 是否有边框线
         /// </summary>
-        public bool Outline { get; set; }
+        public bool Outline { get; }
         /// <summary>
         /// 边框线颜色
         /// </summary>
-        public string OutlineColor;
+        public string OutlineColor { get; }
         /// <summary>
         /// 边框线尺寸
         /// </summary>
-        public double OutlineSize;
+        public double OutlineSize { get; }
         /// <summary>
         /// 样式
         /// </summary>
-        public string Style;
+        public string Style { get; }
 
     }
     /// <summary>
@@ -223,11 +227,11 @@ namespace ArcGIS_SLD_Converter
         /// <summary>
         /// 背景颜色
         /// </summary>
-        public string BackgroundColor { get; set; }
+        public string BackgroundColor { get; }
         /// <summary>
         /// 图片对象
         /// </summary>
-        public IPicture Picture { get; set; }
+        public IPicture Picture { get;}
     }
     /// <summary>
     /// 箭头标记符号
@@ -245,15 +249,15 @@ namespace ArcGIS_SLD_Converter
         /// <summary>
         /// 样式
         /// </summary>
-        public string Style { get; set; }
+        public string Style { get; }
         /// <summary>
         /// 宽度
         /// </summary>
-        public double Width { get; set; }
+        public double Width { get;}
         /// <summary>
         /// 长度
         /// </summary>
-        public double Length { get; set; }
+        public double Length { get;}
     }
     #endregion
 
@@ -278,11 +282,12 @@ namespace ArcGIS_SLD_Converter
         /// <summary>
         /// 透明度
         /// </summary>
-        public byte Transparency { get; set; }
+        public byte Transparency { get;}
         /// <summary>
         /// 宽度
         /// </summary>
-        public double Width { get; set; }
+        public double Width { get;}
+
     }
     /// <summary>
     /// 简单线符号
@@ -300,13 +305,13 @@ namespace ArcGIS_SLD_Converter
             publicStyle = pSimpLineSymbol.Style.ToString();
             if (pSimpLineSymbol.Style == esriSimpleLineStyle.esriSLSNull)
             {
-                Color = string.Empty;
+                base.Color = string.Empty;
             }
         }
         /// <summary>
         /// 样式类型
         /// </summary>
-        public string publicStyle { get; set; }
+        public string publicStyle { get;}
     }
     /// <summary>
     /// 制图线符号
@@ -343,10 +348,10 @@ namespace ArcGIS_SLD_Converter
                 }
             }
         }
-        public string Join { get; set; }
-        public double MiterLimit { get; set; }
-        public string Cap { get; set; }
-        public IList<double> DashArray { get; set; }
+        public string Join { get;}
+        public double MiterLimit { get;}
+        public string Cap { get; }
+        public IList<double> DashArray { get;}
     }
     /// <summary>
     /// 混列线符号
@@ -388,11 +393,11 @@ namespace ArcGIS_SLD_Converter
         /// <summary>
         /// 角度
         /// </summary>
-        public double Angle { get; set; }
+        public double Angle { get; }
         /// <summary>
         /// 混列线符号
         /// </summary>
-        public ptSymbolClass HashSymbol { get; set; }
+        public ptSymbolClass HashSymbol { get;}
     }
     /// <summary>
     /// 标记线符号
@@ -432,7 +437,7 @@ namespace ArcGIS_SLD_Converter
         /// <summary>
         /// 标记符号
         /// </summary>
-        public ptSymbolClass MarkSymbol { get; set; }
+        public ptSymbolClass MarkSymbol { get;}
     }
     /// <summary>
     /// 图片线符号
@@ -458,27 +463,27 @@ namespace ArcGIS_SLD_Converter
         /// <summary>
         /// 背景颜色
         /// </summary>
-        public string BackgroundColor { get; set; }
+        public string BackgroundColor { get;}
         /// <summary>
         /// 背景透明度
         /// </summary>
-        public byte BackgroundTransparency { get; set; }
+        public byte BackgroundTransparency { get;}
         /// <summary>
         /// 图片
         /// </summary>
-        public IPicture Picture { get; set; }
+        public IPicture Picture { get;}
         /// <summary>
         /// 是否旋转
         /// </summary>
-        public bool Rotate { get; set; }
+        public bool Rotate { get;}
         /// <summary>
         /// X比例
         /// </summary>
-        public double XScale { get; set; }
+        public double XScale { get;}
         /// <summary>
         /// Y比例
         /// </summary>
-        public double YScale { get; set; }
+        public double YScale { get;}
     }
     #endregion
 
@@ -530,11 +535,11 @@ namespace ArcGIS_SLD_Converter
         /// <summary>
         /// 透明度
         /// </summary>
-        public byte Transparency { get; set; }
+        public byte Transparency { get;}
         /// <summary>
         /// 轮廓符号
         /// </summary>
-        public ptLineSymbolClass OutlineSymbol { get; set; }
+        public ptLineSymbolClass OutlineSymbol { get;}
     }
     /// <summary>
     /// 简单填充符号
@@ -593,7 +598,7 @@ namespace ArcGIS_SLD_Converter
         /// <summary>
         /// 网格角度
         /// </summary>
-        public double GridAngle { get; set; }
+        public double GridAngle { get;}
         /// <summary>
         /// 标记符号
         /// </summary>
@@ -642,19 +647,19 @@ namespace ArcGIS_SLD_Converter
         /// <summary>
         /// 角度
         /// </summary>
-        public double Angle { get; set; }
+        public double Angle { get;}
         /// <summary>
         /// 偏移
         /// </summary>
-        public double Offset { get; set; }
+        public double Offset { get;}
         /// <summary>
         /// 间隔
         /// </summary>
-        public double Separation { get; set; }
+        public double Separation { get;}
         /// <summary>
         /// 填充线符号
         /// </summary>
-        public ptLineSymbolClass LineSymbol { get; set; }
+        public ptLineSymbolClass LineSymbol { get;}
     }
     /// <summary>
     /// 点密度填充符号
@@ -706,35 +711,35 @@ namespace ArcGIS_SLD_Converter
         /// <summary>
         /// 背景颜色
         /// </summary>
-        public string BackgroundColor { get; set; }
+        public string BackgroundColor { get;}
         /// <summary>
         /// 背景透明度
         /// </summary>
-        public byte BackgroundTransparency { get; set; }
+        public byte BackgroundTransparency { get;}
         /// <summary>
         /// 点数量
         /// </summary>
-        public int DotCount { get; set; }
+        public int DotCount { get;}
         /// <summary>
         /// 点大小
         /// </summary>
-        public double DotSize { get; set; }
+        public double DotSize { get;}
         /// <summary>
         /// 点间隔
         /// </summary>
-        public double DotSpacing { get; set; }
+        public double DotSpacing { get;}
         /// <summary>
         /// 固定位置
         /// </summary>
-        public bool FixedPlacement { get; set; }
+        public bool FixedPlacement { get;}
         /// <summary>
         /// 符号列表
         /// </summary>
-        public IList<ptSymbolClass> SymbolList { get; set; }
+        public IList<ptSymbolClass> SymbolList { get;}
         /// <summary>
         /// 符号数量
         /// </summary>
-        public int SymbolCount { get; set; }
+        public int SymbolCount { get;}
     }
     /// <summary>
     /// 图片填充符号
@@ -755,27 +760,27 @@ namespace ArcGIS_SLD_Converter
         /// <summary>
         /// 角度
         /// </summary>
-        public double Angle { get; set; }
+        public double Angle { get;}
         /// <summary>
         /// 背景颜色
         /// </summary>
-        public string BackgroundColor { get; set; }
+        public string BackgroundColor { get;}
         /// <summary>
         /// 背景透明度
         /// </summary>
-        public byte BackgroundTransparency { get; set; }
+        public byte BackgroundTransparency { get;}
         /// <summary>
         /// 图片
         /// </summary>
-        public IPictureDisp Picture { get; set; }
+        public IPictureDisp Picture { get;}
         /// <summary>
         /// X比例
         /// </summary>
-        public double XScale { get; set; }
+        public double XScale { get;}
         /// <summary>
         /// Y比例
         /// </summary>
-        public double YScale { get; set; }
+        public double YScale { get;}
     }
     /// <summary>
     /// 渐变填充符号
@@ -795,23 +800,23 @@ namespace ArcGIS_SLD_Converter
         /// <summary>
         /// 颜色列表
         /// </summary>
-        public IList<string> Colors;
+        public IList<string> Colors { get; }
         /// <summary>
         /// 角度
         /// </summary>
-        public double GradientAngle;
+        public double GradientAngle { get; }
         /// <summary>
         /// 百分比
         /// </summary>
-        public double GradientPercentage;
+        public double GradientPercentage { get; }
         /// <summary>
         /// 间隔带
         /// </summary>
-        public int IntervallCount;
+        public int IntervallCount { get; }
         /// <summary>
         /// 样式
         /// </summary>
-        public string Style;
+        public string Style { get; }
     }
     #endregion
 
@@ -863,23 +868,23 @@ namespace ArcGIS_SLD_Converter
         /// <summary>
         /// 是否显示轴
         /// </summary>
-        public bool ShowAxes { get; set; }
+        public bool ShowAxes { get; }
         /// <summary>
         /// 间隔
         /// </summary>
-        public double Spacing{ get; set; }
+        public double Spacing { get; }
         /// <summary>
         /// 显示方向
         /// </summary>
-        public bool VerticalBars { get; set; }
+        public bool VerticalBars { get; }
         /// <summary>
         /// 宽度
         /// </summary>
-        public double Width { get; set; }
+        public double Width { get; }
         /// <summary>
         /// 坐标轴线符号
         /// </summary>
-        public ptLineSymbolClass AxesLineSymbol { get; set; }
+        public ptLineSymbolClass AxesLineSymbol { get; }
     }
     /// <summary>
     /// 饼状图符号
@@ -921,15 +926,15 @@ namespace ArcGIS_SLD_Converter
         /// <summary>
         /// 方向
         /// </summary>
-        public bool Clockwise { get; set; }
+        public bool Clockwise { get; }
         /// <summary>
         /// 轮廓
         /// </summary>
-        public bool UseOutline { get; set; }
+        public bool UseOutline { get; }
         /// <summary>
         /// 轮廓线符号
         /// </summary>
-        public ptLineSymbolClass OutLineSymbol { get; set; }
+        public ptLineSymbolClass OutLineSymbol { get; }
     }
     /// <summary>
     /// 堆柱状符号
@@ -973,23 +978,23 @@ namespace ArcGIS_SLD_Converter
         /// <summary>
         /// 确定的
         /// </summary>
-        public bool Fixed { get; set; }
+        public bool Fixed { get; }
         /// <summary>
         /// 是否有轮廓
         /// </summary>
-        public bool UseOutline { get; set; }
+        public bool UseOutline { get; }
         /// <summary>
         /// 方向
         /// </summary>
-        public bool VerticalBar { get; set; }
+        public bool VerticalBar { get; }
         /// <summary>
         /// 宽度
         /// </summary>
-        public double Width { get; set; }
+        public double Width { get; }
         /// <summary>
         /// 轮廓线符号
         /// </summary>
-        public ptLineSymbolClass OutLineSymbol { get; set; }
+        public ptLineSymbolClass OutLineSymbol { get; }
     }
     #endregion
 
@@ -1043,11 +1048,11 @@ namespace ArcGIS_SLD_Converter
         /// <summary>
         /// 符号列表
         /// </summary>
-        public IList<ptSymbolClass> MultiMarkerLayers { get; set; }
+        public IList<ptSymbolClass> MultiMarkerLayers { get; }
         /// <summary>
         /// 图层数量
         /// </summary>
-        public int LayerCount { get; set; }
+        public int LayerCount { get; }
     }
     /// <summary>
     /// 多图层线符号
@@ -1096,11 +1101,11 @@ namespace ArcGIS_SLD_Converter
         /// <summary>
         /// 符号列表
         /// </summary>
-        public IList<ptLineSymbolClass> MultiLineSymbol { get; set; }
+        public IList<ptLineSymbolClass> MultiLineSymbol { get; }
         /// <summary>
         /// 图层数量
         /// </summary>
-        public int LayerCount { get; set; }
+        public int LayerCount { get; }
     }
     /// <summary>
     /// 多图层填充符号
@@ -1154,11 +1159,11 @@ namespace ArcGIS_SLD_Converter
         /// <summary>
         /// 符号列表
         /// </summary>
-        public IList<ptFillSymbolClass> MultiFillSymbol { get; set; }
+        public IList<ptFillSymbolClass> MultiFillSymbol { get; }
         /// <summary>
         /// 图层数量
         /// </summary>
-        public int LayerCount { get; set; }
+        public int LayerCount { get; }
     }
     #endregion
 }

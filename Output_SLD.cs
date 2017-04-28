@@ -218,9 +218,9 @@ namespace ArcGIS_SLD_Converter
                             if (!double.IsNaN(pLayer.m_MaxScale) && !double.IsNaN(pLayer.m_MinScale))
                             {
                                 m_objXMLHandle.CreateElement("MinScale");
-                                m_objXMLHandle.SetElementText(pLayer.m_MinScale.ToString());
-                                m_objXMLHandle.CreateElement("MaxScale");
                                 m_objXMLHandle.SetElementText(pLayer.m_MaxScale.ToString());
+                                m_objXMLHandle.CreateElement("MaxScale");
+                                m_objXMLHandle.SetElementText(pLayer.m_MinScale.ToString());
                             }
                             //多字段多值组合符号
                             if (pUniqueRender.FieldCount > 1) 
@@ -280,9 +280,9 @@ namespace ArcGIS_SLD_Converter
                             if (!double.IsNaN(pLayer.m_MaxScale) && !double.IsNaN(pLayer.m_MinScale))
                             {
                                 m_objXMLHandle.CreateElement("MinScale");
-                                m_objXMLHandle.SetElementText(pLayer.m_MinScale.ToString());
-                                m_objXMLHandle.CreateElement("MaxScale");
                                 m_objXMLHandle.SetElementText(pLayer.m_MaxScale.ToString());
+                                m_objXMLHandle.CreateElement("MaxScale");
+                                m_objXMLHandle.SetElementText(pLayer.m_MinScale.ToString());
                             }
                             m_objXMLHandle.CreateElement("PropertyIsBetween");
 							m_objXMLHandle.CreateElement("PropertyName");
@@ -319,6 +319,13 @@ namespace ArcGIS_SLD_Converter
                             m_objXMLHandle.SetElementText(objStructSR.m_DatasetName);
 							m_objXMLHandle.CreateElement("Title");
                             m_objXMLHandle.SetElementText(objStructSR.m_DatasetName);
+                            if (!double.IsNaN(pLayer.m_MaxScale) && !double.IsNaN(pLayer.m_MinScale))
+                            {
+                                m_objXMLHandle.CreateElement("MinScale");
+                                m_objXMLHandle.SetElementText(pLayer.m_MaxScale.ToString());
+                                m_objXMLHandle.CreateElement("MaxScale");
+                                m_objXMLHandle.SetElementText(pLayer.m_MinScale.ToString());
+                            }
                             if (pSymbolClass is ptMarkerSymbolClass)
                             {
                                 WritePointFeatures(pSymbolClass as ptMarkerSymbolClass);
@@ -413,7 +420,7 @@ namespace ArcGIS_SLD_Converter
 			{
 				int layerIdx = 0;
 				int maxLayerIdx = 1;
-                string imagefile = m_cPath +"\\"+ Guid.NewGuid() + ".png";
+               
 				
 				if (Symbol is ptMultilayerMarkerSymbolClass)
 				{
@@ -428,25 +435,27 @@ namespace ArcGIS_SLD_Converter
                     if (Symbol is ptMultilayerMarkerSymbolClass)
                     {
                         ptMultilayerMarkerSymbolClass pMMS = Symbol as ptMultilayerMarkerSymbolClass;
-
                         if (pMMS.MultiMarkerLayers[layerIdx] is ptPictureMarkerSymbolClass)
                         {
                             m_objXMLHandle.CreateElement("PointExternalGraphic");
                             m_objXMLHandle.CreateElement("PointOnlineResource");
                             //先保存图片到SLD文件夹
+                            string imagefile = m_cPath + "\\" + Guid.NewGuid() + ".png";
                             ptPictureMarkerSymbolClass picSymbole = pMMS.MultiMarkerLayers[layerIdx] as ptPictureMarkerSymbolClass;
                             Image pimage = IPictureConverter.IPictureToImage(picSymbole.Picture);
-                            pimage.Save(imagefile,System.Drawing.Imaging.ImageFormat.Png);
+                            Graphics g = Graphics.FromImage(pimage);
+                            Bitmap pbitmap = new Bitmap(pimage);
+                            pbitmap.MakeTransparent(Color.Black);
+                            pbitmap.Save(imagefile, System.Drawing.Imaging.ImageFormat.Png);
                             //设置当前就节点属性
                             m_objXMLHandle.CreateAttribute("xmlns:xlink");
                             m_objXMLHandle.SetAttributeValue("http://www.w3.org/1999/xlink");
                             m_objXMLHandle.CreateAttribute("xlink:type");
                             m_objXMLHandle.SetAttributeValue("simple");
                             m_objXMLHandle.CreateAttribute("xlink:href");
-                            m_objXMLHandle.SetAttributeValue(imagefile);
+                            m_objXMLHandle.SetAttributeValue(string.Format("file:\\{0}", imagefile.Replace('/','\\')));
                             m_objXMLHandle.CreateElement("PointFormat");
                             m_objXMLHandle.SetElementText("image/png");
-                            m_objXMLHandle.m_objActiveNode = pTempNode;
                         }
                         else
                         {
@@ -1665,7 +1674,7 @@ namespace ArcGIS_SLD_Converter
                     ptCharacterMarkerSymbolClass objTempStruct = SymbolStructure as ptCharacterMarkerSymbolClass;
 					if (ValueNameOfValueYouWant.ToUpper() == "WellKnownName".ToUpper())
 					{
-						cReturn =string.Format("{0}#{1}",objTempStruct.Font,objTempStruct.CharacterIndex);
+						cReturn =string.Format("ttf://{0}#0x{1}", objTempStruct.Font,objTempStruct.CharacterIndex.ToString("X"));
 					}
 					else if ((ValueNameOfValueYouWant.ToUpper() == "PointColor".ToUpper()) || (ValueNameOfValueYouWant.ToUpper() == "PointOutlineColor".ToUpper()))
 					{

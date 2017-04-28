@@ -951,17 +951,17 @@
             是否有边框线
             </summary>
         </member>
-        <member name="F:ArcGIS_SLD_Converter.ptSimpleMarkerSymbolClass.OutlineColor">
+        <member name="P:ArcGIS_SLD_Converter.ptSimpleMarkerSymbolClass.OutlineColor">
             <summary>
             边框线颜色
             </summary>
         </member>
-        <member name="F:ArcGIS_SLD_Converter.ptSimpleMarkerSymbolClass.OutlineSize">
+        <member name="P:ArcGIS_SLD_Converter.ptSimpleMarkerSymbolClass.OutlineSize">
             <summary>
             边框线尺寸
             </summary>
         </member>
-        <member name="F:ArcGIS_SLD_Converter.ptSimpleMarkerSymbolClass.Style">
+        <member name="P:ArcGIS_SLD_Converter.ptSimpleMarkerSymbolClass.Style">
             <summary>
             样式
             </summary>
@@ -1296,27 +1296,27 @@
             渐变填充符号
             </summary>
         </member>
-        <member name="F:ArcGIS_SLD_Converter.ptGradientFillSymbolClass.Colors">
+        <member name="P:ArcGIS_SLD_Converter.ptGradientFillSymbolClass.Colors">
             <summary>
             颜色列表
             </summary>
         </member>
-        <member name="F:ArcGIS_SLD_Converter.ptGradientFillSymbolClass.GradientAngle">
+        <member name="P:ArcGIS_SLD_Converter.ptGradientFillSymbolClass.GradientAngle">
             <summary>
             角度
             </summary>
         </member>
-        <member name="F:ArcGIS_SLD_Converter.ptGradientFillSymbolClass.GradientPercentage">
+        <member name="P:ArcGIS_SLD_Converter.ptGradientFillSymbolClass.GradientPercentage">
             <summary>
             百分比
             </summary>
         </member>
-        <member name="F:ArcGIS_SLD_Converter.ptGradientFillSymbolClass.IntervallCount">
+        <member name="P:ArcGIS_SLD_Converter.ptGradientFillSymbolClass.IntervallCount">
             <summary>
             间隔带
             </summary>
         </member>
-        <member name="F:ArcGIS_SLD_Converter.ptGradientFillSymbolClass.Style">
+        <member name="P:ArcGIS_SLD_Converter.ptGradientFillSymbolClass.Style">
             <summary>
             样式
             </summary>
@@ -1579,6 +1579,21 @@
         <member name="F:ArcGIS_SLD_Converter.XMLHandle.m_objDoc">
             <summary>
             全局处理XML文档对象
+            </summary>
+        </member>
+        <member name="F:ArcGIS_SLD_Converter.XMLHandle.m_objNameDict">
+            <summary>
+            OGC节点名称
+            </summary>
+        </member>
+        <member name="F:ArcGIS_SLD_Converter.XMLHandle.m_objNamespaceDict">
+            <summary>
+            XML命名空间
+            </summary>
+        </member>
+        <member name="F:ArcGIS_SLD_Converter.XMLHandle.m_objXPathDict">
+            <summary>
+            各个节点路径
             </summary>
         </member>
         <member name="F:ArcGIS_SLD_Converter.XMLHandle.m_objRoot">
