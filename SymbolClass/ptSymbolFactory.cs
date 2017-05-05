@@ -215,5 +215,6 @@ namespace ArcGIS_SLD_Converter
             }
             return pSymbolClass;
         }
+       
     }
 }

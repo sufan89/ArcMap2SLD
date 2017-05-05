@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Xml;
 
 namespace ArcGIS_SLD_Converter
 {
@@ -34,6 +35,16 @@ namespace ArcGIS_SLD_Converter
         protected virtual void InitialSymbol()
         {
  
+        }
+        /// <summary>
+        /// 获取渲染的xml节点
+        /// </summary>
+        /// <param name="xmlDoc">SLD文档对象</param>
+        /// <param name="RootXmlElement">当前的节点对象</param>
+        /// <returns></returns>
+        protected virtual XmlElement GetRendXmlNode(XmlDocument xmlDoc,XmlElement RootXmlElement)
+        {
+            return null;
         }
         /// <summary>
         /// 渲染的要素类
@@ -182,6 +193,25 @@ namespace ArcGIS_SLD_Converter
             }
 
         }
+        protected override XmlElement GetRendXmlNode(XmlDocument xmlDoc, XmlElement RootXmlElement)
+        {
+            XmlElement pNewElement = default(XmlElement);
+            try
+            {
+                //开始解析渲染符号信息
+                for (int i = 0; i < SymbolList.Count; i++)
+                {
+                    ptSymbolClass pSymbolClass = SymbolList[i];
+                    //生成Rule节点信息
+
+                }
+            }
+            catch (Exception ex)
+            {
+                ptLogManager.WriteMessage(string.Format("解析符号信息失败:{0}{1}{2}{3}",Environment.NewLine,ex.Message,Environment.NewLine,ex.StackTrace));
+            }
+            return pNewElement;
+        }
     }
     /// <summary>
     /// 分类渲染
@@ -234,6 +264,10 @@ namespace ArcGIS_SLD_Converter
                 MessageBox.Show(ex.Message);
             }
         }
+        protected override XmlElement GetRendXmlNode(XmlDocument xmlDoc, XmlElement RootXmlElement)
+        {
+            return base.GetRendXmlNode(xmlDoc, RootXmlElement);
+        }
     }
     /// <summary>
     /// 简单渲染方式
@@ -262,6 +296,10 @@ namespace ArcGIS_SLD_Converter
             ptSymbolClass pSymbolClass = pSymbolFac.GetSymbolClass(m_pSimpleRender.Label, new List<string>()
                 , 0, 0);
             SymbolList.Add(pSymbolClass);
+        }
+        protected override XmlElement GetRendXmlNode(XmlDocument xmlDoc, XmlElement RootXmlElement)
+        {
+            return base.GetRendXmlNode(xmlDoc, RootXmlElement);
         }
     }
 }

@@ -237,11 +237,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="CommClass\CommStaticClass.cs" />
+    <Compile Include="CommClass\CommXmlHandle.cs" />
     <Compile Include="CommClass\ProjectClass.cs" />
     <Compile Include="CommClass\ptLayer.cs" />
-    <Compile Include="CommonXMLHandle.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="LogManager\ptLogManager.cs" />
     <Compile Include="Motherform.cs">
       <SubType>Form</SubType>

@@ -27,7 +27,6 @@ namespace ArcGIS_SLD_Converter
             m_bLabel = false;
             m_bIncludeLayerNames = true;
             SetSizeOpen();
-            InitCommonXML();
             m_MianDocument = mainDocument;
             string tempStr = System.IO.Path.GetDirectoryName(GetType().Assembly.Location);
             string LogFileName = tempStr +"\\"+ DateTime.Now.ToString("yyyyMMddHHmmss")+".log";
@@ -317,11 +316,6 @@ namespace ArcGIS_SLD_Converter
 		private string m_cXSDFilename;
 
         private IMxDocument m_MianDocument;
-        /// <summary>
-        /// 公共XML文档对象
-        /// </summary>
-		private CommonXMLHandle m_objCommonXML = new CommonXMLHandle(); 
-
 		private bool m_bLabel;
         /// <summary>
         ///是否转换全部图层，
@@ -461,32 +455,6 @@ namespace ArcGIS_SLD_Converter
 		public void DoEvents()
 		{
 			Application.DoEvents();
-		}
-        /// <summary>
-        /// 初始化配置
-        /// </summary>
-		private void InitCommonXML()
-		{
-			try
-			{
-                string tempStr= System.IO.Path.GetDirectoryName(GetType().Assembly.Location);
-                string configFileName = tempStr + "\\TempXmlDoc\\Preconfigure_Converter.xml";
-                m_objCommonXML.XMLfilename = configFileName;
-                if (m_objCommonXML.OpenDoc())
-				{
-					
-				}
-				else
-				{
-                    InfoMsg(string.Format("未找到配置文件,默认配置文件路径为【{0}】", configFileName), "配置错误");
-                    MyTermination();
-                }
-			}
-			catch (Exception ex)
-			{
-                ErrorMsg(string.Format("初始化配置文件失败!"), ex.Message, "配置错误");
-                MyTermination();
-			}
 		}
         /// <summary>
         /// 显示错误信息
@@ -738,7 +706,20 @@ namespace ArcGIS_SLD_Converter
         /// <param name="e"></param>
 		private void Motherform_Load(System.Object sender, System.EventArgs e)
 		{
-
+            //读取配置信息
+            string TempLutFileName = "";
+            if (m_bIncludeLayerNames)
+            {
+                TempLutFileName = CommXmlHandle.c_strLUT_Standard;
+            }
+            else
+            {
+                TempLutFileName = CommXmlHandle.c_strLUT_WorldMap;
+            }
+            if (!CommXmlHandle.ReadLUT(Path.GetDirectoryName(GetType().Assembly.Location), TempLutFileName))
+            {
+                MessageBox.Show("读取配置信息有误！","提示",MessageBoxButtons.OK,MessageBoxIcon.Error);
+            }
 		}
 		/// <summary>
         /// 是否包含图层名
@@ -747,8 +728,24 @@ namespace ArcGIS_SLD_Converter
         /// <param name="e"></param>
 		private void mnuIncludeLayerNames_Click(System.Object sender, System.EventArgs e)
 		{
-			mnuIncludeLayerNames.Checked = !mnuIncludeLayerNames.Checked;
-			m_bIncludeLayerNames = mnuIncludeLayerNames.Checked;
+            if (mnuIncludeLayerNames.Checked)
+            {
+                mnuIncludeLayerNames.Checked = false;
+                m_bIncludeLayerNames = false;
+                if (!CommXmlHandle.ReadLUT(Path.GetDirectoryName( GetType().Assembly.Location), CommXmlHandle.c_strLUT_WorldMap))
+                {
+                    MessageBox.Show("读取配置信息有误！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else
+            {
+                mnuIncludeLayerNames.Checked = true;
+                m_bIncludeLayerNames = true;
+                if (!CommXmlHandle.ReadLUT(Path.GetDirectoryName(GetType().Assembly.Location), CommXmlHandle.c_strLUT_Standard))
+                {
+                    MessageBox.Show("读取配置信息有误！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
 		}
 		
 	}

@@ -56,19 +56,8 @@ namespace ArcGIS_SLD_Converter
             m_ObjDoc = mxDoc;
             CentralProcessingFunc();
         }
-
         #endregion
         #region 属性信息
-        /// <summary>
-        /// 获取项目信息
-        /// </summary>
-        public ProjectClass GetProjectData
-        {
-            get
-            {
-                return m_StrProject;
-            }
-        }
         #endregion
         /// <summary>
         /// 分析符号信息主函数
@@ -114,13 +103,13 @@ namespace ArcGIS_SLD_Converter
                             m_cFilename = frmMotherform.dlgSave.FileName;
                             frmMotherform.txtFileName.Text = m_cFilename;
                         }
-                        objOutputSLD = new Output_SLD(frmMotherform, this, m_cFilename); //输出SLD文件
+                        objOutputSLD = new Output_SLD(frmMotherform, m_StrProject, m_cFilename); //输出SLD文件
                     }
                 }
             }
             else
             {
-                objOutputSLD = new Output_SLD(frmMotherform, this, m_cFilename);//输出SLD文件
+                objOutputSLD = new Output_SLD(frmMotherform, m_StrProject, m_cFilename);//输出SLD文件
             }
             frmMotherform.CHLabelBottom("");
             frmMotherform.CHLabelSmall("");
