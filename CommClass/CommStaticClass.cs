@@ -260,5 +260,16 @@ namespace ArcGIS_SLD_Converter
         168,169,188,189,216,230,250};
 
         public static IList<int> SYMBOLS4ChartIndex = new int[] { 161, 170, 171, 172, 173, 174, 175, 176, 177, 178, 186};
+        /// <summary>
+        /// 将Points转换成像素
+        /// </summary>
+        /// <param name="PointsVal"></param>
+        /// <returns></returns>
+        public static double GetPiexlFromPoints(double PointsVal)
+        {
+            double piexlVal = 0.0;
+            piexlVal = 0.75 * PointsVal;
+            return piexlVal;
+        }
     }
 }

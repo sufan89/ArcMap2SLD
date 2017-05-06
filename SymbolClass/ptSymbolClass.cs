@@ -31,7 +31,7 @@ namespace ArcGIS_SLD_Converter
         /// 最小限制
         /// </summary>
         public double LowerLimit { get; set; }
-        public virtual XmlNode GetSymbolNode(XmlDocument xmlDoc)
+        public virtual XmlElement GetSymbolNode(XmlDocument xmlDoc)
         {
             return null;
         }
@@ -125,9 +125,9 @@ namespace ArcGIS_SLD_Converter
             IMarkerSymbol pMarkerSymbol = pSymbol as IMarkerSymbol;
             Angle = pMarkerSymbol.Angle;
             Color = CommStaticClass.GimmeStringForColor(pMarkerSymbol.Color);
-            Size = pMarkerSymbol.Size;
-            XOffset = pMarkerSymbol.XOffset;
-            YOffset = pMarkerSymbol.YOffset;
+            Size = CommStaticClass.GetPiexlFromPoints(pMarkerSymbol.Size);
+            XOffset = CommStaticClass.GetPiexlFromPoints(pMarkerSymbol.XOffset);
+            YOffset = CommStaticClass.GetPiexlFromPoints(pMarkerSymbol.YOffset);
             if (!string.IsNullOrEmpty(Color))
             {
                 Filled = pMarkerSymbol.Color.Transparency != 0;
@@ -157,6 +157,15 @@ namespace ArcGIS_SLD_Converter
         /// 是否填充
         /// </summary>
         public bool Filled { get;}
+        /// <summary>
+        /// 获取当前符号节点
+        /// </summary>
+        /// <param name="xmlDoc"></param>
+        /// <returns></returns>
+        public override XmlElement GetSymbolNode(XmlDocument xmlDoc)
+        {
+            return base.GetSymbolNode(xmlDoc);
+        }
     }
     /// <summary>
     /// 简单标记符号
@@ -169,7 +178,7 @@ namespace ArcGIS_SLD_Converter
             ISimpleMarkerSymbol pSimpleMarkerSymbol = pSymbol as ISimpleMarkerSymbol;
             Outline = pSimpleMarkerSymbol.Outline;
             OutlineColor = CommStaticClass.GimmeStringForColor(pSimpleMarkerSymbol.OutlineColor);
-            OutlineSize = pSimpleMarkerSymbol.OutlineSize;
+            OutlineSize = CommStaticClass.GetPiexlFromPoints(pSimpleMarkerSymbol.OutlineSize);
             Style = pSimpleMarkerSymbol.Style.ToString();
         }
         /// <summary>
@@ -243,8 +252,8 @@ namespace ArcGIS_SLD_Converter
         {
             IArrowMarkerSymbol pArrowMarkerSymbol = pSymbol as IArrowMarkerSymbol;
             Style = pArrowMarkerSymbol.Style.ToString();
-            Width = pArrowMarkerSymbol.Width;
-            Length = pArrowMarkerSymbol.Length;
+            Width = CommStaticClass.GetPiexlFromPoints(pArrowMarkerSymbol.Width);
+            Length = CommStaticClass.GetPiexlFromPoints(pArrowMarkerSymbol.Length);
         }
         /// <summary>
         /// 样式
@@ -272,7 +281,7 @@ namespace ArcGIS_SLD_Converter
         {
             ILineSymbol pLineSymbol = pSymbol as ILineSymbol;
             Color = CommStaticClass.GimmeStringForColor(pLineSymbol.Color);
-            Width = pLineSymbol.Width;
+            Width = CommStaticClass.GetPiexlFromPoints(pLineSymbol.Width);
             Transparency = pLineSymbol.Color.Transparency; 
         }
         /// <summary>
@@ -397,7 +406,7 @@ namespace ArcGIS_SLD_Converter
         /// <summary>
         /// 混列线符号
         /// </summary>
-        public ptSymbolClass HashSymbol { get;}
+        public ptLineSymbolClass HashSymbol { get;}
     }
     /// <summary>
     /// 标记线符号
@@ -437,7 +446,7 @@ namespace ArcGIS_SLD_Converter
         /// <summary>
         /// 标记符号
         /// </summary>
-        public ptSymbolClass MarkSymbol { get;}
+        public ptMarkerSymbolClass MarkSymbol { get;}
     }
     /// <summary>
     /// 图片线符号
@@ -570,6 +579,7 @@ namespace ArcGIS_SLD_Converter
             : base(pSymbol)
         {
             IMarkerFillSymbol pMarkerFillSymbol = pSymbol as IMarkerFillSymbol;
+            IFillProperties pFillProperties = pMarkerFillSymbol as IFillProperties;
             GridAngle = pMarkerFillSymbol.GridAngle;
             IMarkerSymbol pMarkerSymbol = pMarkerFillSymbol.MarkerSymbol;
             ptMarkerSymbolClass pSymbolClass = null ;
@@ -594,6 +604,13 @@ namespace ArcGIS_SLD_Converter
                 pSymbolClass = new ptMultilayerMarkerSymbolClass(pMarkerSymbol as ISymbol);
             }
             MarkerSymbol = pSymbolClass;
+            if (pFillProperties != null)
+            {
+                XOffset = CommStaticClass.GetPiexlFromPoints( pFillProperties.XOffset);
+                YOffset = CommStaticClass.GetPiexlFromPoints(pFillProperties.YOffset);
+                XSeparation = CommStaticClass.GetPiexlFromPoints(pFillProperties.XSeparation);
+                YSeparation = CommStaticClass.GetPiexlFromPoints(pFillProperties.YSeparation);
+            }
         }
         /// <summary>
         /// 网格角度
@@ -602,7 +619,24 @@ namespace ArcGIS_SLD_Converter
         /// <summary>
         /// 标记符号
         /// </summary>
-        public ptMarkerSymbolClass MarkerSymbol { get; set; }
+        public ptMarkerSymbolClass MarkerSymbol { get; }
+        /// <summary>
+        /// x轴偏移量
+        /// </summary>
+        public double XOffset { get; }
+        /// <summary>
+        /// y轴偏移量
+        /// </summary>
+        public double YOffset { get; }
+        /// <summary>
+        /// x轴间隔
+        /// </summary>
+        public double XSeparation { get; }
+        /// <summary>
+        /// y轴间隔
+        /// </summary>
+        public double YSeparation { get; }
+
     }
     /// <summary>
     /// 线填充符号
@@ -614,8 +648,8 @@ namespace ArcGIS_SLD_Converter
         {
             ILineFillSymbol pLineFillSymbol = pSymbol as ILineFillSymbol;
             Angle = pLineFillSymbol.Angle;
-            Offset = pLineFillSymbol.Offset;
-            Separation = pLineFillSymbol.Separation;
+            Offset = CommStaticClass.GetPiexlFromPoints(pLineFillSymbol.Offset);
+            Separation = CommStaticClass.GetPiexlFromPoints(pLineFillSymbol.Separation);
             ILineSymbol pLineSymbol = pLineFillSymbol.LineSymbol;
             ptLineSymbolClass pSymbolClass = null;
             if (pLineSymbol is ICartographicLineSymbol)
@@ -820,7 +854,7 @@ namespace ArcGIS_SLD_Converter
     }
     #endregion
 
-    #region 图表符号
+    #region 图表符号(SLD暂时不支持图表类型)
     /// <summary>
     /// 条形图符号
     /// </summary>

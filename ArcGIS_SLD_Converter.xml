@@ -36,11 +36,6 @@
             <param name="value">主窗体</param>
             <param name="Filename">保存文件路径</param>
         </member>
-        <member name="P:ArcGIS_SLD_Converter.Analize_ArcMap_Symbols.GetProjectData">
-            <summary>
-            获取项目信息
-            </summary>
-        </member>
         <member name="M:ArcGIS_SLD_Converter.Analize_ArcMap_Symbols.CentralProcessingFunc">
             <summary>
             分析符号信息主函数
@@ -201,6 +196,125 @@
             <param name="ColorRamp"></param>
             <returns></returns>
         </member>
+        <member name="M:ArcGIS_SLD_Converter.CommStaticClass.GetPiexlFromPoints(System.Double)">
+            <summary>
+            将Points转换成像素
+            </summary>
+            <param name="PointsVal"></param>
+            <returns></returns>
+        </member>
+        <member name="F:ArcGIS_SLD_Converter.CommXmlHandle.c_strRootNodeName_Standard">
+            <summary>
+            标准根节点名称
+            </summary>
+        </member>
+        <member name="F:ArcGIS_SLD_Converter.CommXmlHandle.c_strRootNodeName_WorldMap">
+            <summary>
+            世界地图根节点名称
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.CommXmlHandle.m_dicOGCName">
+            <summary>
+            OGC名称
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.CommXmlHandle.m_dicNamespace">
+            <summary>
+            命名空间
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.CommXmlHandle.m_dicPath">
+            <summary>
+            节点路径
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.CommXmlHandle.m_dicNameUrl">
+            <summary>
+            命名空间URL
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.CommXmlHandle.m_xmlVersion">
+            <summary>
+            XML文档版本信息
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.CommXmlHandle.m_sldVersion">
+            <summary>
+            sld文档版本信息
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.CommXmlHandle.m_xmlEncoding">
+            <summary>
+            XML文档编码信息
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.CommXmlHandle.m_SLDXmlns">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.CommXmlHandle.ReadLUT(System.String,System.String)">
+            <summary>
+            读取XML文档配置信息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.CommXmlHandle.CreateNewFile(System.String,System.Boolean,System.Boolean)">
+            <summary>
+            新建一个XML文档
+            </summary>
+            <param name="OverWrite">是否重写</param>
+            <param name="blnIncludeLayerNames">是否包含图层名称</param>
+            <returns></returns>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.CommXmlHandle.GetOGCName(System.String)">
+            <summary>
+            获取OGC名称
+            </summary>
+            <param name="Value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.CommXmlHandle.GetNamespaceURL(System.String)">
+            <summary>
+            获取命名空间URL
+            </summary>
+            <param name="Value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.CommXmlHandle.CreateElement(System.String,System.Xml.XmlDocument)">
+            <summary>
+             创建指定元素
+            </summary>
+            <param name="AliasTagName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.CommXmlHandle.SetElementText(System.String,System.Xml.XmlElement)">
+            <summary>
+            设置XML要素内容
+            </summary>
+            <param name="InnerText"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.CommXmlHandle.CreateAttribute(System.String,System.Xml.XmlElement,System.Xml.XmlDocument)">
+            <summary>
+            创建指定属性
+            </summary>
+            <param name="AttributeName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.CommXmlHandle.SetAttributeValue(System.String,System.Xml.XmlAttribute)">
+            <summary>
+            设置属性值
+            </summary>
+            <param name="AttributeValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.CommXmlHandle.SaveDoc(System.Xml.XmlDocument,System.String)">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
         <member name="P:ArcGIS_SLD_Converter.ptLayer.m_LayerRender">
             <summary>
             渲染方式
@@ -227,111 +341,6 @@
             </summary>
             <param name="player"></param>
         </member>
-        <member name="F:ArcGIS_SLD_Converter.CommonXMLHandle.bDocIsOpen">
-            <summary>
-            XML打开状态
-            </summary>
-        </member>
-        <member name="F:ArcGIS_SLD_Converter.CommonXMLHandle.DocMode">
-            <summary>
-            XML状态
-            </summary>
-        </member>
-        <member name="T:ArcGIS_SLD_Converter.CommonXMLHandle.XmlMode">
-            <summary>
-            XML状态
-            </summary>
-        </member>
-        <member name="P:ArcGIS_SLD_Converter.CommonXMLHandle.XMLfilename">
-            <summary>
-            XML文件名称
-            </summary>
-        </member>
-        <member name="M:ArcGIS_SLD_Converter.CommonXMLHandle.OpenDoc">
-            <summary>
-            打开文档
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ArcGIS_SLD_Converter.CommonXMLHandle.SaveDoc">
-            <summary>
-            保存XML文档
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ArcGIS_SLD_Converter.CommonXMLHandle.FindRoot(System.String)">
-            <summary>
-            根据节点名称获取根节点
-            </summary>
-            <param name="RootName"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ArcGIS_SLD_Converter.CommonXMLHandle.FindSection(System.String)">
-            <summary>
-            查找Section
-            </summary>
-            <param name="Section"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ArcGIS_SLD_Converter.CommonXMLHandle.FindEntry(System.String)">
-            <summary>
-            查找指定节点
-            </summary>
-            <param name="Entry"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ArcGIS_SLD_Converter.CommonXMLHandle.getEntryValue">
-            <summary>
-            获取当前活动节点的内容
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ArcGIS_SLD_Converter.CommonXMLHandle.getSectionValue">
-            <summary>
-            获取选择节点内容
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ArcGIS_SLD_Converter.CommonXMLHandle.SetSectionValue(System.String)">
-            <summary>
-            设置选择节点值
-            </summary>
-            <param name="NewValue"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ArcGIS_SLD_Converter.CommonXMLHandle.SetEntryValue(System.String)">
-            <summary>
-            设置
-            </summary>
-            <param name="NewValue"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ArcGIS_SLD_Converter.CommonXMLHandle.CreateEntry(System.String)">
-            <summary>
-            创建新节点
-            </summary>
-            <param name="Entry"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ArcGIS_SLD_Converter.CommonXMLHandle.GetAllEntryValues">
-            <summary>
-            获取当前活动节点子节点数组
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ArcGIS_SLD_Converter.CommonXMLHandle.FindSubEntry(System.String)">
-            <summary>
-            获取当前活动节点
-            </summary>
-            <param name="SubEntry"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ArcGIS_SLD_Converter.CommonXMLHandle.GetSubentryValue">
-            <summary>
-            获取当前活动节点内容
-            </summary>
-            <returns></returns>
-        </member>
         <member name="T:ArcGIS_SLD_Converter.ptLogManager">
             <summary>
             记录日志信息
@@ -348,11 +357,6 @@
             Clean up any resources being used.
             </summary>
             <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        </member>
-        <member name="F:ArcGIS_SLD_Converter.Motherform.m_objCommonXML">
-            <summary>
-            公共XML文档对象
-            </summary>
         </member>
         <member name="F:ArcGIS_SLD_Converter.Motherform.m_bAllLayers">
              <summary>
@@ -417,11 +421,6 @@
         <member name="M:ArcGIS_SLD_Converter.Motherform.DoEvents">
             <summary>
             处理所有的当前在消息队列中的Windows消息
-            </summary>
-        </member>
-        <member name="M:ArcGIS_SLD_Converter.Motherform.InitCommonXML">
-            <summary>
-            初始化配置
             </summary>
         </member>
         <member name="M:ArcGIS_SLD_Converter.Motherform.ErrorMsg(System.String,System.String,System.String)">
@@ -547,11 +546,6 @@
             <param name="sender"></param>
             <param name="e"></param>
         </member>
-        <member name="F:ArcGIS_SLD_Converter.Output_SLD.m_objData">
-            <summary>
-            符号分析对象
-            </summary>
-        </member>
         <member name="F:ArcGIS_SLD_Converter.Output_SLD.m_strDataSavings">
             <summary>
             分析图层信息
@@ -572,7 +566,12 @@
             是否存在一个SLD文件还是根据图层来进行分别存储SLD
             </summary>
         </member>
-        <member name="M:ArcGIS_SLD_Converter.Output_SLD.#ctor(ArcGIS_SLD_Converter.Motherform,ArcGIS_SLD_Converter.Analize_ArcMap_Symbols,System.String)">
+        <member name="F:ArcGIS_SLD_Converter.Output_SLD.m_bIncludeLayerNames">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.Output_SLD.#ctor(ArcGIS_SLD_Converter.Motherform,ArcGIS_SLD_Converter.ProjectClass,System.String)">
             <summary>
             构造函数
             </summary>
@@ -707,6 +706,14 @@
             <summary>
             初始化符号信息
             </summary>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.ptRender.GetRendXmlNode(System.Xml.XmlDocument,System.Xml.XmlElement)">
+            <summary>
+            获取渲染的xml节点
+            </summary>
+            <param name="xmlDoc">SLD文档对象</param>
+            <param name="RootXmlElement">当前的节点对象</param>
+            <returns></returns>
         </member>
         <member name="P:ArcGIS_SLD_Converter.ptRender.m_FeatureClass">
             <summary>
@@ -940,6 +947,13 @@
             <summary>
             是否填充
             </summary>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.ptMarkerSymbolClass.GetSymbolNode(System.Xml.XmlDocument)">
+            <summary>
+            获取当前符号节点
+            </summary>
+            <param name="xmlDoc"></param>
+            <returns></returns>
         </member>
         <member name="T:ArcGIS_SLD_Converter.ptSimpleMarkerSymbolClass">
             <summary>
@@ -1184,6 +1198,26 @@
         <member name="P:ArcGIS_SLD_Converter.ptMarkerFillSymbolClass.MarkerSymbol">
             <summary>
             标记符号
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptMarkerFillSymbolClass.XOffset">
+            <summary>
+            x轴偏移量
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptMarkerFillSymbolClass.YOffset">
+            <summary>
+            y轴偏移量
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptMarkerFillSymbolClass.XSeparation">
+            <summary>
+            x轴间隔
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptMarkerFillSymbolClass.YSeparation">
+            <summary>
+            y轴间隔
             </summary>
         </member>
         <member name="T:ArcGIS_SLD_Converter.ptLineFillSymbolClass">
@@ -1601,11 +1635,6 @@
             根节点要素
             </summary>
         </member>
-        <member name="F:ArcGIS_SLD_Converter.XMLHandle.m_iLevelCount">
-            <summary>
-            节点级别
-            </summary>
-        </member>
         <member name="P:ArcGIS_SLD_Converter.XMLHandle.m_objActiveNode">
             <summary>
             当前活动节点
@@ -1697,13 +1726,6 @@
             设置属性值
             </summary>
             <param name="AttributeValue"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ArcGIS_SLD_Converter.XMLHandle.ParseDoc(System.Xml.XmlElement)">
-            <summary>
-            复制XML文档
-            </summary>
-            <param name="CurrentNode"></param>
             <returns></returns>
         </member>
         <member name="M:ArcGIS_SLD_Converter.XMLHandle.CreateNewFile(System.Boolean,System.Boolean)">

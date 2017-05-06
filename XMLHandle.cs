@@ -48,7 +48,7 @@ namespace ArcGIS_SLD_Converter
         /// <summary>
         /// XML命名空间
         /// </summary>
-        private Dictionary<string, string> m_objNamespaceDict; 
+        private Dictionary<string, string> m_objNamespaceDict;
         /// <summary>
         /// 各个节点路径
         /// </summary>
@@ -57,10 +57,6 @@ namespace ArcGIS_SLD_Converter
         /// 根节点要素
         /// </summary>
 		private XmlElement m_objRoot; 
-        /// <summary>
-        /// 节点级别
-        /// </summary>
-		private int m_iLevelCount; 
         /// <summary>
         /// 当前活动节点
         /// </summary>
@@ -141,7 +137,6 @@ namespace ArcGIS_SLD_Converter
 			ReadLUT();
 			m_enDocMode = XMLState.xmlDocClosed;
 			m_objDoc = new XmlDocument();
-			m_iLevelCount = 0;
 			if (!string.IsNullOrEmpty(m_cXMLFilename))
 			{
 				OpenDoc();
@@ -348,50 +343,6 @@ namespace ArcGIS_SLD_Converter
 			{
 				ErrorMsg("设置属性值出错", ex.Message, ex.StackTrace, "SetAttributeValue");
 				return false;
-			}
-		}
-		/// <summary>
-        /// 复制XML文档
-        /// </summary>
-        /// <param name="CurrentNode"></param>
-        /// <returns></returns>
-		public bool ParseDoc(XmlElement CurrentNode)
-		{
-             int  ParseDoc_iLevelCount = 0;
-			XmlElement objNode = default(XmlElement); 
-			ParseDoc_iLevelCount++;
-			try
-			{
-				if (m_enDocMode == XMLState.xmlDocOpen)
-				{
-					if (CurrentNode.HasChildNodes)
-					{
-                        objNode = CurrentNode.FirstChild as XmlElement;
-						while (!(objNode == null))
-						{
-							if (objNode.HasChildNodes)
-							{
-								if (objNode.FirstChild is XmlElement) 
-								{
-									ParseDoc(objNode);
-								}
-							}
-                            objNode = objNode.NextSibling as XmlElement;
-						}
-					}
-				}
-				else
-				{
-					MessageBox.Show("不能复制XML文档");
-					return default(bool);
-				}
-				m_iLevelCount = ParseDoc_iLevelCount;
-				return true;
-			}
-			catch (Exception ex)
-			{
-				ErrorMsg("复制XML文档出错", ex.Message, ex.StackTrace, "ParseDoc");
-                return false;
 			}
 		}
         /// <summary>
