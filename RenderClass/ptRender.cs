@@ -26,7 +26,9 @@ namespace ArcGIS_SLD_Converter
                 m_DatasetName = pds.Name;
                 AnnotationClass = new AnnotationClass(pFeatureLayer);
                 SymbolList = new List<ptSymbolClass>();
-
+                m_ptLayer = new ptLayer();
+                m_ptLayer.InitailGeneralInfo(pFeatureLayer);
+                m_ptLayer.m_LayerRender = this;
             }
         }
         /// <summary>
@@ -42,7 +44,7 @@ namespace ArcGIS_SLD_Converter
         /// <param name="xmlDoc">SLD文档对象</param>
         /// <param name="RootXmlElement">当前的节点对象</param>
         /// <returns></returns>
-        protected virtual XmlElement GetRendXmlNode(XmlDocument xmlDoc,XmlElement RootXmlElement)
+        public virtual XmlElement GetRendXmlNode(XmlDocument xmlDoc,XmlElement RootXmlElement)
         {
             return null;
         }
@@ -66,6 +68,7 @@ namespace ArcGIS_SLD_Converter
         /// 符号列表
         /// </summary>
         public IList<ptSymbolClass> SymbolList { get; set; }
+        public ptLayer m_ptLayer { get; }
     }
     /// <summary>
     /// 唯一值渲染
@@ -193,24 +196,83 @@ namespace ArcGIS_SLD_Converter
             }
 
         }
-        protected override XmlElement GetRendXmlNode(XmlDocument xmlDoc, XmlElement RootXmlElement)
+        public override XmlElement GetRendXmlNode(XmlDocument xmlDoc, XmlElement RootXmlElement)
         {
-            XmlElement pNewElement = default(XmlElement);
             try
             {
                 //开始解析渲染符号信息
                 for (int i = 0; i < SymbolList.Count; i++)
                 {
+                    XmlElement pRuleElement = default(XmlElement);
                     ptSymbolClass pSymbolClass = SymbolList[i];
                     //生成Rule节点信息
+                    pRuleElement = CommXmlHandle.CreateElement("Rule", xmlDoc);
+                    pRuleElement.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("RuleName", xmlDoc, pSymbolClass.Label));
+                    pRuleElement.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("Title", xmlDoc, pSymbolClass.Label));
+                    XmlElement pFilterElement = CommXmlHandle.CreateElement("Filter", xmlDoc);
 
+                    //设置符号选择器
+                    //多字段多值组合符号
+                    if (this.FieldCount > 1)
+                    {
+                        XmlElement pAndElement = CommXmlHandle.CreateElement("And", xmlDoc);
+                        for (int l = 0; l <= FieldCount - 1; l++)
+                        {
+                            XmlElement pEqualToElment = CommXmlHandle.CreateElement("PropertyIsEqualTo", xmlDoc);
+                            pEqualToElment.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("PropertyName", xmlDoc, FieldNames[l]));
+                            pEqualToElment.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("Fieldvalue", xmlDoc, pSymbolClass.Fieldvalues[l])) ;
+                            pAndElement.AppendChild(pEqualToElment);
+                        }
+                        pFilterElement.AppendChild(pAndElement);
+                    }
+                    //单字段多值同一符号
+                    else if (FieldCount == 1)
+                    {
+                        XmlElement pOrElement = default(XmlElement);
+                        if (pSymbolClass.Fieldvalues.Count > 1)
+                        {
+                            pOrElement = CommXmlHandle.CreateElement("Or", xmlDoc);
+                        }
+                        for (int l = 0; l <= pSymbolClass.Fieldvalues.Count - 1; l++)
+                        {
+                            if (pSymbolClass.Fieldvalues.Count > 1)
+                            {
+                                XmlElement pEqualToElment = CommXmlHandle.CreateElement("PropertyIsEqualTo", xmlDoc);
+                                pEqualToElment.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("PropertyName", xmlDoc, FieldNames[l]));
+                                pEqualToElment.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("Fieldvalue", xmlDoc, pSymbolClass.Fieldvalues[l]));
+                                pOrElement.AppendChild(pEqualToElment);
+                            }
+                            else
+                            {
+                                XmlElement pEqualToElment = CommXmlHandle.CreateElement("PropertyIsEqualTo", xmlDoc);
+                                pEqualToElment.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("PropertyName", xmlDoc, FieldNames[l]));
+                                pEqualToElment.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("Fieldvalue", xmlDoc, pSymbolClass.Fieldvalues[l]));
+                                pFilterElement.AppendChild(pEqualToElment);
+                            }
+                        }
+                        if(pSymbolClass.Fieldvalues.Count > 1) pFilterElement.AppendChild(pOrElement);
+                    }
+                    pRuleElement.AppendChild(pFilterElement);
+                    //设置显示比例尺
+                    if (!double.IsNaN(m_ptLayer.m_MaxScale) && !double.IsNaN(m_ptLayer.m_MinScale))
+                    {
+                        pRuleElement.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("MinScale", xmlDoc, m_ptLayer.m_MaxScale.ToString()));
+                        pRuleElement.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("MaxScale", xmlDoc, m_ptLayer.m_MinScale.ToString()));
+                    }
+                    //获取符号节点
+                    IList<XmlElement> pSymbolizedNode = pSymbolClass.GetSymbolNode(xmlDoc);
+                    foreach (XmlElement pElement in pSymbolizedNode)
+                    {
+                        pRuleElement.AppendChild(pElement);
+                    }
+                    RootXmlElement.AppendChild(pRuleElement);
                 }
             }
             catch (Exception ex)
             {
                 ptLogManager.WriteMessage(string.Format("解析符号信息失败:{0}{1}{2}{3}",Environment.NewLine,ex.Message,Environment.NewLine,ex.StackTrace));
             }
-            return pNewElement;
+            return RootXmlElement;
         }
     }
     /// <summary>
@@ -264,7 +326,7 @@ namespace ArcGIS_SLD_Converter
                 MessageBox.Show(ex.Message);
             }
         }
-        protected override XmlElement GetRendXmlNode(XmlDocument xmlDoc, XmlElement RootXmlElement)
+        public override XmlElement GetRendXmlNode(XmlDocument xmlDoc, XmlElement RootXmlElement)
         {
             return base.GetRendXmlNode(xmlDoc, RootXmlElement);
         }
@@ -297,7 +359,7 @@ namespace ArcGIS_SLD_Converter
                 , 0, 0);
             SymbolList.Add(pSymbolClass);
         }
-        protected override XmlElement GetRendXmlNode(XmlDocument xmlDoc, XmlElement RootXmlElement)
+        public override XmlElement GetRendXmlNode(XmlDocument xmlDoc, XmlElement RootXmlElement)
         {
             return base.GetRendXmlNode(xmlDoc, RootXmlElement);
         }
