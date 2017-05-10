@@ -53,6 +53,14 @@ namespace ArcGIS_SLD_Converter
         /// </summary>
         public static string m_SLDXmlns { get; set; }
         /// <summary>
+        /// 文档的命名空间
+        /// </summary>
+        private static XmlNamespaceManager m_NamespaceManager;
+        /// <summary>
+        /// 当前文档的保存路径
+        /// </summary>
+        public static string m_SaveFileName { get; set; }
+        /// <summary>
         /// 读取XML文档配置信息
         /// </summary>
         /// <returns></returns>
@@ -184,6 +192,7 @@ namespace ArcGIS_SLD_Converter
                     }
                     File.Delete(strFileName);
                 }
+                m_SaveFileName = strFileName;
                 cNamePre = GetNamespacePrefix(RootNodeName);
                 newDoc = new XmlDocument();
                 XmlElement RootElement = newDoc.CreateElement(cNamePre, GetOGCName(RootNodeName), GetNamespaceURL(cNamePre));
@@ -192,7 +201,7 @@ namespace ArcGIS_SLD_Converter
                 {
                     //标准SLD文件
                    XmlAttribute rootAttribute= CreateAttribute("version", RootElement, newDoc);
-                   SetAttributeValue(m_xmlVersion,rootAttribute);
+                   SetAttributeValue(m_sldVersion, rootAttribute);
                 }
                 else
                 {
@@ -211,10 +220,10 @@ namespace ArcGIS_SLD_Converter
                 newDoc.InsertBefore(objDeclare, RootElement);
                 SaveDoc(newDoc, strFileName); //保存新建的文档
                 //XML命名空间管理器
-                XmlNamespaceManager  m_objNSManager = new XmlNamespaceManager(newDoc.NameTable);
+                m_NamespaceManager = new XmlNamespaceManager(newDoc.NameTable);
                 foreach (string key in m_dicNamespace.Keys)
                 {
-                    m_objNSManager.AddNamespace(key, m_dicNamespace[key]);
+                    m_NamespaceManager.AddNamespace(key, m_dicNamespace[key]);
                 }
                 return newDoc;
             }
@@ -418,5 +427,53 @@ namespace ArcGIS_SLD_Converter
             }
             return true;
         }
+        /// <summary>
+        /// 查询节点
+        /// </summary>
+        /// <param name="XpathName"></param>
+        /// <param name="xmlNode"></param>
+        /// <returns></returns>
+        public static XmlElement GetSingleElement(string XpathName, XmlElement xmlNode)
+        {
+            XmlElement TargetElement = default(XmlElement);
+            try
+            {
+                TargetElement = xmlNode.SelectSingleNode(XpathName, m_NamespaceManager) as XmlElement;
+            }
+            catch (Exception ex)
+            {
+                ptLogManager.WriteMessage(string.Format("查询节点出差:{0}{1}{2}{3}",Environment.NewLine,ex.Message,Environment.NewLine,ex.StackTrace));
+            }
+            return TargetElement;
+        }
+    }
+
+    public sealed class IPictureConverter : System.Windows.Forms.AxHost
+    {
+        private IPictureConverter() : base("") { }
+
+        #region IPictureDisp
+        public static stdole.IPictureDisp ImageToIPictureDisp(System.Drawing.Image image)
+        {
+            return (stdole.IPictureDisp)GetIPictureDispFromPicture(image);
+        }
+
+        public static System.Drawing.Image IPictureDispToImage(stdole.IPictureDisp pictureDisp)
+        {
+            return GetPictureFromIPictureDisp(pictureDisp);
+        }
+        #endregion
+
+        #region IPicture
+        public static stdole.IPicture ImageToIPicture(System.Drawing.Image image)
+        {
+            return (stdole.IPicture)GetIPictureFromPicture(image);
+        }
+
+        public static System.Drawing.Image IPictureToImage(stdole.IPicture picture)
+        {
+            return GetPictureFromIPicture(picture);
+        }
+        #endregion
     }
 }

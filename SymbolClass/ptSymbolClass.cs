@@ -3,6 +3,7 @@ using stdole;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Xml;
@@ -31,7 +32,7 @@ namespace ArcGIS_SLD_Converter
         /// 最小限制
         /// </summary>
         public double LowerLimit { get; set; }
-        public virtual XmlElement GetSymbolNode(XmlDocument xmlDoc)
+        public virtual IList<XmlElement> GetSymbolNode(XmlDocument xmlDoc)
         {
             return null;
         }
@@ -162,9 +163,27 @@ namespace ArcGIS_SLD_Converter
         /// </summary>
         /// <param name="xmlDoc"></param>
         /// <returns></returns>
-        public override XmlElement GetSymbolNode(XmlDocument xmlDoc)
+        public override IList<XmlElement> GetSymbolNode(XmlDocument xmlDoc)
         {
-            return base.GetSymbolNode(xmlDoc);
+            IList<XmlElement> returenData = new List<XmlElement>();
+            XmlElement pSymboleElement = default(XmlElement);
+            pSymboleElement = CommXmlHandle.CreateElement("PointSymbolizer", xmlDoc);
+            //写偏移
+            if (XOffset != 0.00 || YOffset != 0.00)
+            {
+                XmlElement pOffsetElement = CommXmlHandle.CreateElement("PointGeometry", xmlDoc);
+                XmlElement pFunctionElment= CommXmlHandle.CreateElement("PointFunction", xmlDoc);
+                CommXmlHandle.SetAttributeValue("offset", CommXmlHandle.CreateAttribute("name", pFunctionElment, xmlDoc));
+                pFunctionElment.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("PropertyName", xmlDoc, "the_geom"));
+                pFunctionElment.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("Fieldvalue", xmlDoc, XOffset.ToString()));
+                pFunctionElment.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("Fieldvalue", xmlDoc, YOffset.ToString()));
+                pOffsetElement.AppendChild(pFunctionElment);
+                pSymboleElement.AppendChild(pOffsetElement);
+            }
+            pSymboleElement.AppendChild(CommXmlHandle.CreateElement("PointGraphic", xmlDoc));
+            //返回PointSymbolizer节点
+            returenData.Add(pSymboleElement);
+            return returenData;
         }
     }
     /// <summary>
@@ -179,7 +198,27 @@ namespace ArcGIS_SLD_Converter
             Outline = pSimpleMarkerSymbol.Outline;
             OutlineColor = CommStaticClass.GimmeStringForColor(pSimpleMarkerSymbol.OutlineColor);
             OutlineSize = CommStaticClass.GetPiexlFromPoints(pSimpleMarkerSymbol.OutlineSize);
-            Style = pSimpleMarkerSymbol.Style.ToString();
+            switch (pSimpleMarkerSymbol.Style)
+            {
+                case esriSimpleMarkerStyle.esriSMSCircle:
+                    Style = "circle";
+                    break;
+                case esriSimpleMarkerStyle.esriSMSCross:
+                    Style = "cross";
+                    break;
+                case esriSimpleMarkerStyle.esriSMSDiamond:
+                    Style = "triangle";
+                    break;
+                case esriSimpleMarkerStyle.esriSMSSquare:
+                    Style = "square";
+                    break;
+                case esriSimpleMarkerStyle.esriSMSX:
+                    Style = "X";
+                    break;
+                default:
+                    Style = "circle";
+                    break;
+            }
         }
         /// <summary>
         /// 是否有边框线
@@ -197,6 +236,48 @@ namespace ArcGIS_SLD_Converter
         /// 样式
         /// </summary>
         public string Style { get; }
+        public override IList<XmlElement> GetSymbolNode(XmlDocument xmlDoc)
+        {
+            //PointSymbolizer节点
+            IList<XmlElement> SymbolizerElement = base.GetSymbolNode(xmlDoc);
+            XmlElement graphicElement = SymbolizerElement[0].LastChild as XmlElement;
+            if (graphicElement == default(XmlElement))
+            {
+                ptLogManager.WriteMessage(string.Format("无法从点符号化节点下获取图形节点"));
+                return SymbolizerElement;
+            }
+            //mark节点
+            XmlElement markElement =CommXmlHandle.CreateElement("Mark", xmlDoc);
+            //写WellKnownName
+            markElement.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("PointWellKnownName", xmlDoc, Style));
+            //填充节点
+            if (Filled)
+            {
+                XmlElement pFillElment = CommXmlHandle.CreateElement("PointFill", xmlDoc);
+                XmlElement CssElment = CommXmlHandle.CreateElementAndSetElemnetText("PointFillCssParameter", xmlDoc, Color);
+                CommXmlHandle.SetAttributeValue("fill", CommXmlHandle.CreateAttribute("name", CssElment, xmlDoc));
+                pFillElment.AppendChild(CssElment);
+                markElement.AppendChild(pFillElment);
+            }
+            //outline节点
+            if (Outline)
+            {
+                XmlElement pOutLineElment = CommXmlHandle.CreateElement("PointStroke", xmlDoc);
+                XmlElement CssColor= CommXmlHandle.CreateElementAndSetElemnetText("PointStrokeCssParameter", xmlDoc,OutlineColor);
+                CommXmlHandle.SetAttributeValue("stroke", CommXmlHandle.CreateAttribute("name", CssColor, xmlDoc));
+                pOutLineElment.AppendChild(CssColor);
+                XmlElement CssOutlinesize= CommXmlHandle.CreateElementAndSetElemnetText("PointStrokeCssParameter", xmlDoc, OutlineSize.ToString());
+                CommXmlHandle.SetAttributeValue("stroke-width", CommXmlHandle.CreateAttribute("name", CssOutlinesize, xmlDoc));
+                pOutLineElment.AppendChild(CssOutlinesize);
+                markElement.AppendChild(pOutLineElment);
+            }
+            graphicElement.AppendChild(markElement);
+            //size节点
+            graphicElement.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("PointSize", xmlDoc, Size.ToString()));
+            //Rotation节点
+            graphicElement.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("PointRotation", xmlDoc, Angle.ToString()));
+            return SymbolizerElement;
+        }
 
     }
     /// <summary>
@@ -219,6 +300,42 @@ namespace ArcGIS_SLD_Converter
         /// 字体名称
         /// </summary>
         public string Font { get; set; }
+        public override IList<XmlElement> GetSymbolNode(XmlDocument xmlDoc)
+        {
+            //PointSymbolizer节点
+            IList<XmlElement> SymbolizerElement = base.GetSymbolNode(xmlDoc);
+            XmlElement graphicElement = SymbolizerElement[0].LastChild as XmlElement;
+            if (graphicElement == default(XmlElement))
+            {
+                ptLogManager.WriteMessage(string.Format("无法从点符号化节点下获取图形节点"));
+                return SymbolizerElement;
+            }
+            //mark节点
+            XmlElement markElement = CommXmlHandle.CreateElement("Mark", xmlDoc);
+            //写WellKnownName
+            markElement.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("PointWellKnownName", xmlDoc, string.Format("ttf://{0}#0x{1}", Font, CharacterIndex.ToString("X"))));
+            //填充节点
+            if (Filled)
+            {
+                XmlElement pFillElment = CommXmlHandle.CreateElement("PointFill", xmlDoc);
+                XmlElement CssElment = CommXmlHandle.CreateElementAndSetElemnetText("PointFillCssParameter", xmlDoc, Color);
+                CommXmlHandle.SetAttributeValue("fill", CommXmlHandle.CreateAttribute("name", CssElment, xmlDoc));
+                pFillElment.AppendChild(CssElment);
+                markElement.AppendChild(pFillElment);
+            }
+            //stroke节点
+            XmlElement pstrokeElement = CommXmlHandle.CreateElement("PointStroke", xmlDoc);
+            XmlElement CssColor = CommXmlHandle.CreateElementAndSetElemnetText("PointStrokeCssParameter", xmlDoc, Color);
+            CommXmlHandle.SetAttributeValue("stroke", CommXmlHandle.CreateAttribute("name", CssColor, xmlDoc));
+            pstrokeElement.AppendChild(CssColor);
+            markElement.AppendChild(pstrokeElement);
+            graphicElement.AppendChild(markElement);
+            //size节点
+            graphicElement.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("PointSize", xmlDoc, Size.ToString()));
+            //Rotation节点
+            graphicElement.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("PointRotation", xmlDoc, Angle.ToString()));
+            return SymbolizerElement;
+        }
     }
     /// <summary>
     /// 图片标记符号
@@ -241,6 +358,42 @@ namespace ArcGIS_SLD_Converter
         /// 图片对象
         /// </summary>
         public IPicture Picture { get;}
+        public override IList<XmlElement> GetSymbolNode(XmlDocument xmlDoc)
+        {
+            IList<XmlElement> SymbolizerElement = base.GetSymbolNode(xmlDoc);
+            XmlElement graphicElement = SymbolizerElement[0].LastChild as XmlElement;
+            if (graphicElement == default(XmlElement))
+            {
+                ptLogManager.WriteMessage(string.Format("无法从点符号化节点下获取图形节点"));
+                return SymbolizerElement;
+            }
+            //先将图片保存到本地
+            string imagefile = string.Empty;
+            if (Picture != null)
+            {
+                string filePath = System.IO.Path.GetDirectoryName(CommXmlHandle.m_SaveFileName);
+                imagefile = string.Format("{0}\\{1}.png",filePath,Guid.NewGuid().ToString());
+                Image pimage = IPictureConverter.IPictureToImage(Picture);
+                Graphics g = Graphics.FromImage(pimage);
+                Bitmap pbitmap = new Bitmap(pimage);
+                pbitmap.MakeTransparent(System.Drawing.Color.Black);
+                pbitmap.Save(imagefile, System.Drawing.Imaging.ImageFormat.Png);
+            }
+            //PointExternalGraphic节点
+            XmlElement pExterGraphic = CommXmlHandle.CreateElement("PointExternalGraphic", xmlDoc);
+            XmlElement pOnlineElment = CommXmlHandle.CreateElement("PointOnlineResource", xmlDoc);
+            CommXmlHandle.SetAttributeValue("http://www.w3.org/1999/xlink", CommXmlHandle.CreateAttribute("xmlns:xlink", pOnlineElment, xmlDoc));
+            CommXmlHandle.SetAttributeValue("simple", CommXmlHandle.CreateAttribute("xlink:type", pOnlineElment, xmlDoc));
+            CommXmlHandle.SetAttributeValue(string.Format("file:\\{0}", imagefile.Replace('/', '\\')), CommXmlHandle.CreateAttribute("xlink:href", pOnlineElment, xmlDoc));
+            pExterGraphic.AppendChild(pOnlineElment);
+            pExterGraphic.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("PointFormat", xmlDoc, "image/png"));
+            graphicElement.AppendChild(pExterGraphic);
+            //size节点
+            graphicElement.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("PointSize", xmlDoc, Size.ToString()));
+            //Rotation节点
+            graphicElement.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("PointRotation", xmlDoc, Angle.ToString()));
+            return SymbolizerElement;
+        }
     }
     /// <summary>
     /// 箭头标记符号
@@ -267,6 +420,41 @@ namespace ArcGIS_SLD_Converter
         /// 长度
         /// </summary>
         public double Length { get;}
+        public override IList<XmlElement> GetSymbolNode(XmlDocument xmlDoc)
+        {
+            //PointSymbolizer节点
+            IList<XmlElement> SymbolizerElement = base.GetSymbolNode(xmlDoc);
+            XmlElement graphicElement = SymbolizerElement[0].LastChild as XmlElement;
+            if (graphicElement == default(XmlElement))
+            {
+                ptLogManager.WriteMessage(string.Format("无法从点符号化节点下获取图形节点"));
+                return SymbolizerElement;
+            }
+            //mark节点
+            XmlElement markElement = CommXmlHandle.CreateElement("Mark", xmlDoc);
+            //写WellKnownName
+            markElement.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("PointWellKnownName", xmlDoc, "arrow"));
+            //填充节点
+            if (Filled)
+            {
+                XmlElement pFillElment = CommXmlHandle.CreateElement("PointFill", xmlDoc);
+                XmlElement CssElment = CommXmlHandle.CreateElementAndSetElemnetText("PointFillCssParameter", xmlDoc, Color);
+                CommXmlHandle.SetAttributeValue("fill", CommXmlHandle.CreateAttribute("name", CssElment, xmlDoc));
+                pFillElment.AppendChild(CssElment);
+                markElement.AppendChild(pFillElment);
+            }
+            XmlElement pstrokeNode = CommXmlHandle.CreateElement("PointStroke", xmlDoc);
+            XmlElement CssOutlinesize = CommXmlHandle.CreateElementAndSetElemnetText("PointStrokeCssParameter", xmlDoc, Width.ToString());
+            CommXmlHandle.SetAttributeValue("stroke-width", CommXmlHandle.CreateAttribute("name", CssOutlinesize, xmlDoc));
+            pstrokeNode.AppendChild(CssOutlinesize);
+            markElement.AppendChild(pstrokeNode);
+            graphicElement.AppendChild(markElement);
+            //size节点
+            graphicElement.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("PointSize", xmlDoc, Size.ToString()));
+            //Rotation节点
+            graphicElement.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("PointRotation", xmlDoc, Angle.ToString()));
+            return SymbolizerElement;
+        }
     }
     #endregion
 
@@ -296,6 +484,28 @@ namespace ArcGIS_SLD_Converter
         /// 宽度
         /// </summary>
         public double Width { get;}
+        public override IList<XmlElement> GetSymbolNode(XmlDocument xmlDoc)
+        {
+            IList<XmlElement> returenData = new List<XmlElement>();
+            //XmlElement pSymboleElement = default(XmlElement);
+            //pSymboleElement = CommXmlHandle.CreateElement("PointSymbolizer", xmlDoc);
+            ////写偏移
+            //if (XOffset != 0.00 || YOffset != 0.00)
+            //{
+            //    XmlElement pOffsetElement = CommXmlHandle.CreateElement("PointGeometry", xmlDoc);
+            //    XmlElement pFunctionElment = CommXmlHandle.CreateElement("PointFunction", xmlDoc);
+            //    CommXmlHandle.SetAttributeValue("offset", CommXmlHandle.CreateAttribute("name", pFunctionElment, xmlDoc));
+            //    pFunctionElment.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("PropertyName", xmlDoc, "the_geom"));
+            //    pFunctionElment.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("Fieldvalue", xmlDoc, XOffset.ToString()));
+            //    pFunctionElment.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("Fieldvalue", xmlDoc, YOffset.ToString()));
+            //    pOffsetElement.AppendChild(pFunctionElment);
+            //    pSymboleElement.AppendChild(pOffsetElement);
+            //}
+            //pSymboleElement.AppendChild(CommXmlHandle.CreateElement("PointGraphic", xmlDoc));
+            ////返回PointSymbolizer节点
+            //returenData.Add(pSymboleElement);
+            return returenData;
+        }
 
     }
     /// <summary>
@@ -1087,6 +1297,15 @@ namespace ArcGIS_SLD_Converter
         /// 图层数量
         /// </summary>
         public int LayerCount { get; }
+        public override IList<XmlElement> GetSymbolNode(XmlDocument xmlDoc)
+        {
+            IList<XmlElement> returnData = new List<XmlElement>();
+            foreach (ptSymbolClass symbol in MultiMarkerLayers)
+            {
+                returnData.Add(symbol.GetSymbolNode(xmlDoc)[0]);
+            }
+            return returnData;
+        }
     }
     /// <summary>
     /// 多图层线符号

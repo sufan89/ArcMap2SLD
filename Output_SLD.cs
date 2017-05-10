@@ -137,11 +137,6 @@ namespace ArcGIS_SLD_Converter
             string sldFileName = "";
             if (m_bSepFiles)
             {
-                //if (System.IO.Directory.Exists(m_cPath))
-                //{
-                //    System.IO.Directory.Delete(m_cPath, true);
-                //}
-                //System.IO.Directory.CreateDirectory(m_cPath);
                 bDoOneLayer = false;
             }
             else
@@ -156,7 +151,6 @@ namespace ArcGIS_SLD_Converter
             }
             try
             {
-                XmlElement tempElement = null;
                 foreach (string key in m_strDataSavings.m_LayerRender.Keys)
                 {
                     #region 获取图层名称
@@ -182,173 +176,177 @@ namespace ArcGIS_SLD_Converter
                     #region 创建基础节点
                     if (Convert.ToBoolean(m_bIncludeLayerNames))
                     {
-                        tempElement= m_newXmlDoc.DocumentElement.AppendChild( CommXmlHandle.CreateElement("NamedLayer", m_newXmlDoc)) as XmlElement;
-                        XmlElement pElement = CommXmlHandle.CreateElementAndSetElemnetText("LayerName", m_newXmlDoc, strDatasetName);
-                        tempElement=tempElement.AppendChild(pElement) as XmlElement;
-                        tempElement = tempElement.AppendChild(CommXmlHandle.CreateElement("UserStyle", m_newXmlDoc)) as XmlElement;
-                        tempElement = tempElement.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("StyleName", m_newXmlDoc, "Style1")) as XmlElement;
-                        tempElement = tempElement.AppendChild(CommXmlHandle.CreateElement("FeatureTypeStyle", m_newXmlDoc)) as XmlElement;
-                        tempElement = tempElement.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("FeatureTypeName", m_newXmlDoc, strDatasetName)) as XmlElement;
+                        XmlElement NameLayerelment= m_newXmlDoc.DocumentElement.AppendChild(CommXmlHandle.CreateElement("NamedLayer", m_newXmlDoc)) as XmlElement;
+                        NameLayerelment.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("LayerName", m_newXmlDoc, strDatasetName));
+                        XmlElement UserStyleElment = CommXmlHandle.CreateElement("UserStyle", m_newXmlDoc);
+                        UserStyleElment.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("StyleName", m_newXmlDoc, "Style1"));
+                        NameLayerelment.AppendChild(UserStyleElment);
+                        XmlElement TypeStyleElement = CommXmlHandle.CreateElement("FeatureTypeStyle", m_newXmlDoc);
+                        TypeStyleElement.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("FeatureTypeName", m_newXmlDoc, strDatasetName));
+                        UserStyleElment.AppendChild(TypeStyleElement);
+                        pRender.GetRendXmlNode(m_newXmlDoc, TypeStyleElement);
                     }
                     else
                     {
-                        tempElement = m_newXmlDoc.DocumentElement.AppendChild(CommXmlHandle.CreateElement("FeatureTypeStyle", m_newXmlDoc)) as XmlElement;
-                        tempElement = tempElement.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("FeatureTypeName", m_newXmlDoc, strDatasetName)) as XmlElement;
-                        tempElement = tempElement.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("FeatureTypeTitle", m_newXmlDoc, strDatasetName)) as XmlElement;
+                        //tempElement = m_newXmlDoc.DocumentElement.AppendChild(CommXmlHandle.CreateElement("FeatureTypeStyle", m_newXmlDoc)) as XmlElement;
+                        //tempElement = tempElement.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("FeatureTypeName", m_newXmlDoc, strDatasetName)) as XmlElement;
+                        //tempElement = tempElement.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("FeatureTypeTitle", m_newXmlDoc, strDatasetName)) as XmlElement;
                     }
-                    #endregion 
+                    #endregion
+                    //tempElement.AppendChild(pRender.GetRendXmlNode(m_newXmlDoc, tempElement))
+                    #region 代码屏蔽
+                    //for (int j = 0; j <= objSymbols.Count - 1; j++)
+                    //{
 
-                    for (int j = 0; j <= objSymbols.Count - 1; j++)
-                    {
+                    //    frmMotherForm.CHLabelSmall("写入符号 " + (j + 1).ToString() + " 中 " + objSymbols.Count.ToString());
 
-                        frmMotherForm.CHLabelSmall("写入符号 " + (j + 1).ToString() + " 中 " + objSymbols.Count.ToString());
+                    //    ptSymbolClass pSymbolClass = objSymbols[j];
+                    //    #region 读取符号基础信息
+                    //    string StrLabel = pSymbolClass.Label;//标题
+                    //    double StrLowerLimit = pSymbolClass.LowerLimit;
+                    //    double StrUpperLimit = pSymbolClass.UpperLimit;
+                    //    objFieldValues = pSymbolClass.Fieldvalues;
+                    //    #endregion
 
-                        ptSymbolClass pSymbolClass = objSymbols[j];
-                        #region 读取符号基础信息
-                        string StrLabel = pSymbolClass.Label;//标题
-                        double StrLowerLimit = pSymbolClass.LowerLimit;
-                        double StrUpperLimit = pSymbolClass.UpperLimit;
-                        objFieldValues = pSymbolClass.Fieldvalues;
-                        #endregion
+                    //    #region 唯一值渲染
+                    //    if (pRender is ptUniqueValueRendererClass)
+                    //    {
+                    //        ptUniqueValueRendererClass pUniqueRender = pRender as ptUniqueValueRendererClass;
+                    //        m_objXMLHandle.CreateElement("Rule");
+                    //        m_objXMLHandle.CreateElement("RuleName");
+                    //        m_objXMLHandle.SetElementText(StrLabel);
+                    //        m_objXMLHandle.CreateElement("Title");
+                    //        m_objXMLHandle.SetElementText(StrLabel);
+                    //        m_objXMLHandle.CreateElement("Filter");
+                    //        //设置显示比例尺
+                    //        if (!double.IsNaN(pLayer.m_MaxScale) && !double.IsNaN(pLayer.m_MinScale))
+                    //        {
+                    //            m_objXMLHandle.CreateElement("MinScale");
+                    //            m_objXMLHandle.SetElementText(pLayer.m_MaxScale.ToString());
+                    //            m_objXMLHandle.CreateElement("MaxScale");
+                    //            m_objXMLHandle.SetElementText(pLayer.m_MinScale.ToString());
+                    //        }
+                    //        //多字段多值组合符号
+                    //        if (pUniqueRender.FieldCount > 1)
+                    //        {
+                    //            m_objXMLHandle.CreateElement("And");
+                    //            for (int l = 0; l <= pUniqueRender.FieldCount - 1; l++)
+                    //            {
+                    //                m_objXMLHandle.CreateElement("PropertyIsEqualTo");
+                    //                m_objXMLHandle.CreateElement("PropertyName");
+                    //                m_objXMLHandle.SetElementText(System.Convert.ToString(pUniqueRender.FieldNames[l]));
+                    //                m_objXMLHandle.CreateElement("Fieldvalue");
+                    //                m_objXMLHandle.SetElementText(System.Convert.ToString(objFieldValues[l]));
+                    //            }
+                    //        }
+                    //        //单字段多值同一符号
+                    //        else if (pUniqueRender.FieldCount == 1)
+                    //        {
+                    //            if (objFieldValues.Count > 1)
+                    //            {
+                    //                m_objXMLHandle.CreateElement("Or");
+                    //            }
+                    //            for (int l = 0; l <= objFieldValues.Count - 1; l++)
+                    //            {
+                    //                m_objXMLHandle.CreateElement("PropertyIsEqualTo");
+                    //                m_objXMLHandle.CreateElement("PropertyName");
+                    //                m_objXMLHandle.SetElementText(System.Convert.ToString(pUniqueRender.FieldNames[0]));
+                    //                m_objXMLHandle.CreateElement("Fieldvalue");
+                    //                m_objXMLHandle.SetElementText(System.Convert.ToString(objFieldValues[l]));
+                    //            }
+                    //        }
 
-                        #region 唯一值渲染
-                        if (pRender is ptUniqueValueRendererClass)
-                        {
-                            ptUniqueValueRendererClass pUniqueRender = pRender as ptUniqueValueRendererClass;
-                            m_objXMLHandle.CreateElement("Rule");
-                            m_objXMLHandle.CreateElement("RuleName");
-                            m_objXMLHandle.SetElementText(StrLabel);
-                            m_objXMLHandle.CreateElement("Title");
-                            m_objXMLHandle.SetElementText(StrLabel);
-                            m_objXMLHandle.CreateElement("Filter");
-                            //设置显示比例尺
-                            if (!double.IsNaN(pLayer.m_MaxScale) && !double.IsNaN(pLayer.m_MinScale))
-                            {
-                                m_objXMLHandle.CreateElement("MinScale");
-                                m_objXMLHandle.SetElementText(pLayer.m_MaxScale.ToString());
-                                m_objXMLHandle.CreateElement("MaxScale");
-                                m_objXMLHandle.SetElementText(pLayer.m_MinScale.ToString());
-                            }
-                            //多字段多值组合符号
-                            if (pUniqueRender.FieldCount > 1)
-                            {
-                                m_objXMLHandle.CreateElement("And");
-                                for (int l = 0; l <= pUniqueRender.FieldCount - 1; l++)
-                                {
-                                    m_objXMLHandle.CreateElement("PropertyIsEqualTo");
-                                    m_objXMLHandle.CreateElement("PropertyName");
-                                    m_objXMLHandle.SetElementText(System.Convert.ToString(pUniqueRender.FieldNames[l]));
-                                    m_objXMLHandle.CreateElement("Fieldvalue");
-                                    m_objXMLHandle.SetElementText(System.Convert.ToString(objFieldValues[l]));
-                                }
-                            }
-                            //单字段多值同一符号
-                            else if (pUniqueRender.FieldCount == 1)
-                            {
-                                if (objFieldValues.Count > 1)
-                                {
-                                    m_objXMLHandle.CreateElement("Or");
-                                }
-                                for (int l = 0; l <= objFieldValues.Count - 1; l++)
-                                {
-                                    m_objXMLHandle.CreateElement("PropertyIsEqualTo");
-                                    m_objXMLHandle.CreateElement("PropertyName");
-                                    m_objXMLHandle.SetElementText(System.Convert.ToString(pUniqueRender.FieldNames[0]));
-                                    m_objXMLHandle.CreateElement("Fieldvalue");
-                                    m_objXMLHandle.SetElementText(System.Convert.ToString(objFieldValues[l]));
-                                }
-                            }
+                    //        if (pSymbolClass is ptMarkerSymbolClass)
+                    //        {
+                    //            WritePointFeatures(pSymbolClass as ptMarkerSymbolClass);
+                    //        }
+                    //        else if (pSymbolClass is ptLineSymbolClass)
+                    //        {
+                    //            WriteLineFeatures(pSymbolClass as ptLineSymbolClass);
+                    //        }
+                    //        else if (pSymbolClass is ptFillSymbolClass)
+                    //        {
+                    //            WritePolygonFeatures(pSymbolClass as ptFillSymbolClass);
+                    //        }
+                    //    }
+                    //    #endregion
 
-                            if (pSymbolClass is ptMarkerSymbolClass)
-                            {
-                                WritePointFeatures(pSymbolClass as ptMarkerSymbolClass);
-                            }
-                            else if (pSymbolClass is ptLineSymbolClass)
-                            {
-                                WriteLineFeatures(pSymbolClass as ptLineSymbolClass);
-                            }
-                            else if (pSymbolClass is ptFillSymbolClass)
-                            {
-                                WritePolygonFeatures(pSymbolClass as ptFillSymbolClass);
-                            }
-                        }
-                        #endregion
+                    //    #region 分类值渲染方式
+                    //    else if (pRender is ptClassBreaksRendererCalss)
+                    //    {
+                    //        ptClassBreaksRendererCalss objStructCBR = pRender as ptClassBreaksRendererCalss;
+                    //        m_objXMLHandle.CreateElement("Rule");
+                    //        m_objXMLHandle.CreateElement("RuleName");
+                    //        m_objXMLHandle.SetElementText(StrLabel);
+                    //        m_objXMLHandle.CreateElement("Title");
+                    //        m_objXMLHandle.SetElementText(StrLabel);
+                    //        m_objXMLHandle.CreateElement("Filter");
+                    //        if (!double.IsNaN(pLayer.m_MaxScale) && !double.IsNaN(pLayer.m_MinScale))
+                    //        {
+                    //            m_objXMLHandle.CreateElement("MinScale");
+                    //            m_objXMLHandle.SetElementText(pLayer.m_MaxScale.ToString());
+                    //            m_objXMLHandle.CreateElement("MaxScale");
+                    //            m_objXMLHandle.SetElementText(pLayer.m_MinScale.ToString());
+                    //        }
+                    //        m_objXMLHandle.CreateElement("PropertyIsBetween");
+                    //        m_objXMLHandle.CreateElement("PropertyName");
+                    //        m_objXMLHandle.SetElementText(objStructCBR.FieldName);
+                    //        m_objXMLHandle.CreateElement("LowerBoundary");
+                    //        m_objXMLHandle.CreateElement("Fieldvalue");
+                    //        dummy = StrLowerLimit;
+                    //        m_objXMLHandle.SetElementText(CommaToPoint(dummy));
+                    //        m_objXMLHandle.CreateElement("UpperBoundary");
+                    //        m_objXMLHandle.CreateElement("Fieldvalue");
+                    //        dummy = StrUpperLimit;
+                    //        m_objXMLHandle.SetElementText(CommaToPoint(dummy));
+                    //        if (pSymbolClass is ptMarkerSymbolClass)
+                    //        {
+                    //            WritePointFeatures(pSymbolClass as ptMarkerSymbolClass);
+                    //        }
+                    //        else if (pSymbolClass is ptLineSymbolClass)
+                    //        {
+                    //            WriteLineFeatures(pSymbolClass as ptLineSymbolClass);
+                    //        }
+                    //        else if (pSymbolClass is ptFillSymbolClass)
+                    //        {
+                    //            WritePolygonFeatures(pSymbolClass as ptFillSymbolClass);
+                    //        }
+                    //    }
+                    //    #endregion
 
-                        #region 分类值渲染方式
-                        else if (pRender is ptClassBreaksRendererCalss)
-                        {
-                            ptClassBreaksRendererCalss objStructCBR = pRender as ptClassBreaksRendererCalss;
-                            m_objXMLHandle.CreateElement("Rule");
-                            m_objXMLHandle.CreateElement("RuleName");
-                            m_objXMLHandle.SetElementText(StrLabel);
-                            m_objXMLHandle.CreateElement("Title");
-                            m_objXMLHandle.SetElementText(StrLabel);
-                            m_objXMLHandle.CreateElement("Filter");
-                            if (!double.IsNaN(pLayer.m_MaxScale) && !double.IsNaN(pLayer.m_MinScale))
-                            {
-                                m_objXMLHandle.CreateElement("MinScale");
-                                m_objXMLHandle.SetElementText(pLayer.m_MaxScale.ToString());
-                                m_objXMLHandle.CreateElement("MaxScale");
-                                m_objXMLHandle.SetElementText(pLayer.m_MinScale.ToString());
-                            }
-                            m_objXMLHandle.CreateElement("PropertyIsBetween");
-                            m_objXMLHandle.CreateElement("PropertyName");
-                            m_objXMLHandle.SetElementText(objStructCBR.FieldName);
-                            m_objXMLHandle.CreateElement("LowerBoundary");
-                            m_objXMLHandle.CreateElement("Fieldvalue");
-                            dummy = StrLowerLimit;
-                            m_objXMLHandle.SetElementText(CommaToPoint(dummy));
-                            m_objXMLHandle.CreateElement("UpperBoundary");
-                            m_objXMLHandle.CreateElement("Fieldvalue");
-                            dummy = StrUpperLimit;
-                            m_objXMLHandle.SetElementText(CommaToPoint(dummy));
-                            if (pSymbolClass is ptMarkerSymbolClass)
-                            {
-                                WritePointFeatures(pSymbolClass as ptMarkerSymbolClass);
-                            }
-                            else if (pSymbolClass is ptLineSymbolClass)
-                            {
-                                WriteLineFeatures(pSymbolClass as ptLineSymbolClass);
-                            }
-                            else if (pSymbolClass is ptFillSymbolClass)
-                            {
-                                WritePolygonFeatures(pSymbolClass as ptFillSymbolClass);
-                            }
-                        }
-                        #endregion
-
-                        #region 简单渲染方式
-                        else if (pRender is ptSimpleRendererClass)
-                        {
-                            ptSimpleRendererClass objStructSR = pRender as ptSimpleRendererClass;
-                            m_objXMLHandle.CreateElement("Rule");
-                            m_objXMLHandle.CreateElement("RuleName");
-                            m_objXMLHandle.SetElementText(objStructSR.m_DatasetName);
-                            m_objXMLHandle.CreateElement("Title");
-                            m_objXMLHandle.SetElementText(objStructSR.m_DatasetName);
-                            if (!double.IsNaN(pLayer.m_MaxScale) && !double.IsNaN(pLayer.m_MinScale))
-                            {
-                                m_objXMLHandle.CreateElement("MinScale");
-                                m_objXMLHandle.SetElementText(pLayer.m_MaxScale.ToString());
-                                m_objXMLHandle.CreateElement("MaxScale");
-                                m_objXMLHandle.SetElementText(pLayer.m_MinScale.ToString());
-                            }
-                            if (pSymbolClass is ptMarkerSymbolClass)
-                            {
-                                WritePointFeatures(pSymbolClass as ptMarkerSymbolClass);
-                            }
-                            else if (pSymbolClass is ptLineSymbolClass)
-                            {
-                                WriteLineFeatures(pSymbolClass as ptLineSymbolClass);
-                            }
-                            else if (pSymbolClass is ptFillSymbolClass)
-                            {
-                                WritePolygonFeatures(pSymbolClass as ptFillSymbolClass);
-                            }
-                            WriteAnnotation(objStructSR.AnnotationClass);
-                        }
-                        #endregion
-                    }
+                    //    #region 简单渲染方式
+                    //    else if (pRender is ptSimpleRendererClass)
+                    //    {
+                    //        ptSimpleRendererClass objStructSR = pRender as ptSimpleRendererClass;
+                    //        m_objXMLHandle.CreateElement("Rule");
+                    //        m_objXMLHandle.CreateElement("RuleName");
+                    //        m_objXMLHandle.SetElementText(objStructSR.m_DatasetName);
+                    //        m_objXMLHandle.CreateElement("Title");
+                    //        m_objXMLHandle.SetElementText(objStructSR.m_DatasetName);
+                    //        if (!double.IsNaN(pLayer.m_MaxScale) && !double.IsNaN(pLayer.m_MinScale))
+                    //        {
+                    //            m_objXMLHandle.CreateElement("MinScale");
+                    //            m_objXMLHandle.SetElementText(pLayer.m_MaxScale.ToString());
+                    //            m_objXMLHandle.CreateElement("MaxScale");
+                    //            m_objXMLHandle.SetElementText(pLayer.m_MinScale.ToString());
+                    //        }
+                    //        if (pSymbolClass is ptMarkerSymbolClass)
+                    //        {
+                    //            WritePointFeatures(pSymbolClass as ptMarkerSymbolClass);
+                    //        }
+                    //        else if (pSymbolClass is ptLineSymbolClass)
+                    //        {
+                    //            WriteLineFeatures(pSymbolClass as ptLineSymbolClass);
+                    //        }
+                    //        else if (pSymbolClass is ptFillSymbolClass)
+                    //        {
+                    //            WritePolygonFeatures(pSymbolClass as ptFillSymbolClass);
+                    //        }
+                    //        WriteAnnotation(objStructSR.AnnotationClass);
+                    //    }
+                    //    #endregion
+                    //}
+                    #endregion
                     if (bDoOneLayer == false)
                     {
                         CommXmlHandle.SaveDoc(m_newXmlDoc, sldFileName);
@@ -1881,33 +1879,6 @@ namespace ArcGIS_SLD_Converter
 #endregion
 	}
 
-    public sealed class IPictureConverter : AxHost
-    {
-        private IPictureConverter() : base("") { }
 
-        #region IPictureDisp
-        public static stdole.IPictureDisp ImageToIPictureDisp(Image image)
-        {
-            return (stdole.IPictureDisp)GetIPictureDispFromPicture(image);
-        }
-
-        public static Image IPictureDispToImage(stdole.IPictureDisp pictureDisp)
-        {
-            return GetPictureFromIPictureDisp(pictureDisp);
-        }
-        #endregion
-
-        #region IPicture
-        public static stdole.IPicture ImageToIPicture(Image image)
-        {
-            return (stdole.IPicture)GetIPictureFromPicture(image);
-        }
-
-        public static Image IPictureToImage(stdole.IPicture picture)
-        {
-            return GetPictureFromIPicture(picture);
-        }
-        #endregion
-    }
 
 }

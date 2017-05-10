@@ -143,6 +143,13 @@
 		<PointWellKnownName ogcTag="WellKnownName" Namespace="sld">
 			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic/sld:Mark</XPath>
 		</PointWellKnownName>
+		<PointGeometry ogcTag="Geometry" Namespace="sld">
+		<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer</XPath>
+		</PointGeometry>
+		<PointFunction ogcTag="Function" Namespace="ogc">
+		<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Geometry</XPath>
+		</PointFunction>
+		
 		<PointFill ogcTag="Fill" Namespace="sld">
 			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic/sld:Mark</XPath>
 		</PointFill>

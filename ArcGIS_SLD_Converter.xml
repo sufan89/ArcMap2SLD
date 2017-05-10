@@ -253,6 +253,16 @@
             
             </summary>
         </member>
+        <member name="F:ArcGIS_SLD_Converter.CommXmlHandle.m_NamespaceManager">
+            <summary>
+            文档的命名空间
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.CommXmlHandle.m_SaveFileName">
+            <summary>
+            当前文档的保存路径
+            </summary>
+        </member>
         <member name="M:ArcGIS_SLD_Converter.CommXmlHandle.ReadLUT(System.String,System.String)">
             <summary>
             读取XML文档配置信息
@@ -313,6 +323,14 @@
             <summary>
             
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.CommXmlHandle.GetSingleElement(System.String,System.Xml.XmlElement)">
+            <summary>
+            查询节点
+            </summary>
+            <param name="XpathName"></param>
+            <param name="xmlNode"></param>
             <returns></returns>
         </member>
         <member name="P:ArcGIS_SLD_Converter.ptLayer.m_LayerRender">
