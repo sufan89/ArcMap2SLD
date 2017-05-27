@@ -487,26 +487,13 @@ namespace ArcGIS_SLD_Converter
         public override IList<XmlElement> GetSymbolNode(XmlDocument xmlDoc)
         {
             IList<XmlElement> returenData = new List<XmlElement>();
-            //XmlElement pSymboleElement = default(XmlElement);
-            //pSymboleElement = CommXmlHandle.CreateElement("PointSymbolizer", xmlDoc);
-            ////写偏移
-            //if (XOffset != 0.00 || YOffset != 0.00)
-            //{
-            //    XmlElement pOffsetElement = CommXmlHandle.CreateElement("PointGeometry", xmlDoc);
-            //    XmlElement pFunctionElment = CommXmlHandle.CreateElement("PointFunction", xmlDoc);
-            //    CommXmlHandle.SetAttributeValue("offset", CommXmlHandle.CreateAttribute("name", pFunctionElment, xmlDoc));
-            //    pFunctionElment.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("PropertyName", xmlDoc, "the_geom"));
-            //    pFunctionElment.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("Fieldvalue", xmlDoc, XOffset.ToString()));
-            //    pFunctionElment.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("Fieldvalue", xmlDoc, YOffset.ToString()));
-            //    pOffsetElement.AppendChild(pFunctionElment);
-            //    pSymboleElement.AppendChild(pOffsetElement);
-            //}
-            //pSymboleElement.AppendChild(CommXmlHandle.CreateElement("PointGraphic", xmlDoc));
-            ////返回PointSymbolizer节点
-            //returenData.Add(pSymboleElement);
+            XmlElement pSymboleElement = default(XmlElement);
+            pSymboleElement = CommXmlHandle.CreateElement("LineSymbolizer", xmlDoc);
+            pSymboleElement.AppendChild(CommXmlHandle.CreateElement("LineStroke", xmlDoc));
+            //返回LineSymbolizer节点
+            returenData.Add(pSymboleElement);
             return returenData;
         }
-
     }
     /// <summary>
     /// 简单线符号
@@ -521,6 +508,25 @@ namespace ArcGIS_SLD_Converter
             : base(pSymbol)
         {
             ISimpleLineSymbol pSimpLineSymbol = pSymbol as ISimpleLineSymbol;
+            switch (pSimpLineSymbol.Style)
+            {
+                case esriSimpleLineStyle.esriSLSDash:
+                    publicStyle = "10.0 10.0";
+                    break;
+                case esriSimpleLineStyle.esriSLSDashDot:
+                    publicStyle = "10.0 10.0 1.0 10.0";
+                    break;
+                case esriSimpleLineStyle.esriSLSDashDotDot:
+                    publicStyle = "10.0 10.0 1.0 10.0 1.0 10.0";
+                    break;
+                case esriSimpleLineStyle.esriSLSDot:
+                    publicStyle = "1.0 5.0";
+                    break;
+                default:
+                    publicStyle = string.Empty;
+                    break;
+
+            }
             publicStyle = pSimpLineSymbol.Style.ToString();
             if (pSimpLineSymbol.Style == esriSimpleLineStyle.esriSLSNull)
             {
@@ -531,6 +537,47 @@ namespace ArcGIS_SLD_Converter
         /// 样式类型
         /// </summary>
         public string publicStyle { get;}
+        public override IList<XmlElement> GetSymbolNode(XmlDocument xmlDoc)
+        {
+            //LineSymbolizer节点
+            IList<XmlElement> SymbolizerElement = base.GetSymbolNode(xmlDoc);
+            XmlElement strokeElement = SymbolizerElement[0].LastChild as XmlElement;
+            if (strokeElement == default(XmlElement))
+            {
+                ptLogManager.WriteMessage(string.Format("无法从线符号化节点下获取图形节点"));
+                return SymbolizerElement;
+            }
+            if (string.IsNullOrEmpty(Color))
+            {
+                //颜色节点
+                XmlElement pStrokeColor = CommXmlHandle.CreateElementAndSetElemnetText("LineCssParameter", xmlDoc, Color.ToString());
+                CommXmlHandle.SetAttributeValue("stroke", CommXmlHandle.CreateAttribute("name", pStrokeColor, xmlDoc));
+                strokeElement.AppendChild(pStrokeColor);
+            }
+            XmlElement pOpacityElement = CommXmlHandle.CreateElementAndSetElemnetText("LineCssParameter", xmlDoc, string.Format("{0}",Transparency / 255));
+            CommXmlHandle.SetAttributeValue("stroke-opacity", CommXmlHandle.CreateAttribute("name", pOpacityElement, xmlDoc));
+            strokeElement.AppendChild(pOpacityElement);
+            //线宽节点
+            XmlElement pStrokeWidth = default(XmlElement);
+            if (publicStyle == "esriSLSSolid")
+            {
+                pStrokeWidth = CommXmlHandle.CreateElementAndSetElemnetText("LineCssParameter", xmlDoc, Width.ToString());
+            }
+            else
+            {
+                pStrokeWidth = CommXmlHandle.CreateElementAndSetElemnetText("LineCssParameter", xmlDoc, "1");
+            }
+            CommXmlHandle.SetAttributeValue("stroke-width", CommXmlHandle.CreateAttribute("name", pStrokeWidth, xmlDoc));
+            strokeElement.AppendChild(pStrokeWidth);
+            //写Dash节点
+            if (string.IsNullOrEmpty(publicStyle))
+            {
+                XmlElement dashElment = CommXmlHandle.CreateElementAndSetElemnetText("LineCssParameter", xmlDoc, publicStyle);
+                CommXmlHandle.SetAttributeValue("stroke-dasharray", CommXmlHandle.CreateAttribute("name", dashElment, xmlDoc));
+                strokeElement.AppendChild(dashElment);
+            }
+            return SymbolizerElement;
+        }
     }
     /// <summary>
     /// 制图线符号
@@ -545,15 +592,39 @@ namespace ArcGIS_SLD_Converter
             : base(pSymbol)
         {
             ICartographicLineSymbol pCartographicLineSymbol = pSymbol as ICartographicLineSymbol;
-            Join = pCartographicLineSymbol.Join.ToString();
+            switch (pCartographicLineSymbol.Join)
+            {
+                case esriLineJoinStyle.esriLJSBevel:
+                    Join = "bevel";
+                    break;
+                case esriLineJoinStyle.esriLJSMitre:
+                    Join = "mitre";
+                    break;
+                case esriLineJoinStyle.esriLJSRound:
+                    Join = "round";
+                    break;
+            }
+            switch (pCartographicLineSymbol.Cap)
+            {
+                case esriLineCapStyle.esriLCSButt:
+                    Cap = "butt";
+                    break;
+                case esriLineCapStyle.esriLCSRound:
+                    Cap = "round";
+                    break;
+                case esriLineCapStyle.esriLCSSquare:
+                    Cap = "square";
+                    break;
+            }
             MiterLimit = pCartographicLineSymbol.MiterLimit;
-            Cap = pCartographicLineSymbol.Cap.ToString();
             DashArray = new List<double>();
             if (pCartographicLineSymbol is ILineProperties)
             {
                 ILineProperties lineProperties = pCartographicLineSymbol as ILineProperties;
                 double markLen = 0;
                 double gapLen = 0;
+                bool filp = lineProperties.Flip;
+
                 if (lineProperties.Template is ITemplate)
                 {
                     ITemplate template = lineProperties.Template;
@@ -565,12 +636,92 @@ namespace ArcGIS_SLD_Converter
                         DashArray.Add(gapLen * interval);
                     }
                 }
+                //装饰线
+                //由于SLD装饰线只有两头，所以默认值读第一个，其他的忽略
+                ILineDecoration pLineDecoration = lineProperties.LineDecoration;
+                if (pLineDecoration != null)
+                {
+                    if (pLineDecoration.ElementCount > 0)
+                    {
+                        ISimpleLineDecorationElement pElement = pLineDecoration.Element[0] as ISimpleLineDecorationElement;
+                        SimpleLineDecoration = new ptSimpleLineDecorationClass(pElement);
+                    }
+                }
+            }
+            if (DashArray.Count != 0)
+            {
+                foreach (var key in DashArray)
+                {
+                    Dash = string.Format("{0} {1}", Dash, key);
+                }
+                Dash = Dash.TrimStart();
             }
         }
         public string Join { get;}
         public double MiterLimit { get;}
         public string Cap { get; }
         public IList<double> DashArray { get;}
+        private string Dash = string.Empty;
+        /// <summary>
+        /// 装饰线
+        /// </summary>
+        public ptSimpleLineDecorationClass SimpleLineDecoration { get; }
+        /// <summary>
+        /// 获取符号XML节点
+        /// </summary>
+        /// <param name="xmlDoc"></param>
+        /// <returns></returns>
+        public override IList<XmlElement> GetSymbolNode(XmlDocument xmlDoc)
+        {
+            //LineSymbolizer节点
+            IList<XmlElement> SymbolizerElement = base.GetSymbolNode(xmlDoc);
+            XmlElement strokeElement = SymbolizerElement[0].LastChild as XmlElement;
+            if (strokeElement == default(XmlElement))
+            {
+                ptLogManager.WriteMessage(string.Format("无法从线符号化节点下获取图形节点"));
+                return SymbolizerElement;
+            }
+            if (string.IsNullOrEmpty(Color))
+            {
+                //颜色节点
+                XmlElement pStrokeColor = CommXmlHandle.CreateElementAndSetElemnetText("LineCssParameter", xmlDoc, Color.ToString());
+                CommXmlHandle.SetAttributeValue("stroke", CommXmlHandle.CreateAttribute("name", pStrokeColor, xmlDoc));
+                strokeElement.AppendChild(pStrokeColor);
+            }
+            //透明度节点
+            XmlElement pOpacityElement = CommXmlHandle.CreateElementAndSetElemnetText("LineCssParameter", xmlDoc, string.Format("{0}", Transparency / 255));
+            CommXmlHandle.SetAttributeValue("stroke-opacity", CommXmlHandle.CreateAttribute("name", pOpacityElement, xmlDoc));
+            strokeElement.AppendChild(pOpacityElement);
+            //linecap节点
+            XmlElement pCapElement= CommXmlHandle.CreateElementAndSetElemnetText("LineCssParameter", xmlDoc, Cap);
+            CommXmlHandle.SetAttributeValue("stroke-linecap", CommXmlHandle.CreateAttribute("name", pCapElement, xmlDoc));
+            strokeElement.AppendChild(pCapElement);
+            //linejoin节点
+            XmlElement pJoinElment = CommXmlHandle.CreateElementAndSetElemnetText("LineCssParameter", xmlDoc, Join);
+            CommXmlHandle.SetAttributeValue("stroke-linejoin", CommXmlHandle.CreateAttribute("name", pJoinElment, xmlDoc));
+            strokeElement.AppendChild(pJoinElment);
+            //线宽节点
+            XmlElement pStrokeWidth = CommXmlHandle.CreateElementAndSetElemnetText("LineCssParameter", xmlDoc, Width.ToString());
+            CommXmlHandle.SetAttributeValue("stroke-width", CommXmlHandle.CreateAttribute("name", pStrokeWidth, xmlDoc));
+            strokeElement.AppendChild(pStrokeWidth);
+            //写Dash节点
+            if (!string.IsNullOrEmpty(Dash))
+            {
+                XmlElement dashElment = CommXmlHandle.CreateElementAndSetElemnetText("LineCssParameter", xmlDoc, Dash);
+                CommXmlHandle.SetAttributeValue("stroke-dasharray", CommXmlHandle.CreateAttribute("name", dashElment, xmlDoc));
+                strokeElement.AppendChild(dashElment);
+            }
+            //写装饰线符号
+            if (SimpleLineDecoration != null)
+            {
+                IList<XmlElement> pLineDecoration = SimpleLineDecoration.GetSymbolNode(xmlDoc);
+                foreach(XmlElement pElement in pLineDecoration)
+                {
+                    SymbolizerElement.Add(pElement);
+                }
+            }
+            return SymbolizerElement;
+        }
     }
     /// <summary>
     /// 混列线符号
@@ -608,7 +759,78 @@ namespace ArcGIS_SLD_Converter
                 HashSymbol = new ptMultilayerLineSymbolClass(pLineSymbol as ISymbol);
             }
 
+            if (pHashLineSymbol is ILineProperties)
+            {
+                ILineProperties lineProperties = pHashLineSymbol as ILineProperties;
+                double markLen = 0;
+                double gapLen = 0;
+                bool filp = lineProperties.Flip;
+                DashArray = new List<double>();
+                if (lineProperties.Template is ITemplate)
+                {
+                    ITemplate template = lineProperties.Template;
+                    double interval = template.Interval;
+                    for (int templateIdx = 0; templateIdx <= template.PatternElementCount - 1; templateIdx++)
+                    {
+                        template.GetPatternElement(templateIdx, out markLen, out gapLen);
+                        DashArray.Add(markLen * interval);
+                        DashArray.Add(gapLen * interval);
+                    }
+                }
+                if (DashArray.Count != 0)
+                {
+                    foreach (var key in DashArray)
+                    {
+                        Dash = string.Format("{0} {1}", Dash, key);
+                    }
+                    Dash = Dash.TrimStart();
+                }
+                //装饰线
+                //由于SLD装饰线只有两头，所以默认值读第一个，其他的忽略
+                ILineDecoration pLineDecoration = lineProperties.LineDecoration;
+                if (pLineDecoration.ElementCount > 0)
+                {
+                    ISimpleLineDecorationElement pElement = pLineDecoration.Element[0] as ISimpleLineDecorationElement;
+                    SimpleLineDecoration = new ptSimpleLineDecorationClass(pElement);
+                }
+            }
+            if (pHashLineSymbol is ICartographicLineSymbol)
+            {
+                ICartographicLineSymbol pCartographicLine = pHashLineSymbol as ICartographicLineSymbol;
+                switch (pCartographicLine.Join)
+                {
+                    case esriLineJoinStyle.esriLJSBevel:
+                        Join = "bevel";
+                        break;
+                    case esriLineJoinStyle.esriLJSMitre:
+                        Join = "mitre";
+                        break;
+                    case esriLineJoinStyle.esriLJSRound:
+                        Join = "round";
+                        break;
+                }
+                switch (pCartographicLine.Cap)
+                {
+                    case esriLineCapStyle.esriLCSButt:
+                        Cap = "butt";
+                        break;
+                    case esriLineCapStyle.esriLCSRound:
+                        Cap = "round";
+                        break;
+                    case esriLineCapStyle.esriLCSSquare:
+                        Cap = "square";
+                        break;
+                }
+            }
         }
+        public IList<double> DashArray { get; }
+        /// <summary>
+        /// 装饰线
+        /// </summary>
+        public ptSimpleLineDecorationClass SimpleLineDecoration { get; }
+        private string Dash = string.Empty;
+        public string Cap { get; }
+        public string Join { get; }
         /// <summary>
         /// 角度
         /// </summary>
@@ -617,6 +839,63 @@ namespace ArcGIS_SLD_Converter
         /// 混列线符号
         /// </summary>
         public ptLineSymbolClass HashSymbol { get;}
+        public override IList<XmlElement> GetSymbolNode(XmlDocument xmlDoc)
+        {
+            //LineSymbolizer节点
+            IList<XmlElement> SymbolizerElement = base.GetSymbolNode(xmlDoc);
+            XmlElement strokeElement = SymbolizerElement[0].LastChild as XmlElement;
+            if (strokeElement == default(XmlElement))
+            {
+                ptLogManager.WriteMessage(string.Format("无法从线符号化节点下获取图形节点"));
+                return SymbolizerElement;
+            }
+            if (string.IsNullOrEmpty(Color))
+            {
+                //颜色节点
+                XmlElement pStrokeColor = CommXmlHandle.CreateElementAndSetElemnetText("LineCssParameter", xmlDoc, Color.ToString());
+                CommXmlHandle.SetAttributeValue("stroke", CommXmlHandle.CreateAttribute("name", pStrokeColor, xmlDoc));
+                strokeElement.AppendChild(pStrokeColor);
+            }
+            //透明度节点
+            XmlElement pOpacityElement = CommXmlHandle.CreateElementAndSetElemnetText("LineCssParameter", xmlDoc, string.Format("{0}", Transparency / 255));
+            CommXmlHandle.SetAttributeValue("stroke-opacity", CommXmlHandle.CreateAttribute("name", pOpacityElement, xmlDoc));
+            strokeElement.AppendChild(pOpacityElement);
+            if (!string.IsNullOrEmpty(Cap))
+            {
+                //linecap节点
+                XmlElement pCapElement = CommXmlHandle.CreateElementAndSetElemnetText("LineCssParameter", xmlDoc, Cap);
+                CommXmlHandle.SetAttributeValue("stroke-linecap", CommXmlHandle.CreateAttribute("name", pCapElement, xmlDoc));
+                strokeElement.AppendChild(pCapElement);
+            }
+            if (!string.IsNullOrEmpty(Join))
+            {
+                //linejoin节点
+                XmlElement pJoinElment = CommXmlHandle.CreateElementAndSetElemnetText("LineCssParameter", xmlDoc, Join);
+                CommXmlHandle.SetAttributeValue("stroke-linejoin", CommXmlHandle.CreateAttribute("name", pJoinElment, xmlDoc));
+                strokeElement.AppendChild(pJoinElment);
+            }
+            //线宽节点
+            XmlElement pStrokeWidth = CommXmlHandle.CreateElementAndSetElemnetText("LineCssParameter", xmlDoc, Width.ToString());
+            CommXmlHandle.SetAttributeValue("stroke-width", CommXmlHandle.CreateAttribute("name", pStrokeWidth, xmlDoc));
+            strokeElement.AppendChild(pStrokeWidth);
+            //写Dash节点
+            if (!string.IsNullOrEmpty(Dash))
+            {
+                XmlElement dashElment = CommXmlHandle.CreateElementAndSetElemnetText("LineCssParameter", xmlDoc, Dash);
+                CommXmlHandle.SetAttributeValue("stroke-dasharray", CommXmlHandle.CreateAttribute("name", dashElment, xmlDoc));
+                strokeElement.AppendChild(dashElment);
+            }
+            //写装饰线符号
+            if (SimpleLineDecoration != null)
+            {
+                IList<XmlElement> pLineDecoration = SimpleLineDecoration.GetSymbolNode(xmlDoc);
+                foreach (XmlElement pElement in pLineDecoration)
+                {
+                    SymbolizerElement.Add(pElement);
+                }
+            }
+            return SymbolizerElement;
+        }
     }
     /// <summary>
     /// 标记线符号
@@ -652,11 +931,140 @@ namespace ArcGIS_SLD_Converter
             {
                 MarkSymbol = new ptMultilayerMarkerSymbolClass(pMarkerSymbol as ISymbol);
             }
+
+            if (pMarkerLineSymbol is ILineProperties)
+            {
+                ILineProperties lineProperties = pMarkerLineSymbol as ILineProperties;
+                double markLen = 0;
+                double gapLen = 0;
+                bool filp = lineProperties.Flip;
+                DashArray = new List<double>();
+                if (lineProperties.Template is ITemplate)
+                {
+                    ITemplate template = lineProperties.Template;
+                    double interval = template.Interval;
+                    for (int templateIdx = 0; templateIdx <= template.PatternElementCount - 1; templateIdx++)
+                    {
+                        template.GetPatternElement(templateIdx, out markLen, out gapLen);
+                        DashArray.Add(markLen * interval);
+                        DashArray.Add(gapLen * interval);
+                    }
+                }
+                if (DashArray.Count != 0)
+                {
+                    foreach (var key in DashArray)
+                    {
+                        Dash = string.Format("{0} {1}", Dash, key);
+                    }
+                    Dash = Dash.TrimStart();
+                }
+                //装饰线
+                //由于SLD装饰线只有两头，所以默认值读第一个，其他的忽略
+                ILineDecoration pLineDecoration = lineProperties.LineDecoration;
+                if (pLineDecoration.ElementCount > 0)
+                {
+                    ISimpleLineDecorationElement pElement = pLineDecoration.Element[0] as ISimpleLineDecorationElement;
+                    SimpleLineDecoration = new ptSimpleLineDecorationClass(pElement);
+                }
+            }
+            if (pMarkerLineSymbol is ICartographicLineSymbol)
+            {
+                ICartographicLineSymbol pCartographicLine = pMarkerLineSymbol as ICartographicLineSymbol;
+                switch (pCartographicLine.Join)
+                {
+                    case esriLineJoinStyle.esriLJSBevel:
+                        Join = "bevel";
+                        break;
+                    case esriLineJoinStyle.esriLJSMitre:
+                        Join = "mitre";
+                        break;
+                    case esriLineJoinStyle.esriLJSRound:
+                        Join = "round";
+                        break;
+                }
+                switch (pCartographicLine.Cap)
+                {
+                    case esriLineCapStyle.esriLCSButt:
+                        Cap = "butt";
+                        break;
+                    case esriLineCapStyle.esriLCSRound:
+                        Cap = "round";
+                        break;
+                    case esriLineCapStyle.esriLCSSquare:
+                        Cap = "square";
+                        break;
+                }
+            }
         }
+        public IList<double> DashArray { get; }
+        public string Cap { get; }
+        public string Join { get; }
+        private string Dash = string.Empty;
+        /// <summary>
+        /// 装饰线
+        /// </summary>
+        public ptSimpleLineDecorationClass SimpleLineDecoration { get; }
         /// <summary>
         /// 标记符号
         /// </summary>
         public ptMarkerSymbolClass MarkSymbol { get;}
+        public override IList<XmlElement> GetSymbolNode(XmlDocument xmlDoc)
+        {
+            //LineSymbolizer节点
+            IList<XmlElement> SymbolizerElement = base.GetSymbolNode(xmlDoc);
+            XmlElement strokeElement = SymbolizerElement[0].LastChild as XmlElement;
+            if (strokeElement == default(XmlElement))
+            {
+                ptLogManager.WriteMessage(string.Format("无法从线符号化节点下获取图形节点"));
+                return SymbolizerElement;
+            }
+            if (string.IsNullOrEmpty(Color))
+            {
+                //颜色节点
+                XmlElement pStrokeColor = CommXmlHandle.CreateElementAndSetElemnetText("LineCssParameter", xmlDoc, Color.ToString());
+                CommXmlHandle.SetAttributeValue("stroke", CommXmlHandle.CreateAttribute("name", pStrokeColor, xmlDoc));
+                strokeElement.AppendChild(pStrokeColor);
+            }
+            //透明度节点
+            XmlElement pOpacityElement = CommXmlHandle.CreateElementAndSetElemnetText("LineCssParameter", xmlDoc, string.Format("{0}", Transparency / 255));
+            CommXmlHandle.SetAttributeValue("stroke-opacity", CommXmlHandle.CreateAttribute("name", pOpacityElement, xmlDoc));
+            strokeElement.AppendChild(pOpacityElement);
+            if (!string.IsNullOrEmpty(Cap))
+            {
+                //linecap节点
+                XmlElement pCapElement = CommXmlHandle.CreateElementAndSetElemnetText("LineCssParameter", xmlDoc, Cap);
+                CommXmlHandle.SetAttributeValue("stroke-linecap", CommXmlHandle.CreateAttribute("name", pCapElement, xmlDoc));
+                strokeElement.AppendChild(pCapElement);
+            }
+            if (!string.IsNullOrEmpty(Join))
+            {
+                //linejoin节点
+                XmlElement pJoinElment = CommXmlHandle.CreateElementAndSetElemnetText("LineCssParameter", xmlDoc, Join);
+                CommXmlHandle.SetAttributeValue("stroke-linejoin", CommXmlHandle.CreateAttribute("name", pJoinElment, xmlDoc));
+                strokeElement.AppendChild(pJoinElment);
+            }
+            //线宽节点
+            XmlElement pStrokeWidth = CommXmlHandle.CreateElementAndSetElemnetText("LineCssParameter", xmlDoc, Width.ToString());
+            CommXmlHandle.SetAttributeValue("stroke-width", CommXmlHandle.CreateAttribute("name", pStrokeWidth, xmlDoc));
+            strokeElement.AppendChild(pStrokeWidth);
+            //写Dash节点
+            if (!string.IsNullOrEmpty(Dash))
+            {
+                XmlElement dashElment = CommXmlHandle.CreateElementAndSetElemnetText("LineCssParameter", xmlDoc, Dash);
+                CommXmlHandle.SetAttributeValue("stroke-dasharray", CommXmlHandle.CreateAttribute("name", dashElment, xmlDoc));
+                strokeElement.AppendChild(dashElment);
+            }
+            //写装饰线符号
+            if (SimpleLineDecoration != null)
+            {
+                IList<XmlElement> pLineDecoration = SimpleLineDecoration.GetSymbolNode(xmlDoc);
+                foreach (XmlElement pElement in pLineDecoration)
+                {
+                    SymbolizerElement.Add(pElement);
+                }
+            }
+            return SymbolizerElement;
+        }
     }
     /// <summary>
     /// 图片线符号
@@ -677,7 +1085,6 @@ namespace ArcGIS_SLD_Converter
             Rotate = pPictureLineSymbol.Rotate;
             XScale = pPictureLineSymbol.XScale;
             YScale = pPictureLineSymbol.YScale;
-
         }
         /// <summary>
         /// 背景颜色
@@ -703,6 +1110,51 @@ namespace ArcGIS_SLD_Converter
         /// Y比例
         /// </summary>
         public double YScale { get;}
+        public override IList<XmlElement> GetSymbolNode(XmlDocument xmlDoc)
+        {
+            //LineSymbolizer节点
+            IList<XmlElement> SymbolizerElement = base.GetSymbolNode(xmlDoc);
+            XmlElement strokeElement = SymbolizerElement[0].LastChild as XmlElement;
+            if (strokeElement == default(XmlElement))
+            {
+                ptLogManager.WriteMessage(string.Format("无法从线符号化节点下获取图形节点"));
+                return SymbolizerElement;
+            }
+            //先将图片保存到本地
+            string imagefile = string.Empty;
+            if (Picture != null)
+            {
+                string filePath = System.IO.Path.GetDirectoryName(CommXmlHandle.m_SaveFileName);
+                imagefile = string.Format("{0}\\{1}.png", filePath, Guid.NewGuid().ToString());
+                Image pimage = IPictureConverter.IPictureToImage(Picture);
+                Graphics g = Graphics.FromImage(pimage);
+                Bitmap pbitmap = new Bitmap(pimage);
+                pbitmap.MakeTransparent(System.Drawing.Color.Black);
+                pbitmap.Save(imagefile, System.Drawing.Imaging.ImageFormat.Png);
+            }
+            //新建GraphicStroke节点
+            XmlElement pGraphicStrokeElement = CommXmlHandle.CreateElement("LineGraphicStroke", xmlDoc);
+            strokeElement.AppendChild(pGraphicStrokeElement);
+            //Graphic节点
+            XmlElement pgraphicElement = CommXmlHandle.CreateElement("PointGraphic", xmlDoc);
+            pGraphicStrokeElement.AppendChild(pgraphicElement);
+            //ExternalGraphic节点
+            XmlElement pExtrernalElement= CommXmlHandle.CreateElement("PointExternalGraphic", xmlDoc);
+            pgraphicElement.AppendChild(pExtrernalElement);
+            //OnlineResource节点
+            XmlElement pOnlineResourceElement = CommXmlHandle.CreateElement("PointOnlineResource", xmlDoc);
+            CommXmlHandle.SetAttributeValue("http://www.w3.org/1999/xlink", CommXmlHandle.CreateAttribute("xmlns:xlink", pOnlineResourceElement, xmlDoc));
+            CommXmlHandle.SetAttributeValue("simple", CommXmlHandle.CreateAttribute("xlink:type", pOnlineResourceElement, xmlDoc));
+            CommXmlHandle.SetAttributeValue(imagefile, CommXmlHandle.CreateAttribute("xlink:href", pOnlineResourceElement, xmlDoc));
+            //Format节点
+            XmlElement pFormatElement = CommXmlHandle.CreateElementAndSetElemnetText("PointFormat", xmlDoc, "image/png");
+            pExtrernalElement.AppendChild(pOnlineResourceElement);
+            pExtrernalElement.AppendChild(pFormatElement);
+            //size节点
+            XmlElement pSizeElement = CommXmlHandle.CreateElementAndSetElemnetText("PointSize", xmlDoc, this.Width.ToString());
+            pgraphicElement.AppendChild(pSizeElement);
+            return SymbolizerElement;
+        }
     }
     #endregion
 
@@ -1359,6 +1811,15 @@ namespace ArcGIS_SLD_Converter
         /// 图层数量
         /// </summary>
         public int LayerCount { get; }
+        public override IList<XmlElement> GetSymbolNode(XmlDocument xmlDoc)
+        {
+            IList<XmlElement> returnData = new List<XmlElement>();
+            foreach (ptSymbolClass symbol in MultiLineSymbol)
+            {
+                returnData.Add(symbol.GetSymbolNode(xmlDoc)[0]);
+            }
+            return returnData;
+        }
     }
     /// <summary>
     /// 多图层填充符号
@@ -1419,4 +1880,133 @@ namespace ArcGIS_SLD_Converter
         public int LayerCount { get; }
     }
     #endregion
+    /// <summary>
+    /// 装饰线符号
+    /// </summary>
+    public class ptSimpleLineDecorationClass 
+    {
+        public ptSimpleLineDecorationClass(ISimpleLineDecorationElement pSymbol)
+        {
+            if (pSymbol != null)
+            {
+                FlipAll = pSymbol.FlipAll;
+                FilipFirst = pSymbol.FlipFirst;
+                IMarkerSymbol pMarkSymbol = pSymbol.MarkerSymbol;
+                if (pMarkSymbol is ISimpleMarkerSymbol)
+                {
+                    MarkerSymbol = new ptSimpleMarkerSymbolClass(pMarkSymbol as ISymbol);
+                }
+                else if (pMarkSymbol is ICharacterMarkerSymbol)
+                {
+                    MarkerSymbol = new ptCharacterMarkerSymbolClass(pMarkSymbol as ISymbol);
+                }
+                else if (pMarkSymbol is IPictureMarkerSymbol)
+                {
+                    MarkerSymbol = new ptPictureMarkerSymbolClass(pMarkSymbol as ISymbol);
+                }
+                else if (pMarkSymbol is IArrowMarkerSymbol)
+                {
+                    MarkerSymbol = new ptArrowMarkerSymbolClass(pMarkSymbol as ISymbol);
+                }
+                else if (pMarkSymbol is IMultiLayerMarkerSymbol)
+                {
+                    MarkerSymbol = new ptMultilayerMarkerSymbolClass(pMarkSymbol as ISymbol);
+                }
+                PositionCount = pSymbol.PositionCount;
+            }
+            if (PositionCount != 0)
+            {
+                ElementPosit = new List<double>();
+                for (int i = 0; i < PositionCount; i++)
+                {
+                    ElementPosit.Add(pSymbol.Position[i]);
+                }
+            }
+
+        }
+        /// <summary>
+        /// 反转所有点
+        /// </summary>
+        private bool FlipAll { get; }
+        /// <summary>
+        /// 反转第一个点
+        /// </summary>
+        private bool FilipFirst { get; }
+        /// <summary>
+        /// 点符号
+        /// </summary>
+        private ptMarkerSymbolClass MarkerSymbol { get; }
+        /// <summary>
+        /// 点符号个数
+        /// </summary>
+        private int PositionCount { get; }
+        /// <summary>
+        /// 点符号位置集合
+        /// </summary>
+        private IList<double> ElementPosit { get; }
+        /// <summary>
+        /// 获取装饰线的SLD节点
+        /// </summary>
+        /// <param name="xmlDoc"></param>
+        /// <returns></returns>
+        public IList<XmlElement> GetSymbolNode(XmlDocument xmlDoc)
+        {
+            IList<XmlElement> returnData = new List<XmlElement>();
+            //目前SLD文件只支持线的头和尾的装饰符号，暂时不支持线中间的装饰符号
+            for (int j = 0; j < PositionCount; j++)
+            {
+                XmlElement pPointSymbolEle = MarkerSymbol.GetSymbolNode(xmlDoc)[0];
+                //Start Symbol
+                if (ElementPosit[j] == 0.00)
+                {
+                    //添加Geometry节点
+                    XmlElement pGeometryElement = CommXmlHandle.CreateElement("PointGeometry", xmlDoc);
+                    XmlElement pFuncionElement = CommXmlHandle.CreateElement("PointFunction", xmlDoc);
+                    CommXmlHandle.SetAttributeValue("startPoint", CommXmlHandle.CreateAttribute("name", pFuncionElement, xmlDoc));
+                    XmlElement pPropertyNameElement = CommXmlHandle.CreateElementAndSetElemnetText("PropertyName", xmlDoc, "geom");
+                    pFuncionElement.AppendChild(pPropertyNameElement);
+                    pGeometryElement.AppendChild(pFuncionElement);
+                    pPointSymbolEle.AppendChild(pGeometryElement);
+                    //添加Rotation节点
+                    XmlElement pRotationElement = CommXmlHandle.CreateElement("PointRotation", xmlDoc);
+                    XmlElement pAddElement = CommXmlHandle.CreateElement("PointAdd", xmlDoc);
+                    pRotationElement.AppendChild(pAddElement);
+                    XmlElement pFuntionElment = CommXmlHandle.CreateElement("PointFunction", xmlDoc);
+                    CommXmlHandle.SetAttributeValue("startAngle", CommXmlHandle.CreateAttribute("name", pFuntionElment, xmlDoc));
+                    XmlElement pPropertyElement = CommXmlHandle.CreateElementAndSetElemnetText("PropertyName", xmlDoc, "geom");
+                    pFuntionElment.AppendChild(pPropertyElement);
+                    XmlElement pLiteralElemetn= CommXmlHandle.CreateElementAndSetElemnetText("Fieldvalue", xmlDoc, "-180");
+                    pFuntionElment.AppendChild(pLiteralElemetn);
+                    pAddElement.AppendChild(pFuntionElment);
+                    pPointSymbolEle.AppendChild(pRotationElement);
+                    returnData.Add(pPointSymbolEle);
+                }
+                //StopSymbol
+                else if (ElementPosit[j] == 1.00)
+                {
+                    //添加Geometry节点
+                    XmlElement pGeometryElement = CommXmlHandle.CreateElement("PointGeometry", xmlDoc);
+                    XmlElement pFuncionElement = CommXmlHandle.CreateElement("PointFunction", xmlDoc);
+                    CommXmlHandle.SetAttributeValue("endPoint", CommXmlHandle.CreateAttribute("name", pFuncionElement, xmlDoc));
+                    XmlElement pPropertyNameElement = CommXmlHandle.CreateElementAndSetElemnetText("PropertyName", xmlDoc, "geom");
+                    pFuncionElement.AppendChild(pPropertyNameElement);
+                    pGeometryElement.AppendChild(pFuncionElement);
+                    pPointSymbolEle.AppendChild(pGeometryElement);
+                    //添加Rotation节点
+                    XmlElement pRotationElement = CommXmlHandle.CreateElement("PointRotation", xmlDoc);
+                    XmlElement pAddElement = CommXmlHandle.CreateElement("PointAdd", xmlDoc);
+                    pRotationElement.AppendChild(pAddElement);
+                    XmlElement pFuntionElment = CommXmlHandle.CreateElement("PointFunction", xmlDoc);
+                    CommXmlHandle.SetAttributeValue("endAngle", CommXmlHandle.CreateAttribute("name", pFuntionElment, xmlDoc));
+                    XmlElement pPropertyElement = CommXmlHandle.CreateElementAndSetElemnetText("PropertyName", xmlDoc, "geom");
+                    pFuntionElment.AppendChild(pPropertyElement);
+                    pAddElement.AppendChild(pFuntionElment);
+                    pPointSymbolEle.AppendChild(pRotationElement);
+                    returnData.Add(pPointSymbolEle);
+                }
+            }
+            return returnData;
+        }
+
+    }
 }

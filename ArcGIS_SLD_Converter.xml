@@ -1095,6 +1095,18 @@
             </summary>
             <param name="pSymbol"></param>
         </member>
+        <member name="P:ArcGIS_SLD_Converter.ptCartographicLineSymbol.SimpleLineDecoration">
+            <summary>
+            装饰线
+            </summary>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.ptCartographicLineSymbol.GetSymbolNode(System.Xml.XmlDocument)">
+            <summary>
+            获取符号XML节点
+            </summary>
+            <param name="xmlDoc"></param>
+            <returns></returns>
+        </member>
         <member name="T:ArcGIS_SLD_Converter.ptHashLineSymbolClass">
             <summary>
             混列线符号
@@ -1105,6 +1117,11 @@
             混列线符号
             </summary>
             <param name="pSymbol"></param>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptHashLineSymbolClass.SimpleLineDecoration">
+            <summary>
+            装饰线
+            </summary>
         </member>
         <member name="P:ArcGIS_SLD_Converter.ptHashLineSymbolClass.Angle">
             <summary>
@@ -1126,6 +1143,11 @@
             标记线符号
             </summary>
             <param name="pSymbol"></param>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptMarkerLineSymbolClass.SimpleLineDecoration">
+            <summary>
+            装饰线
+            </summary>
         </member>
         <member name="P:ArcGIS_SLD_Converter.ptMarkerLineSymbolClass.MarkSymbol">
             <summary>
@@ -1497,6 +1519,43 @@
             <summary>
             图层数量
             </summary>
+        </member>
+        <member name="T:ArcGIS_SLD_Converter.ptSimpleLineDecorationClass">
+            <summary>
+            装饰线符号
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptSimpleLineDecorationClass.FlipAll">
+            <summary>
+            反转所有点
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptSimpleLineDecorationClass.FilipFirst">
+            <summary>
+            反转第一个点
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptSimpleLineDecorationClass.MarkerSymbol">
+            <summary>
+            点符号
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptSimpleLineDecorationClass.PositionCount">
+            <summary>
+            点符号个数
+            </summary>
+        </member>
+        <member name="P:ArcGIS_SLD_Converter.ptSimpleLineDecorationClass.ElementPosit">
+            <summary>
+            点符号位置集合
+            </summary>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.ptSimpleLineDecorationClass.GetSymbolNode(System.Xml.XmlDocument)">
+            <summary>
+            获取装饰线的SLD节点
+            </summary>
+            <param name="xmlDoc"></param>
+            <returns></returns>
         </member>
         <member name="M:ArcGIS_SLD_Converter.ptSymbolFactory.#ctor(ESRI.ArcGIS.Display.ISymbol)">
             <summary>
