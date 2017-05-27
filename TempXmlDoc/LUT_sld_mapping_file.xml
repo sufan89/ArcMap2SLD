@@ -116,6 +116,8 @@
 		<LineCssParameter ogcTag="CssParameter" Namespace="sld">
 			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:LineSymbolizer/sld:Stroke</XPath>
 		</LineCssParameter>
+		<LineGraphicStroke ogcTage="GraphicStroke" Namespace="sld">
+		</LineGraphicStroke>
 		<PointGraphic ogcTag="Graphic" Namespace="sld">
 			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer</XPath>
 		</PointGraphic>
@@ -140,6 +142,9 @@
 		<PointRotation ogcTag="Rotation" Namespace="sld">
 			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic</XPath>
 		</PointRotation>
+		<PointAdd ogcTag="Add" Namespace="ogc">
+		<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic</XPath>
+		</PointAdd>
 		<PointWellKnownName ogcTag="WellKnownName" Namespace="sld">
 			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic/sld:Mark</XPath>
 		</PointWellKnownName>
@@ -149,7 +154,6 @@
 		<PointFunction ogcTag="Function" Namespace="ogc">
 		<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Geometry</XPath>
 		</PointFunction>
-		
 		<PointFill ogcTag="Fill" Namespace="sld">
 			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic/sld:Mark</XPath>
 		</PointFill>
