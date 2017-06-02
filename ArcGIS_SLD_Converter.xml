@@ -1068,6 +1068,11 @@
             宽度
             </summary>
         </member>
+        <member name="P:ArcGIS_SLD_Converter.ptLineSymbolClass.Offset">
+            <summary>
+            偏移
+            </summary>
+        </member>
         <member name="T:ArcGIS_SLD_Converter.ptSimpleLineSymbolClass">
             <summary>
             简单线符号

@@ -210,7 +210,6 @@ namespace ArcGIS_SLD_Converter
                     pRuleElement.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("RuleName", xmlDoc, pSymbolClass.Label));
                     pRuleElement.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("Title", xmlDoc, pSymbolClass.Label));
                     XmlElement pFilterElement = CommXmlHandle.CreateElement("Filter", xmlDoc);
-
                     //设置符号选择器
                     //多字段多值组合符号
                     if (this.FieldCount > 1)
@@ -328,7 +327,57 @@ namespace ArcGIS_SLD_Converter
         }
         public override XmlElement GetRendXmlNode(XmlDocument xmlDoc, XmlElement RootXmlElement)
         {
-            return base.GetRendXmlNode(xmlDoc, RootXmlElement);
+            try
+            {
+                //开始解析渲染符号信息
+                for (int i = 0; i < SymbolList.Count; i++)
+                {
+                    XmlElement pRuleElement = default(XmlElement);
+                    ptSymbolClass pSymbolClass = SymbolList[i];
+                    //生成Rule节点信息
+                    pRuleElement = CommXmlHandle.CreateElement("Rule", xmlDoc);
+                    pRuleElement.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("RuleName", xmlDoc, pSymbolClass.Label));
+                    pRuleElement.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("Title", xmlDoc, pSymbolClass.Label));
+                    if (pSymbolClass.LowerLimit != 0.00 && pSymbolClass.UpperLimit != 0.00)
+                    {
+                        //写条件节点
+                        XmlElement pFilterElement = CommXmlHandle.CreateElement("Filter", xmlDoc);
+                        XmlElement pBetweenElement = CommXmlHandle.CreateElement("PropertyIsBetween", xmlDoc);
+                        pFilterElement.AppendChild(pBetweenElement);
+                        XmlElement pPropertyNameElement = CommXmlHandle.CreateElementAndSetElemnetText("PropertyName", xmlDoc, this.FieldName);
+                        pBetweenElement.AppendChild(pPropertyNameElement);
+                        XmlElement pLowerBoundaryElement = CommXmlHandle.CreateElement("LowerBoundary", xmlDoc);
+                        pBetweenElement.AppendChild(pLowerBoundaryElement);
+                        XmlElement pLowerValue = CommXmlHandle.CreateElementAndSetElemnetText("", xmlDoc, CommStaticClass.CommaToPoint(pSymbolClass.LowerLimit));
+                        pLowerBoundaryElement.AppendChild(pLowerValue);
+
+                        XmlElement pUpperElement = CommXmlHandle.CreateElement("UpperBoundary", xmlDoc);
+                        pBetweenElement.AppendChild(pUpperElement);
+                        XmlElement pUpperValueElement = CommXmlHandle.CreateElementAndSetElemnetText("Fieldvalue", xmlDoc, CommStaticClass.CommaToPoint(pSymbolClass.UpperLimit));
+                        pUpperElement.AppendChild(pUpperValueElement);
+
+                        pRuleElement.AppendChild(pFilterElement);
+                    }
+                    //设置显示比例尺
+                    if (!double.IsNaN(m_ptLayer.m_MaxScale) && !double.IsNaN(m_ptLayer.m_MinScale))
+                    {
+                        pRuleElement.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("MinScale", xmlDoc, m_ptLayer.m_MaxScale.ToString()));
+                        pRuleElement.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("MaxScale", xmlDoc, m_ptLayer.m_MinScale.ToString()));
+                    }
+                    //获取符号节点
+                    IList<XmlElement> pSymbolizedNode = pSymbolClass.GetSymbolNode(xmlDoc);
+                    foreach (XmlElement pElement in pSymbolizedNode)
+                    {
+                        pRuleElement.AppendChild(pElement);
+                    }
+                    RootXmlElement.AppendChild(pRuleElement);
+                }
+            }
+            catch (Exception ex)
+            {
+                ptLogManager.WriteMessage(string.Format("解析符号信息失败:{0}{1}{2}{3}", Environment.NewLine, ex.Message, Environment.NewLine, ex.StackTrace));
+            }
+            return RootXmlElement;
         }
     }
     /// <summary>
@@ -361,7 +410,37 @@ namespace ArcGIS_SLD_Converter
         }
         public override XmlElement GetRendXmlNode(XmlDocument xmlDoc, XmlElement RootXmlElement)
         {
-            return base.GetRendXmlNode(xmlDoc, RootXmlElement);
+            try
+            {
+                //开始解析渲染符号信息
+                for (int i = 0; i < SymbolList.Count; i++)
+                {
+                    XmlElement pRuleElement = default(XmlElement);
+                    ptSymbolClass pSymbolClass = SymbolList[i];
+                    //生成Rule节点信息
+                    pRuleElement = CommXmlHandle.CreateElement("Rule", xmlDoc);
+                    pRuleElement.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("RuleName", xmlDoc, string.IsNullOrEmpty(pSymbolClass.Label)?string.Format("rule{0}",i):pSymbolClass.Label));
+                    pRuleElement.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("Title", xmlDoc, string.IsNullOrEmpty(pSymbolClass.Label) ? string.Format("rule{0}", i) : pSymbolClass.Label));
+                    //设置显示比例尺
+                    if (!double.IsNaN(m_ptLayer.m_MaxScale) && !double.IsNaN(m_ptLayer.m_MinScale))
+                    {
+                        pRuleElement.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("MinScale", xmlDoc, m_ptLayer.m_MaxScale.ToString()));
+                        pRuleElement.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("MaxScale", xmlDoc, m_ptLayer.m_MinScale.ToString()));
+                    }
+                    //获取符号节点
+                    IList<XmlElement> pSymbolizedNode = pSymbolClass.GetSymbolNode(xmlDoc);
+                    foreach (XmlElement pElement in pSymbolizedNode)
+                    {
+                        pRuleElement.AppendChild(pElement);
+                    }
+                    RootXmlElement.AppendChild(pRuleElement);
+                }
+            }
+            catch (Exception ex)
+            {
+                ptLogManager.WriteMessage(string.Format("解析符号信息失败:{0}{1}{2}{3}", Environment.NewLine, ex.Message, Environment.NewLine, ex.StackTrace));
+            }
+            return RootXmlElement;
         }
     }
 }
