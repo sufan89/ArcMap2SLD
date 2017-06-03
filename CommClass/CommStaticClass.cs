@@ -271,5 +271,17 @@ namespace ArcGIS_SLD_Converter
             piexlVal = 0.75 * PointsVal;
             return piexlVal;
         }
+        /// <summary>
+        /// 数值中去掉逗号
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static string CommaToPoint(double value)
+        {
+            string cReturn = "";
+            cReturn = value.ToString();
+            cReturn = cReturn.Replace(",", ".");
+            return cReturn;
+        }
     }
 }

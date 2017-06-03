@@ -116,7 +116,7 @@
 		<LineCssParameter ogcTag="CssParameter" Namespace="sld">
 			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:LineSymbolizer/sld:Stroke</XPath>
 		</LineCssParameter>
-		<LineGraphicStroke ogcTage="GraphicStroke" Namespace="sld">
+		<LineGraphicStroke ogcTag="GraphicStroke" Namespace="sld">
 		</LineGraphicStroke>
 		<PointGraphic ogcTag="Graphic" Namespace="sld">
 			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer</XPath>

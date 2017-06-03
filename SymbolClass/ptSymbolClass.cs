@@ -470,7 +470,12 @@ namespace ArcGIS_SLD_Converter
             ILineSymbol pLineSymbol = pSymbol as ILineSymbol;
             Color = CommStaticClass.GimmeStringForColor(pLineSymbol.Color);
             Width = CommStaticClass.GetPiexlFromPoints(pLineSymbol.Width);
-            Transparency = pLineSymbol.Color.Transparency; 
+            Transparency = pLineSymbol.Color.Transparency;
+            if (pLineSymbol is ILineProperties)
+            {
+                ILineProperties pLinePro = pLineSymbol as ILineProperties;
+                Offset = CommStaticClass.GetPiexlFromPoints(pLinePro.Offset);
+            }
         }
         /// <summary>
         /// 颜色
@@ -484,11 +489,27 @@ namespace ArcGIS_SLD_Converter
         /// 宽度
         /// </summary>
         public double Width { get;}
+        /// <summary>
+        /// 偏移
+        /// </summary>
+        public double Offset { get; }
         public override IList<XmlElement> GetSymbolNode(XmlDocument xmlDoc)
         {
             IList<XmlElement> returenData = new List<XmlElement>();
             XmlElement pSymboleElement = default(XmlElement);
             pSymboleElement = CommXmlHandle.CreateElement("LineSymbolizer", xmlDoc);
+            if (Offset!=0.00)
+            {
+                XmlElement pGeometryElement = CommXmlHandle.CreateElement("PolygonGeometry", xmlDoc);
+                XmlElement pFunciontElement = CommXmlHandle.CreateElement("PointFunction", xmlDoc);
+                CommXmlHandle.SetAttributeValue("offset", CommXmlHandle.CreateAttribute("name", pFunciontElement, xmlDoc));
+                pGeometryElement.AppendChild(pFunciontElement);
+                XmlElement pProElement = CommXmlHandle.CreateElementAndSetElemnetText("PropertyName", xmlDoc, "geom");
+                pFunciontElement.AppendChild(pProElement);
+                pFunciontElement.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("Fieldvalue", xmlDoc, Offset.ToString()));
+                pFunciontElement.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("Fieldvalue", xmlDoc, "0.00"));
+                pSymboleElement.AppendChild(pGeometryElement);
+            }
             pSymboleElement.AppendChild(CommXmlHandle.CreateElement("LineStroke", xmlDoc));
             //返回LineSymbolizer节点
             returenData.Add(pSymboleElement);
@@ -637,7 +658,7 @@ namespace ArcGIS_SLD_Converter
                     }
                 }
                 //装饰线
-                //由于SLD装饰线只有两头，所以默认值读第一个，其他的忽略
+                //忽略装饰线多图层的情况，这里SLD貌似不支持
                 ILineDecoration pLineDecoration = lineProperties.LineDecoration;
                 if (pLineDecoration != null)
                 {
@@ -681,7 +702,7 @@ namespace ArcGIS_SLD_Converter
                 ptLogManager.WriteMessage(string.Format("无法从线符号化节点下获取图形节点"));
                 return SymbolizerElement;
             }
-            if (string.IsNullOrEmpty(Color))
+            if (!string.IsNullOrEmpty(Color))
             {
                 //颜色节点
                 XmlElement pStrokeColor = CommXmlHandle.CreateElementAndSetElemnetText("LineCssParameter", xmlDoc, Color.ToString());
@@ -849,7 +870,7 @@ namespace ArcGIS_SLD_Converter
                 ptLogManager.WriteMessage(string.Format("无法从线符号化节点下获取图形节点"));
                 return SymbolizerElement;
             }
-            if (string.IsNullOrEmpty(Color))
+            if (!string.IsNullOrEmpty(Color))
             {
                 //颜色节点
                 XmlElement pStrokeColor = CommXmlHandle.CreateElementAndSetElemnetText("LineCssParameter", xmlDoc, Color.ToString());
@@ -961,7 +982,7 @@ namespace ArcGIS_SLD_Converter
                 //装饰线
                 //由于SLD装饰线只有两头，所以默认值读第一个，其他的忽略
                 ILineDecoration pLineDecoration = lineProperties.LineDecoration;
-                if (pLineDecoration.ElementCount > 0)
+                if (pLineDecoration!=null&&pLineDecoration.ElementCount > 0)
                 {
                     ISimpleLineDecorationElement pElement = pLineDecoration.Element[0] as ISimpleLineDecorationElement;
                     SimpleLineDecoration = new ptSimpleLineDecorationClass(pElement);
@@ -1018,7 +1039,14 @@ namespace ArcGIS_SLD_Converter
                 ptLogManager.WriteMessage(string.Format("无法从线符号化节点下获取图形节点"));
                 return SymbolizerElement;
             }
-            if (string.IsNullOrEmpty(Color))
+            //写点标记信息
+            if (MarkSymbol != null)
+            {
+                XmlElement pGraphicStrokeElement = CommXmlHandle.CreateElement("LineGraphicStroke",xmlDoc);
+                pGraphicStrokeElement.AppendChild(MarkSymbol.GetSymbolNode(xmlDoc)[0].LastChild.Clone());
+                strokeElement.AppendChild(pGraphicStrokeElement);
+            }
+            if (!string.IsNullOrEmpty(Color))
             {
                 //颜色节点
                 XmlElement pStrokeColor = CommXmlHandle.CreateElementAndSetElemnetText("LineCssParameter", xmlDoc, Color.ToString());
@@ -1063,6 +1091,7 @@ namespace ArcGIS_SLD_Converter
                     SymbolizerElement.Add(pElement);
                 }
             }
+ 
             return SymbolizerElement;
         }
     }
@@ -1211,6 +1240,15 @@ namespace ArcGIS_SLD_Converter
         /// 轮廓符号
         /// </summary>
         public ptLineSymbolClass OutlineSymbol { get;}
+        public override IList<XmlElement> GetSymbolNode(XmlDocument xmlDoc)
+        {
+            IList<XmlElement> returenData = new List<XmlElement>();
+            XmlElement pSymboleElement = default(XmlElement);
+            pSymboleElement = CommXmlHandle.CreateElement("PolygonSymbolizer", xmlDoc);
+            //返回LineSymbolizer节点
+            returenData.Add(pSymboleElement);
+            return returenData;
+        }
     }
     /// <summary>
     /// 简单填充符号
@@ -1780,17 +1818,19 @@ namespace ArcGIS_SLD_Converter
                 }
                 else if (pLineSymbol is ICartographicLineSymbol)
                 {
-                    tempSymbol = new ptCartographicLineSymbol(pLineSymbol as ISymbol);
-                }
-                else if (pLineSymbol is IHashLineSymbol)
-                {
-                    tempSymbol = new ptHashLineSymbolClass(pLineSymbol as ISymbol);
-
-                }
-                else if (pLineSymbol is IMarkerLineSymbol)
-                {
-                    tempSymbol = new ptMarkerLineSymbolClass(pLineSymbol as ISymbol);
-
+                    ICartographicLineSymbol ICLS = pLineSymbol as ICartographicLineSymbol;
+                    if (ICLS is IHashLineSymbol)
+                    {
+                        tempSymbol = new ptHashLineSymbolClass(pLineSymbol as ISymbol);
+                    }
+                    else if (ICLS is IMarkerLineSymbol)
+                    {
+                        tempSymbol = new ptMarkerLineSymbolClass(pLineSymbol as ISymbol);
+                    }
+                    else
+                    {
+                        tempSymbol = new ptCartographicLineSymbol(pLineSymbol as ISymbol);
+                    }
                 }
                 else if(pLineSymbol is IPictureLineSymbol)
                 {
@@ -1878,6 +1918,15 @@ namespace ArcGIS_SLD_Converter
         /// 图层数量
         /// </summary>
         public int LayerCount { get; }
+        public override IList<XmlElement> GetSymbolNode(XmlDocument xmlDoc)
+        {
+            IList<XmlElement> returnData = new List<XmlElement>();
+            foreach (ptSymbolClass symbol in MultiFillSymbol)
+            {
+                returnData.Add(symbol.GetSymbolNode(xmlDoc)[0]);
+            }
+            return returnData;
+        }
     }
     #endregion
     /// <summary>
