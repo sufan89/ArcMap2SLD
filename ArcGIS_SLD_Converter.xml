@@ -203,6 +203,13 @@
             <param name="PointsVal"></param>
             <returns></returns>
         </member>
+        <member name="M:ArcGIS_SLD_Converter.CommStaticClass.CommaToPoint(System.Double)">
+            <summary>
+            数值中去掉逗号
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
         <member name="F:ArcGIS_SLD_Converter.CommXmlHandle.c_strRootNodeName_Standard">
             <summary>
             标准根节点名称
@@ -1229,6 +1236,13 @@
             <summary>
             样式
             </summary>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.ptSimpleFillSymbolClass.GetSymbolNode(System.Xml.XmlDocument)">
+            <summary>
+            获取符号SLD节点
+            </summary>
+            <param name="xmlDoc"></param>
+            <returns></returns>
         </member>
         <member name="T:ArcGIS_SLD_Converter.ptMarkerFillSymbolClass">
             <summary>
