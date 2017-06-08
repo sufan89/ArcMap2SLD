@@ -1245,7 +1245,7 @@ namespace ArcGIS_SLD_Converter
             IList<XmlElement> returenData = new List<XmlElement>();
             XmlElement pSymboleElement = default(XmlElement);
             pSymboleElement = CommXmlHandle.CreateElement("PolygonSymbolizer", xmlDoc);
-            //返回LineSymbolizer节点
+            //返回PolygonSymbolizer节点
             returenData.Add(pSymboleElement);
             return returenData;
         }
@@ -1269,6 +1269,42 @@ namespace ArcGIS_SLD_Converter
         /// 样式
         /// </summary>
         public string Style { get; set; }
+        /// <summary>
+        /// 获取符号SLD节点
+        /// </summary>
+        /// <param name="xmlDoc"></param>
+        /// <returns></returns>
+        public override IList<XmlElement> GetSymbolNode(XmlDocument xmlDoc)
+        {
+            IList<XmlElement> returenData = new List<XmlElement>();
+            XmlElement pSymbolizerElement = base.GetSymbolNode(xmlDoc)[0] as XmlElement;
+            if (pSymbolizerElement == null)
+            {
+                ptLogManager.WriteMessage("无法获取面符号节点");
+                return null;
+            }
+            //填充节点
+            XmlElement pFillElement = CommXmlHandle.CreateElement("Fill", xmlDoc);
+            pSymbolizerElement.AppendChild(pFillElement);
+            if (!string.IsNullOrEmpty(Color))
+            {
+                XmlElement pFillColorEl = CommXmlHandle.CreateElementAndSetElemnetText("PolyCssParameter", xmlDoc,Color);
+                CommXmlHandle.SetAttributeValue("fill", CommXmlHandle.CreateAttribute("name", pFillColorEl, xmlDoc));
+                pFillElement.AppendChild(pFillColorEl);
+            }
+            if (!string.IsNullOrEmpty(Transparency.ToString()))
+            {
+                XmlElement pTransEl = CommXmlHandle.CreateElementAndSetElemnetText("PolyCssParameter", xmlDoc, Transparency.ToString());
+                CommXmlHandle.SetAttributeValue("fill-opacity", CommXmlHandle.CreateAttribute("name", pTransEl, xmlDoc));
+                pFillElement.AppendChild(pTransEl);
+            }
+            //外轮廓线节点
+            XmlElement pLineEl = OutlineSymbol.GetSymbolNode(xmlDoc)[0].LastChild as XmlElement;
+            pSymbolizerElement.AppendChild(pLineEl);
+            returenData.Add(pSymbolizerElement);
+            return returenData; 
+
+        }
     }
     /// <summary>
     /// 标记填充符号
@@ -1336,6 +1372,46 @@ namespace ArcGIS_SLD_Converter
         /// y轴间隔
         /// </summary>
         public double YSeparation { get; }
+        public override IList<XmlElement> GetSymbolNode(XmlDocument xmlDoc)
+        {
+            IList<XmlElement> returenData = new List<XmlElement>();
+            XmlElement pSymbolizerElement = base.GetSymbolNode(xmlDoc)[0] as XmlElement;
+            if (pSymbolizerElement == null)
+            {
+                ptLogManager.WriteMessage("无法获取面符号节点");
+                return null;
+            }
+            //获取点符号
+            if (MarkerSymbol != null)
+            {
+                XmlElement pGraphFillEl = CommXmlHandle.CreateElement("PolygonGraphicFill", xmlDoc);
+                pSymbolizerElement.AppendChild(pGraphFillEl);
+                XmlElement pPointEl = MarkerSymbol.GetSymbolNode(xmlDoc)[0].LastChild as XmlElement;
+                pGraphFillEl.AppendChild(pPointEl);
+            }
+            //填充节点
+            XmlElement pFillElement = CommXmlHandle.CreateElement("Fill", xmlDoc);
+            pSymbolizerElement.AppendChild(pFillElement);
+            if (!string.IsNullOrEmpty(Color))
+            {
+                XmlElement pFillColorEl = CommXmlHandle.CreateElementAndSetElemnetText("PolyCssParameter", xmlDoc, Color);
+                CommXmlHandle.SetAttributeValue("fill", CommXmlHandle.CreateAttribute("name", pFillColorEl, xmlDoc));
+                pFillElement.AppendChild(pFillColorEl);
+            }
+            if (!string.IsNullOrEmpty(Transparency.ToString()))
+            {
+                XmlElement pTransEl = CommXmlHandle.CreateElementAndSetElemnetText("PolyCssParameter", xmlDoc, Transparency.ToString());
+                CommXmlHandle.SetAttributeValue("fill-opacity", CommXmlHandle.CreateAttribute("name", pTransEl, xmlDoc));
+                pFillElement.AppendChild(pTransEl);
+            }
+
+            //外轮廓线节点
+            XmlElement pLineEl = OutlineSymbol.GetSymbolNode(xmlDoc)[0].LastChild as XmlElement;
+            pSymbolizerElement.AppendChild(pLineEl);
+
+            returenData.Add(pSymbolizerElement);
+            return returenData;
+        }
 
     }
     /// <summary>
@@ -1394,9 +1470,13 @@ namespace ArcGIS_SLD_Converter
         /// 填充线符号
         /// </summary>
         public ptLineSymbolClass LineSymbol { get;}
+        public override IList<XmlElement> GetSymbolNode(XmlDocument xmlDoc)
+        {
+            return base.GetSymbolNode(xmlDoc);
+        }
     }
     /// <summary>
-    /// 点密度填充符号
+    /// 点密度填充符号(ArcGIS10.2没有点密度填充符号)
     /// </summary>
     public class ptDotDensityFillSymbolClass : ptFillSymbolClass
     {
@@ -1474,6 +1554,10 @@ namespace ArcGIS_SLD_Converter
         /// 符号数量
         /// </summary>
         public int SymbolCount { get;}
+        public override IList<XmlElement> GetSymbolNode(XmlDocument xmlDoc)
+        {
+            return base.GetSymbolNode(xmlDoc);
+        }
     }
     /// <summary>
     /// 图片填充符号
