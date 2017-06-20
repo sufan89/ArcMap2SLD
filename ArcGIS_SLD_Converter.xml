@@ -1304,9 +1304,16 @@
             填充线符号
             </summary>
         </member>
+        <member name="M:ArcGIS_SLD_Converter.ptLineFillSymbolClass.GetSymbolNode(System.Xml.XmlDocument)">
+            <summary>
+            先填充符号，SLD中填充无法设定填充线符号，只能设定填充线的颜色，角度以及线的宽度
+            </summary>
+            <param name="xmlDoc"></param>
+            <returns></returns>
+        </member>
         <member name="T:ArcGIS_SLD_Converter.ptDotDensityFillSymbolClass">
             <summary>
-            点密度填充符号
+            点密度填充符号(ArcGIS10.2没有点密度填充符号)
             </summary>
         </member>
         <member name="P:ArcGIS_SLD_Converter.ptDotDensityFillSymbolClass.BackgroundColor">
@@ -1384,9 +1391,16 @@
             Y比例
             </summary>
         </member>
+        <member name="M:ArcGIS_SLD_Converter.ptPictureFillSymbolClass.GetSymbolNode(System.Xml.XmlDocument)">
+            <summary>
+            获取SLD节点
+            </summary>
+            <param name="xmlDoc"></param>
+            <returns></returns>
+        </member>
         <member name="T:ArcGIS_SLD_Converter.ptGradientFillSymbolClass">
             <summary>
-            渐变填充符号
+            渐变填充符号(貌似SLD不支持渐变符号，这里直接用简单填充符号，取颜色的第一个颜色)
             </summary>
         </member>
         <member name="P:ArcGIS_SLD_Converter.ptGradientFillSymbolClass.Colors">
@@ -1413,6 +1427,13 @@
             <summary>
             样式
             </summary>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.ptGradientFillSymbolClass.GetSymbolNode(System.Xml.XmlDocument)">
+            <summary>
+            获取SLD节点
+            </summary>
+            <param name="xmlDoc"></param>
+            <returns></returns>
         </member>
         <member name="T:ArcGIS_SLD_Converter.ptBarChartSymbolClass">
             <summary>
