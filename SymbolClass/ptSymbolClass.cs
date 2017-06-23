@@ -112,6 +112,34 @@ namespace ArcGIS_SLD_Converter
         /// 垂直对齐
         /// </summary>
         public string VerticalAlignment { get;}
+        /// <summary>
+        /// 获取标记符号节点(ArcGIS 中标记是可以用脚本语言来进行定制，SLD不支持)
+        /// </summary>
+        /// <param name="xmlDoc"></param>
+        /// <returns></returns>
+        public override IList<XmlElement> GetSymbolNode(XmlDocument xmlDoc)
+        {
+            IList<XmlElement> returnData = new List<XmlElement>();
+            XmlElement pFontElment = CommXmlHandle.CreateElement("TextFont", xmlDoc);
+            //字体名称
+            XmlElement pFontNameElment = CommXmlHandle.CreateElementAndSetElemnetText("TextFontCssParameter", xmlDoc, Font);
+            CommXmlHandle.SetAttributeValue("font-family", CommXmlHandle.CreateAttribute("name", pFontNameElment, xmlDoc));
+            pFontElment.AppendChild(pFontNameElment);
+            //字体大小
+            XmlElement pSizeElment = CommXmlHandle.CreateElementAndSetElemnetText("TextFontCssParameter", xmlDoc, Size.ToString());
+            CommXmlHandle.SetAttributeValue("font-size", CommXmlHandle.CreateAttribute("name", pSizeElment, xmlDoc));
+            pFontElment.AppendChild(pSizeElment);
+            //style节点
+            XmlElement pStyleElment = CommXmlHandle.CreateElementAndSetElemnetText("TextFontCssParameter", xmlDoc, Style);
+            CommXmlHandle.SetAttributeValue("font-style", CommXmlHandle.CreateAttribute("name", pStyleElment, xmlDoc));
+            pFontElment.AppendChild(pStyleElment);
+            //Weight节点
+            XmlElement pWeightElment= CommXmlHandle.CreateElementAndSetElemnetText("TextFontCssParameter", xmlDoc, Weight);
+            CommXmlHandle.SetAttributeValue("font-weight", CommXmlHandle.CreateAttribute("name", pWeightElment, xmlDoc));
+            pFontElment.AppendChild(pWeightElment);
+            returnData.Add(pFontElment);
+            return returnData;
+        }
     }
 
     #region 点符号

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml;
 
 namespace ArcGIS_SLD_Converter
 {
@@ -41,7 +42,10 @@ namespace ArcGIS_SLD_Converter
         /// <summary>
         /// 是否是单个属性
         /// </summary>
-        public bool IsSingleProperty { get; set; }
+        public bool IsSingleProperty {
+            get;
+            set;
+        }
         /// <summary>
         /// 属性名称
         /// </summary>
@@ -50,5 +54,35 @@ namespace ArcGIS_SLD_Converter
         /// 标注文本符号
         /// </summary>
         public TextSymbolClass TextSymbol { get; set; }
+        /// <summary>
+        /// 获取标注XML节点，SLD的注记方式和ArcMap的标注方式不一样，这里只解析了最基本的要素，高级标注要素未进行解析
+        /// </summary>
+        /// <param name="xmlDoc"></param>
+        /// <returns></returns>
+        public XmlElement GetSymbolNode(XmlDocument xmlDoc)
+        {
+            XmlElement pAnnotaElment = null;
+            if (this.IsSingleProperty && !string.IsNullOrEmpty(this.PropertyName))
+            {
+                return pAnnotaElment;
+            }
+            else
+            {
+                //创建TextSymbolizer节点
+                pAnnotaElment = CommXmlHandle.CreateElement("TextSymbolizer", xmlDoc);
+                //写标注字段信息
+                XmlElement pLableElment = CommXmlHandle.CreateElementAndSetElemnetText("TextLabel", xmlDoc, PropertyName);
+                pAnnotaElment.AppendChild(pLableElment);
+                //写字体信息
+                pAnnotaElment.AppendChild(TextSymbol.GetSymbolNode(xmlDoc)[0]);
+                //写填充颜色
+                XmlElement pTextFillElment = CommXmlHandle.CreateElement("TextFill", xmlDoc);
+                XmlElement pFillElment = CommXmlHandle.CreateElementAndSetElemnetText("TextFillCssParameter", xmlDoc, TextSymbol.Color);
+                CommXmlHandle.SetAttributeValue("fill", CommXmlHandle.CreateAttribute("name", pFillElment, xmlDoc));
+                pTextFillElment.AppendChild(pFillElment);
+                pAnnotaElment.AppendChild(pTextFillElment);
+            }
+            return pAnnotaElment;
+        }
     }
 }
