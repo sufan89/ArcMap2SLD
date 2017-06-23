@@ -112,6 +112,34 @@ namespace ArcGIS_SLD_Converter
         /// 垂直对齐
         /// </summary>
         public string VerticalAlignment { get;}
+        /// <summary>
+        /// 获取标记符号节点(ArcGIS 中标记是可以用脚本语言来进行定制，SLD不支持)
+        /// </summary>
+        /// <param name="xmlDoc"></param>
+        /// <returns></returns>
+        public override IList<XmlElement> GetSymbolNode(XmlDocument xmlDoc)
+        {
+            IList<XmlElement> returnData = new List<XmlElement>();
+            XmlElement pFontElment = CommXmlHandle.CreateElement("TextFont", xmlDoc);
+            //字体名称
+            XmlElement pFontNameElment = CommXmlHandle.CreateElementAndSetElemnetText("TextFontCssParameter", xmlDoc, Font);
+            CommXmlHandle.SetAttributeValue("font-family", CommXmlHandle.CreateAttribute("name", pFontNameElment, xmlDoc));
+            pFontElment.AppendChild(pFontNameElment);
+            //字体大小
+            XmlElement pSizeElment = CommXmlHandle.CreateElementAndSetElemnetText("TextFontCssParameter", xmlDoc, Size.ToString());
+            CommXmlHandle.SetAttributeValue("font-size", CommXmlHandle.CreateAttribute("name", pSizeElment, xmlDoc));
+            pFontElment.AppendChild(pSizeElment);
+            //style节点
+            XmlElement pStyleElment = CommXmlHandle.CreateElementAndSetElemnetText("TextFontCssParameter", xmlDoc, Style);
+            CommXmlHandle.SetAttributeValue("font-style", CommXmlHandle.CreateAttribute("name", pStyleElment, xmlDoc));
+            pFontElment.AppendChild(pStyleElment);
+            //Weight节点
+            XmlElement pWeightElment= CommXmlHandle.CreateElementAndSetElemnetText("TextFontCssParameter", xmlDoc, Weight);
+            CommXmlHandle.SetAttributeValue("font-weight", CommXmlHandle.CreateAttribute("name", pWeightElment, xmlDoc));
+            pFontElment.AppendChild(pWeightElment);
+            returnData.Add(pFontElment);
+            return returnData;
+        }
     }
 
     #region 点符号
@@ -1240,6 +1268,11 @@ namespace ArcGIS_SLD_Converter
         /// 轮廓符号
         /// </summary>
         public ptLineSymbolClass OutlineSymbol { get;}
+        /// <summary>
+        /// 获取符号SLD节点(SLD暂时不支持外轮廓线多图层表达，这里只取第一层)
+        /// </summary>
+        /// <param name="xmlDoc"></param>
+        /// <returns></returns>
         public override IList<XmlElement> GetSymbolNode(XmlDocument xmlDoc)
         {
             IList<XmlElement> returenData = new List<XmlElement>();
@@ -1291,12 +1324,6 @@ namespace ArcGIS_SLD_Converter
                 XmlElement pFillColorEl = CommXmlHandle.CreateElementAndSetElemnetText("PolyCssParameter", xmlDoc,Color);
                 CommXmlHandle.SetAttributeValue("fill", CommXmlHandle.CreateAttribute("name", pFillColorEl, xmlDoc));
                 pFillElement.AppendChild(pFillColorEl);
-            }
-            if (!string.IsNullOrEmpty(Transparency.ToString()))
-            {
-                XmlElement pTransEl = CommXmlHandle.CreateElementAndSetElemnetText("PolyCssParameter", xmlDoc, Transparency.ToString());
-                CommXmlHandle.SetAttributeValue("fill-opacity", CommXmlHandle.CreateAttribute("name", pTransEl, xmlDoc));
-                pFillElement.AppendChild(pTransEl);
             }
             //外轮廓线节点
             XmlElement pLineEl = OutlineSymbol.GetSymbolNode(xmlDoc)[0].LastChild as XmlElement;
@@ -1470,9 +1497,71 @@ namespace ArcGIS_SLD_Converter
         /// 填充线符号
         /// </summary>
         public ptLineSymbolClass LineSymbol { get;}
+        /// <summary>
+        /// 先填充符号，SLD中填充无法设定填充线符号，只能设定填充线的颜色，角度以及线的宽度
+        /// </summary>
+        /// <param name="xmlDoc"></param>
+        /// <returns></returns>
         public override IList<XmlElement> GetSymbolNode(XmlDocument xmlDoc)
         {
-            return base.GetSymbolNode(xmlDoc);
+            IList<XmlElement> returenData = new List<XmlElement>();
+            XmlElement pSymbolizerElement = base.GetSymbolNode(xmlDoc)[0] as XmlElement;
+            if (pSymbolizerElement == null)
+            {
+                ptLogManager.WriteMessage("无法获取面符号节点");
+                return null;
+            }
+            //Fill节点
+            XmlElement pFillElment = CommXmlHandle.CreateElement("Fill", xmlDoc);
+            //GraphicFill节点
+            XmlElement pGraphFillElment = CommXmlHandle.CreateElement("PolygonGraphicFill", xmlDoc);
+            pFillElment.AppendChild(pGraphFillElment);
+            //Graphic节点
+            XmlElement pGraphElment = CommXmlHandle.CreateElement("PolygonGraphic", xmlDoc);
+            pGraphFillElment.AppendChild(pGraphElment);
+            //Mark节点
+            XmlElement pMarkElment = CommXmlHandle.CreateElement("PolygonMark", xmlDoc);
+            pGraphElment.AppendChild(pMarkElment);
+            //wellknownName节点
+            XmlElement pWellElment = CommXmlHandle.CreateElement("PolygonWellKnownName", xmlDoc);
+            if (Angle == 0.00 || Angle == 180.00 || Angle == 360.00 || Angle == -180.00 || Angle == -360.00)//水平线
+            {
+                CommXmlHandle.SetElementText("shape://horline", pWellElment);
+            }
+            else if (Angle == 90.00 || Angle == 270.00 || Angle == -90.00 || Angle == -270.00)//竖线填充
+            {
+                CommXmlHandle.SetElementText("shape://vertline", pWellElment);
+            }
+            else if ((Angle > 0.0 && Angle < 90.0) || (Angle > 180.0 && Angle < 270.0) || (Angle > -180.0 && Angle < -90.0) || (Angle > -360.0 && Angle < -270.0))
+            {
+                CommXmlHandle.SetElementText("shape://slash", pWellElment);
+            }
+            else if ((Angle > 90.0 && Angle < 180.0) || (Angle > 270.0 && Angle < 360.0) || (Angle < 0.0 && Angle > -90.0) || (Angle < -180.0 && Angle > -270.0))
+            {
+                CommXmlHandle.SetElementText("shape://backslash", pWellElment);
+            }
+            pGraphElment.AppendChild(pWellElment);
+            //写线宽和颜色，SLD不支持线样式
+            XmlElement pStrokeElment = CommXmlHandle.CreateElement("PolygonStroke", xmlDoc);
+            pGraphElment.AppendChild(pStrokeElment);
+            //线颜色
+            XmlElement pStrokeColorElment = CommXmlHandle.CreateElementAndSetElemnetText("PolyCssParameter", xmlDoc, LineSymbol.Color);
+            CommXmlHandle.SetAttributeValue("stroke", CommXmlHandle.CreateAttribute("name", pStrokeColorElment, xmlDoc));
+            pStrokeElment.AppendChild(pStrokeColorElment);
+            //线宽度
+            XmlElement pLineWidthElment = CommXmlHandle.CreateElementAndSetElemnetText("PolyCssParameter", xmlDoc, LineSymbol.Width.ToString());
+            CommXmlHandle.SetAttributeValue("stroke-width", CommXmlHandle.CreateAttribute("name", pLineWidthElment, xmlDoc));
+            pStrokeElment.AppendChild(pLineWidthElment);
+            //写Size节点
+            XmlElement pSizeElment = CommXmlHandle.CreateElementAndSetElemnetText("PolygonSize", xmlDoc, CommStaticClass.CommaToPoint(Separation+5));
+            pGraphElment.AppendChild(pSizeElment);
+            pSymbolizerElement.AppendChild(pFillElment);
+            //外轮廓线节点
+            XmlElement pLineEl = OutlineSymbol.GetSymbolNode(xmlDoc)[0].LastChild as XmlElement;
+            pSymbolizerElement.AppendChild(pLineEl);
+
+            returenData.Add(pSymbolizerElement);
+            return returenData;
         }
     }
     /// <summary>
@@ -1599,9 +1688,66 @@ namespace ArcGIS_SLD_Converter
         /// Y比例
         /// </summary>
         public double YScale { get;}
+        /// <summary>
+        /// 获取SLD节点
+        /// </summary>
+        /// <param name="xmlDoc"></param>
+        /// <returns></returns>
+        public override IList<XmlElement> GetSymbolNode(XmlDocument xmlDoc)
+        {
+            IList<XmlElement> returenData = new List<XmlElement>();
+            XmlElement pSymbolizerElement = base.GetSymbolNode(xmlDoc)[0] as XmlElement;
+            if (pSymbolizerElement == null)
+            {
+                ptLogManager.WriteMessage("无法获取面符号节点");
+                return null;
+            }
+            //先将图片保存到本地
+            string imagefile = string.Empty;
+            if (Picture != null)
+            {
+                string filePath = System.IO.Path.GetDirectoryName(CommXmlHandle.m_SaveFileName);
+                imagefile = string.Format("{0}\\{1}.png", filePath, Guid.NewGuid().ToString());
+                Image pimage = IPictureConverter.IPictureDispToImage(Picture);
+                Graphics g = Graphics.FromImage(pimage);
+                Bitmap pbitmap = new Bitmap(pimage);
+                pbitmap.MakeTransparent(System.Drawing.Color.Black);
+                pbitmap.Save(imagefile, System.Drawing.Imaging.ImageFormat.Png);
+            }
+            //Fill节点
+            XmlElement pFillElment = CommXmlHandle.CreateElement("Fill", xmlDoc);
+            //GraphicFill节点
+            XmlElement pGraphFillElment = CommXmlHandle.CreateElement("PolygonGraphicFill", xmlDoc);
+            pFillElment.AppendChild(pGraphFillElment);
+            //Graphic节点
+            XmlElement pGraphElment = CommXmlHandle.CreateElement("PolygonGraphic", xmlDoc);
+            pGraphFillElment.AppendChild(pGraphElment);
+            //ExternalGraphic节点 
+            XmlElement pexternalGraphicElment = CommXmlHandle.CreateElement("PointExternalGraphic", xmlDoc);
+            pGraphElment.AppendChild(pexternalGraphicElment);
+            //OnlineResource节点
+            XmlElement pOnlineElment = CommXmlHandle.CreateElement("PointOnlineResource", xmlDoc);
+            CommXmlHandle.SetAttributeValue("http://www.w3.org/1999/xlink", CommXmlHandle.CreateAttribute("xmlns:xlink", pOnlineElment, xmlDoc));
+            CommXmlHandle.SetAttributeValue("simple", CommXmlHandle.CreateAttribute("xlink:type", pOnlineElment, xmlDoc));
+            CommXmlHandle.SetAttributeValue(imagefile, CommXmlHandle.CreateAttribute("xlink:href", pOnlineElment, xmlDoc));
+            pexternalGraphicElment.AppendChild(pOnlineElment);
+            //Format节点
+            XmlElement pFormatElment = CommXmlHandle.CreateElementAndSetElemnetText("PointFormat", xmlDoc, "image/png");
+            pexternalGraphicElment.AppendChild(pFormatElment);
+            //写Size节点
+            XmlElement pSizeElment = CommXmlHandle.CreateElementAndSetElemnetText("PolygonSize", xmlDoc, CommStaticClass.CommaToPoint(Picture.Height>Picture.Width?Picture.Width:Picture.Height));
+            pGraphElment.AppendChild(pSizeElment);
+            pSymbolizerElement.AppendChild(pFillElment);
+            //外轮廓线节点
+            XmlElement pLineEl = OutlineSymbol.GetSymbolNode(xmlDoc)[0].LastChild as XmlElement;
+            pSymbolizerElement.AppendChild(pLineEl);
+
+            returenData.Add(pSymbolizerElement);
+            return returenData;
+        }
     }
     /// <summary>
-    /// 渐变填充符号
+    /// 渐变填充符号(貌似SLD不支持渐变符号，这里直接用简单填充符号，取颜色的第一个颜色)
     /// </summary>
     public class ptGradientFillSymbolClass : ptFillSymbolClass
     {
@@ -1635,6 +1781,29 @@ namespace ArcGIS_SLD_Converter
         /// 样式
         /// </summary>
         public string Style { get; }
+        /// <summary>
+        /// 获取SLD节点
+        /// </summary>
+        /// <param name="xmlDoc"></param>
+        /// <returns></returns>
+        public override IList<XmlElement> GetSymbolNode(XmlDocument xmlDoc)
+        {
+            IList<XmlElement> returenData = new List<XmlElement>();
+            XmlElement pSymbolizerElement = base.GetSymbolNode(xmlDoc)[0] as XmlElement;
+            if (pSymbolizerElement == null)
+            {
+                ptLogManager.WriteMessage("无法获取面符号节点");
+                return null;
+            }
+            //填充节点
+            XmlElement pFillElement = CommXmlHandle.CreateElement("Fill", xmlDoc);
+            pSymbolizerElement.AppendChild(pFillElement);
+            //外轮廓线节点
+            XmlElement pLineEl = OutlineSymbol.GetSymbolNode(xmlDoc)[0].LastChild as XmlElement;
+            pSymbolizerElement.AppendChild(pLineEl);
+            returenData.Add(pSymbolizerElement);
+            return returenData;
+        }
     }
     #endregion
 

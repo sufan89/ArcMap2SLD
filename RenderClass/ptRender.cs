@@ -36,7 +36,7 @@ namespace ArcGIS_SLD_Converter
         /// </summary>
         protected virtual void InitialSymbol()
         {
- 
+            
         }
         /// <summary>
         /// 获取渲染的xml节点
@@ -200,6 +200,12 @@ namespace ArcGIS_SLD_Converter
         {
             try
             {
+                XmlElement pAnnotationElment=null;
+                //如果有标注，则添加标注信息
+                if (AnnotationClass.IsSingleProperty && !string.IsNullOrEmpty(AnnotationClass.PropertyName))
+                {
+                     pAnnotationElment = AnnotationClass.GetSymbolNode(xmlDoc);
+                }
                 //开始解析渲染符号信息
                 for (int i = 0; i < SymbolList.Count; i++)
                 {
@@ -263,6 +269,10 @@ namespace ArcGIS_SLD_Converter
                     foreach (XmlElement pElement in pSymbolizedNode)
                     {
                         pRuleElement.AppendChild(pElement);
+                    }
+                    if (pAnnotationElment != null)
+                    {
+                        pRuleElement.AppendChild(pAnnotationElment);
                     }
                     RootXmlElement.AppendChild(pRuleElement);
                 }
@@ -329,6 +339,12 @@ namespace ArcGIS_SLD_Converter
         {
             try
             {
+                //如果有标注，则添加标注信息
+                XmlElement pAnnotationElment = null;
+                if (AnnotationClass.IsSingleProperty && !string.IsNullOrEmpty(AnnotationClass.PropertyName))
+                {
+                    pAnnotationElment = AnnotationClass.GetSymbolNode(xmlDoc);
+                }
                 //开始解析渲染符号信息
                 for (int i = 0; i < SymbolList.Count; i++)
                 {
@@ -369,6 +385,10 @@ namespace ArcGIS_SLD_Converter
                     foreach (XmlElement pElement in pSymbolizedNode)
                     {
                         pRuleElement.AppendChild(pElement);
+                    }
+                    if (pAnnotationElment != null)
+                    {
+                        pRuleElement.AppendChild(pAnnotationElment);
                     }
                     RootXmlElement.AppendChild(pRuleElement);
                 }
@@ -412,6 +432,12 @@ namespace ArcGIS_SLD_Converter
         {
             try
             {
+                //如果有标注，则添加标注信息
+                XmlElement pAnnotationElment = null;
+                if (AnnotationClass.IsSingleProperty && !string.IsNullOrEmpty(AnnotationClass.PropertyName))
+                {
+                     pAnnotationElment = AnnotationClass.GetSymbolNode(xmlDoc);
+                }
                 //开始解析渲染符号信息
                 for (int i = 0; i < SymbolList.Count; i++)
                 {
@@ -432,6 +458,10 @@ namespace ArcGIS_SLD_Converter
                     foreach (XmlElement pElement in pSymbolizedNode)
                     {
                         pRuleElement.AppendChild(pElement);
+                    }
+                    if (pAnnotationElment != null)
+                    {
+                        pRuleElement.AppendChild(pAnnotationElment);
                     }
                     RootXmlElement.AppendChild(pRuleElement);
                 }
