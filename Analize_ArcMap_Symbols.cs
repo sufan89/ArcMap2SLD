@@ -57,8 +57,6 @@ namespace ArcGIS_SLD_Converter
             CentralProcessingFunc();
         }
         #endregion
-        #region 属性信息
-        #endregion
         /// <summary>
         /// 分析符号信息主函数
         /// </summary>
@@ -255,10 +253,6 @@ namespace ArcGIS_SLD_Converter
             ptLogManager.WriteMessage(string.Format("{0} 方法名称:{1}", Message, FunctionName));
             return null;
         }
-        /// <summary>
-        /// 退出程序
-        /// </summary>
-        /// <returns></returns>
         #endregion
     }
 }

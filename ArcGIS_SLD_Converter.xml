@@ -345,6 +345,11 @@
             渲染方式
             </summary>
         </member>
+        <member name="P:ArcGIS_SLD_Converter.ptLayer.m_isLabel">
+            <summary>
+            是否有标记
+            </summary>
+        </member>
         <member name="P:ArcGIS_SLD_Converter.ptLayer.m_MinScale">
             <summary>
             最小比例尺
@@ -365,6 +370,11 @@
             根据图层初始化基本信息
             </summary>
             <param name="player"></param>
+        </member>
+        <member name="T:ArcGIS_SLD_Converter.ShapeType">
+            <summary>
+            图形类型
+            </summary>
         </member>
         <member name="T:ArcGIS_SLD_Converter.ptLogManager">
             <summary>
@@ -857,6 +867,13 @@
             标注文本符号
             </summary>
         </member>
+        <member name="M:ArcGIS_SLD_Converter.AnnotationClass.GetSymbolNode(System.Xml.XmlDocument)">
+            <summary>
+            获取标注XML节点，SLD的注记方式和ArcMap的标注方式不一样，这里只解析了最基本的要素，高级标注要素未进行解析
+            </summary>
+            <param name="xmlDoc"></param>
+            <returns></returns>
+        </member>
         <member name="P:ArcGIS_SLD_Converter.ptSymbolClass.Label">
             <summary>
             标记
@@ -937,6 +954,13 @@
             <summary>
             垂直对齐
             </summary>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.TextSymbolClass.GetSymbolNode(System.Xml.XmlDocument)">
+            <summary>
+            获取标记符号节点(ArcGIS 中标记是可以用脚本语言来进行定制，SLD不支持)
+            </summary>
+            <param name="xmlDoc"></param>
+            <returns></returns>
         </member>
         <member name="T:ArcGIS_SLD_Converter.ptMarkerSymbolClass">
             <summary>
@@ -1226,6 +1250,13 @@
             <summary>
             轮廓符号
             </summary>
+        </member>
+        <member name="M:ArcGIS_SLD_Converter.ptFillSymbolClass.GetSymbolNode(System.Xml.XmlDocument)">
+            <summary>
+            获取符号SLD节点(SLD暂时不支持外轮廓线多图层表达，这里只取第一层)
+            </summary>
+            <param name="xmlDoc"></param>
+            <returns></returns>
         </member>
         <member name="T:ArcGIS_SLD_Converter.ptSimpleFillSymbolClass">
             <summary>

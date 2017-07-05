@@ -62,7 +62,7 @@ namespace ArcGIS_SLD_Converter
         public XmlElement GetSymbolNode(XmlDocument xmlDoc)
         {
             XmlElement pAnnotaElment = null;
-            if (this.IsSingleProperty && !string.IsNullOrEmpty(this.PropertyName))
+            if (!this.IsSingleProperty || string.IsNullOrEmpty(this.PropertyName))
             {
                 return pAnnotaElment;
             }
@@ -71,7 +71,9 @@ namespace ArcGIS_SLD_Converter
                 //创建TextSymbolizer节点
                 pAnnotaElment = CommXmlHandle.CreateElement("TextSymbolizer", xmlDoc);
                 //写标注字段信息
-                XmlElement pLableElment = CommXmlHandle.CreateElementAndSetElemnetText("TextLabel", xmlDoc, PropertyName);
+                XmlElement pLableElment = CommXmlHandle.CreateElement("TextLabel", xmlDoc);
+                XmlElement pLableProperty = CommXmlHandle.CreateElementAndSetElemnetText("TextLabelProperty", xmlDoc, PropertyName);
+                pLableElment.AppendChild(pLableProperty);
                 pAnnotaElment.AppendChild(pLableElment);
                 //写字体信息
                 pAnnotaElment.AppendChild(TextSymbol.GetSymbolNode(xmlDoc)[0]);
