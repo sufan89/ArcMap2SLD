@@ -192,7 +192,7 @@ namespace ArcGIS_SLD_Converter
             }
             catch (Exception ex)
             {
-                ptLogManager.WriteMessage(ex.Message);
+                ptLogManager.WriteMessage(string.Format("方法名称：{0}{1}{2}{3}{4}", "InitialSymbol",Environment.NewLine, ex.Message,Environment.NewLine,ex.StackTrace));
             }
 
         }
@@ -270,9 +270,10 @@ namespace ArcGIS_SLD_Converter
                     {
                         pRuleElement.AppendChild(pElement);
                     }
+                    //写注记节点
                     if (pAnnotationElment != null)
                     {
-                        pRuleElement.AppendChild(pAnnotationElment);
+                        pRuleElement.AppendChild(pAnnotationElment.CloneNode(true));
                     }
                     RootXmlElement.AppendChild(pRuleElement);
                 }
@@ -388,7 +389,7 @@ namespace ArcGIS_SLD_Converter
                     }
                     if (pAnnotationElment != null)
                     {
-                        pRuleElement.AppendChild(pAnnotationElment);
+                        pRuleElement.AppendChild(pAnnotationElment.CloneNode(true));
                     }
                     RootXmlElement.AppendChild(pRuleElement);
                 }
@@ -461,7 +462,7 @@ namespace ArcGIS_SLD_Converter
                     }
                     if (pAnnotationElment != null)
                     {
-                        pRuleElement.AppendChild(pAnnotationElment);
+                        pRuleElement.AppendChild(pAnnotationElment.CloneNode(true));
                     }
                     RootXmlElement.AppendChild(pRuleElement);
                 }

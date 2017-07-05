@@ -837,7 +837,7 @@ namespace ArcGIS_SLD_Converter
                 //装饰线
                 //由于SLD装饰线只有两头，所以默认值读第一个，其他的忽略
                 ILineDecoration pLineDecoration = lineProperties.LineDecoration;
-                if (pLineDecoration.ElementCount > 0)
+                if (pLineDecoration!=null&&pLineDecoration.ElementCount > 0)
                 {
                     ISimpleLineDecorationElement pElement = pLineDecoration.Element[0] as ISimpleLineDecorationElement;
                     SimpleLineDecoration = new ptSimpleLineDecorationClass(pElement);
