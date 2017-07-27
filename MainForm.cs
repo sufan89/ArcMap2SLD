@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -12,6 +13,11 @@ namespace ArcGIS_SLD_Converter
 {
     public partial class MainForm : Form
     {
+        /// <summary>
+        /// 写日志
+        /// </summary>
+        /// <param name="logStr"></param>
+        public delegate void WriteConverterLogDelegate(string logStr); 
         public MainForm(IMxDocument mainDocument)
         {
             InitializeComponent();
@@ -36,7 +42,13 @@ namespace ArcGIS_SLD_Converter
         /// 转换所有图层
         /// </summary>
         private bool m_AllLayer = true;
+        /// <summary>
+        /// 验证文件名称
+        /// </summary>
         private string m_cXSDFilename = string.Empty;
+        /// <summary>
+        /// 地图文档
+        /// </summary>
         private IMxDocument m_MianDocument;
         /// <summary>
         /// 选择保存路径
@@ -80,6 +92,8 @@ namespace ArcGIS_SLD_Converter
         private void cbIncludeLayerName_CheckedChanged(object sender, EventArgs e)
         {
             m_IncludeLayerName = cbIncludeLayerName.Checked;
+            //重新读取配置文件
+            ReadXmlConfig();
         }
         /// <summary>
         /// 是否保存为单个SLD文件
@@ -98,6 +112,15 @@ namespace ArcGIS_SLD_Converter
         private void rbAllLayer_CheckedChanged(object sender, EventArgs e)
         {
             m_AllLayer = rbAllLayer.Checked;
+        }
+        /// <summary>
+        /// 是否只转换可视图层
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void rbVisibleLayer_CheckedChanged(object sender, EventArgs e)
+        {
+            m_AllLayer = !rbVisibleLayer.Checked;
         }
         /// <summary>
         /// 是否验证SLD文件
@@ -143,6 +166,46 @@ namespace ArcGIS_SLD_Converter
         private void btStart_Click(object sender, EventArgs e)
         {
 
+        }
+        /// <summary>
+        /// 窗体加载时，读取配置文件信息
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            ReadXmlConfig();
+        }
+        /// <summary>
+        /// 读取XML配置文件信息
+        /// </summary>
+        private void ReadXmlConfig()
+        {
+            //读取配置信息
+            string TempLutFileName = "";
+            if (m_IncludeLayerName)
+            {
+                TempLutFileName = CommXmlHandle.c_strLUT_Standard;
+            }
+            else
+            {
+                TempLutFileName = CommXmlHandle.c_strLUT_WorldMap;
+            }
+            if (!CommXmlHandle.ReadLUT(Path.GetDirectoryName(GetType().Assembly.Location), TempLutFileName))
+            {
+                MessageBox.Show("读取配置信息有误！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        /// <summary>
+        /// 写日志信息
+        /// </summary>
+        /// <param name="strLog"></param>
+        private void WriteConvertLog(string strLog)
+        {
+            txtMessage.Select(txtMessage.Text.Length, 0);
+            txtMessage.ScrollToCaret();
+            txtMessage.AppendText(string.Format("{0}:{1}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:ffff"), strLog));
+            txtMessage.Refresh();
         }
     }
 }

@@ -121,7 +121,8 @@ namespace ArcGIS_SLD_Converter
         {
             if (m_application == null) return;
             IDocument pMainDocument = m_application.Document;
-            Motherform mainForm = new Motherform(pMainDocument as IMxDocument);
+            MainForm mainForm = new MainForm(pMainDocument as IMxDocument);
+            //Motherform mainForm = new Motherform(pMainDocument as IMxDocument);
             mainForm.Show();
         }
 
