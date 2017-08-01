@@ -16,7 +16,6 @@ namespace ArcGIS_SLD_Converter
     public class Output_SLD
     {
         #region 全局变量
-        private Motherform frmMotherForm;
         /// <summary>
         /// 分析图层信息
         /// </summary>
@@ -29,19 +28,12 @@ namespace ArcGIS_SLD_Converter
         /// SLD文件名称
         /// </summary>
 		private string m_cFilename;
-
-        private string m_cFile;
-
         private string m_cPath;
-        /// <summary>
-        /// 是否存在一个SLD文件还是根据图层来进行分别存储SLD
-        /// </summary>
-        private bool m_bSepFiles;
-        /// <summary>
-        /// 
-        /// </summary>
-        private string m_bIncludeLayerNames;
         private XmlDocument m_newXmlDoc;
+        /// <summary>
+        /// 写日志
+        /// </summary>
+        private WriteConverterLogDelegate m_WriteLog;
         #endregion
 
         #region Routinen
@@ -51,20 +43,13 @@ namespace ArcGIS_SLD_Converter
         /// <param name="Mother"></param>
         /// <param name="Analize"></param>
         /// <param name="Filename"></param>
-        public Output_SLD(Motherform Mother, ProjectClass projectData, string Filename)
+        public Output_SLD(WriteConverterLogDelegate WriteLog, ProjectClass projectData, string Filename,string sldFilePath)
         {
-            frmMotherForm = Mother;
+            m_WriteLog = WriteLog;
             m_cFilename = Filename;
-
-            m_bSepFiles = frmMotherForm.GetInfoSeparateLayers;
-
-            m_cFile = frmMotherForm.GetSLDFile;
-            m_cPath = frmMotherForm.GetSLDPath;
+            m_cPath = sldFilePath;
             //图层分析信息
             m_strDataSavings = projectData;
-            m_bIncludeLayerNames = frmMotherForm.GetInfoIncludeLayerNames;
-            //输出SLD文件
-            CentralProcessingFunc();
         }
         #endregion
         #region 
@@ -72,32 +57,31 @@ namespace ArcGIS_SLD_Converter
         /// 开始分析符号，并将符号转换成SLD
         /// </summary>
         /// <returns></returns>
-        private bool CentralProcessingFunc()
+        public bool CentralProcessingFunc(bool SepFiles, bool IncludeLayerNames)
         {
             bool bSuccess = false;
-            frmMotherForm.CHLabelTop(string.Format("输出SLD文件..."));
-            frmMotherForm.CHLabelBottom(string.Format("正在输出SLD文件..."));
+            m_WriteLog(string.Format("输出SLD文件..."));
+            m_WriteLog(string.Format("正在输出SLD文件..."));
             //输出SLD文件
-            bSuccess = WriteToSLD();
-            frmMotherForm.CHLabelTop(string.Format("开始..."));
+            bSuccess = WriteToSLD(SepFiles,IncludeLayerNames);
+            m_WriteLog(string.Format("开始..."));
             if (bSuccess)
             {
-                frmMotherForm.CHLabelBottom(string.Format("成功创建文件..."));
-                //如果描述文件存在，则加载设置的XML头文件
-                if (frmMotherForm.chkValidate.Checked == true)
-                {
-                    //验证SLD文件是否可用
-                    ValidateSLD ValSLD = new ValidateSLD(frmMotherForm);
-                }
-                else
-                {
-                    frmMotherForm.CHLabelSmall("");
-                }
+                m_WriteLog(string.Format("成功创建文件..."));
+                ////如果描述文件存在，则加载设置的XML头文件
+                //if (frmMotherForm.chkValidate.Checked == true)
+                //{
+                //    //验证SLD文件是否可用
+                //    ValidateSLD ValSLD = new ValidateSLD(frmMotherForm);
+                //}
+                //else
+                //{
+
+                //}
             }
             else
             {
-                frmMotherForm.CHLabelBottom(string.Format("无法创建文件..."));
-                frmMotherForm.CHLabelSmall("");
+                m_WriteLog(string.Format("无法创建文件..."));
             }
 
             return true;
@@ -125,14 +109,14 @@ namespace ArcGIS_SLD_Converter
         /// 将分析的符号信息写入SLD
         /// </summary>
         /// <returns></returns>
-		public bool WriteToSLD()
+		public bool WriteToSLD(bool SepFiles,bool IncludeLayerNames)
         {
             string cLayerName = "";//图层名称
             IList<string> objFieldValues = new List<string>();//字段值列表
             bool bDoOneLayer = false;
             double dummy = 0;
             string sldFileName = "";
-            if (m_bSepFiles)
+            if (SepFiles)
             {
                 bDoOneLayer = false;
             }
@@ -140,7 +124,7 @@ namespace ArcGIS_SLD_Converter
             {
                 bDoOneLayer = true;
                 sldFileName = m_cFilename;
-                if (!CreateSLD(sldFileName, bool.Parse(m_bIncludeLayerNames)))
+                if (!CreateSLD(sldFileName,IncludeLayerNames))
                 {
                     ptLogManager.WriteMessage(string.Format("创建SLD文件失败:{0}", sldFileName));
                     return false;
@@ -148,6 +132,7 @@ namespace ArcGIS_SLD_Converter
             }
             try
             {
+                XmlElement pRootElment = null; 
                 foreach (string key in m_strDataSavings.m_LayerRender.Keys)
                 {
                     #region 获取图层名称
@@ -159,19 +144,19 @@ namespace ArcGIS_SLD_Converter
                     objSymbols = pLayer.m_LayerRender.SymbolList;
                     ptRender pRender = pLayer.m_LayerRender;
                     #endregion
-                    frmMotherForm.CHLabelBottom(string.Format("正在处理图层【{0}】...", cLayerName));
+                    m_WriteLog(string.Format("正在处理图层【{0}】...", cLayerName));
                     //是否每个图层都要新建一个SLD文件
                     if (!bDoOneLayer)
                     {
                         sldFileName = m_cPath + "\\" + cLayerName + ".sld";
-                        if (!CreateSLD(sldFileName, bool.Parse(m_bIncludeLayerNames)))
+                        if (!CreateSLD(sldFileName, IncludeLayerNames))
                         {
-                            ptLogManager.WriteMessage(string.Format("创建SLD文件失败:{0}", sldFileName));
+                            m_WriteLog(string.Format("创建SLD文件失败:{0}", sldFileName));
                             break;
                         }
                     }
                     #region 创建基础节点
-                    if (Convert.ToBoolean(m_bIncludeLayerNames))
+                    if (IncludeLayerNames)
                     {
                         XmlElement NameLayerelment= m_newXmlDoc.DocumentElement.AppendChild(CommXmlHandle.CreateElement("NamedLayer", m_newXmlDoc)) as XmlElement;
                         NameLayerelment.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("LayerName", m_newXmlDoc, strDatasetName));
@@ -185,9 +170,13 @@ namespace ArcGIS_SLD_Converter
                     }
                     else
                     {
-                        //tempElement = m_newXmlDoc.DocumentElement.AppendChild(CommXmlHandle.CreateElement("FeatureTypeStyle", m_newXmlDoc)) as XmlElement;
-                        //tempElement = tempElement.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("FeatureTypeName", m_newXmlDoc, strDatasetName)) as XmlElement;
-                        //tempElement = tempElement.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("FeatureTypeTitle", m_newXmlDoc, strDatasetName)) as XmlElement;
+                        if (pRootElment == null)
+                        {
+                            pRootElment = m_newXmlDoc.DocumentElement.AppendChild(CommXmlHandle.CreateElement("FeatureTypeStyle", m_newXmlDoc)) as XmlElement;
+                            pRootElment = pRootElment.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("FeatureTypeName", m_newXmlDoc, strDatasetName)) as XmlElement;
+                            pRootElment = pRootElment.AppendChild(CommXmlHandle.CreateElementAndSetElemnetText("FeatureTypeTitle", m_newXmlDoc, strDatasetName)) as XmlElement;
+                        }
+                        pRender.GetRendXmlNode(m_newXmlDoc, pRootElment);
                     }
                     #endregion
                     if (bDoOneLayer == false)
@@ -203,7 +192,7 @@ namespace ArcGIS_SLD_Converter
             }
             catch (Exception ex)
             {
-                ptLogManager.WriteMessage(string.Format("SLD文件写入错误:方法名称【{0}】{1}{2}{3}{4}","WriteToSLD",Environment.NewLine, ex.Message,Environment.NewLine, ex.StackTrace));
+                m_WriteLog(string.Format("SLD文件写入错误:方法名称【{0}】{1}{2}{3}{4}","WriteToSLD",Environment.NewLine, ex.Message,Environment.NewLine, ex.StackTrace));
                 return false;
             }
         }

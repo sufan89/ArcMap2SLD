@@ -1,3 +1,4 @@
+<!-- 被2013 sp1 () 使用XMLSpy v编辑的 (http://www.altova.com) by -->
 <LUT>
 	<sldConfiguration>
 		<xmlVersion>1.0</xmlVersion>
@@ -10,200 +11,67 @@
 		</Namespaces>
 	</sldConfiguration>
 	<sldSyntax>
-		<StyledLayerDescriptor ogcTag="StyledLayerDescriptor" Namespace="sld">
-			<XPath>/</XPath>
-		</StyledLayerDescriptor>
-		<NamedLayer ogcTag="NamedLayer" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor</XPath>
-		</NamedLayer>
-		<LayerName ogcTag="Name" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer</XPath>
-		</LayerName>
-		<UserStyle ogcTag="UserStyle" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer</XPath>
-		</UserStyle>
-		<FeatureTypeStyle ogcTag="FeatureTypeStyle" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle</XPath>
-		</FeatureTypeStyle>
-		<StyleName ogcTag="Name" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle</XPath>
-		</StyleName>
-		<FeatureTypeName ogcTag="FeatureTypeName" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle</XPath>
-		</FeatureTypeName>
-		<Rule ogcTag="Rule" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle</XPath>
-		</Rule>
-		<Title ogcTag="Title" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule</XPath>
-		</Title>
-		<RuleName ogcTag="Name" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule</XPath>
-		</RuleName>
-		<Filter ogcTag="Filter" Namespace="ogc">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule</XPath>
-		</Filter>
-		<MinScale ogcTag="MinScaleDenominator" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule</XPath>
-		</MinScale>
-		<MaxScale ogcTag="MaxScaleDenominator" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule</XPath>
-		</MaxScale>
-		<PolygonSymbolizer ogcTag="PolygonSymbolizer" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule</XPath>
-		</PolygonSymbolizer>
-		<LineSymbolizer ogcTag="LineSymbolizer" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule</XPath>
-		</LineSymbolizer>
-		<PointSymbolizer ogcTag="PointSymbolizer" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule</XPath>
-		</PointSymbolizer>
-		<TextSymbolizer ogcTag="TextSymbolizer" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule</XPath>
-		</TextSymbolizer>
-		<And ogcTag="And" Namespace="ogc">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/ogc:Filter</XPath>
-		</And>
-		<Or ogcTag="Or" Namespace="ogc">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/ogc:Filter</XPath>
-		</Or>
-		<PropertyIsEqualTo ogcTag="PropertyIsEqualTo" Namespace="ogc">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/ogc:Filter</XPath>
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/ogc:Filter/ogc:And</XPath>
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/ogc:Filter/ogc:Or</XPath>
-		</PropertyIsEqualTo>
-		<PropertyIsBetween ogcTag="PropertyIsBetween" Namespace="ogc">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/ogc:Filter</XPath>
-		</PropertyIsBetween>
-		<LowerBoundary ogcTag="LowerBoundary" Namespace="ogc">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/ogc:Filter/ogc:PropertyIsBetween</XPath>
-		</LowerBoundary>
-		<UpperBoundary ogcTag="UpperBoundary" Namespace="ogc">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/ogc:Filter/ogc:PropertyIsBetween</XPath>
-		</UpperBoundary>
-		<PropertyName ogcTag="PropertyName" Namespace="ogc">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/ogc:Filter/ogc:PropertyIsBetween</XPath>
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/ogc:Filter/ogc:PropertyIsEqualTo</XPath>
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/ogc:Filter/ogc:And/ogc:PropertyIsEqualTo</XPath>
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/ogc:Filter/ogc:Or/ogc:PropertyIsEqualTo</XPath>
-		</PropertyName>
-		<Fieldvalue ogcTag="Literal" Namespace="ogc">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/ogc:Filter/ogc:PropertyIsBetween/ogc:LowerBoundary</XPath>
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/ogc:Filter/ogc:PropertyIsBetween/ogc:UpperBoundary</XPath>
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/ogc:Filter/ogc:PropertyIsEqualTo</XPath>
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/ogc:Filter/ogc:And/ogc:PropertyIsEqualTo</XPath>
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/ogc:Filter/ogc:Or/ogc:PropertyIsEqualTo</XPath>
-		</Fieldvalue>
-		<PolygonGeometry ogcTag="Geometry" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PolygonSymbolizer</XPath>
-		</PolygonGeometry>
-		<PolygonPropertyName ogcTag="PropertyName" Namespace="ogc">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PolygonSymbolizer/sld:Geometry</XPath>
-		</PolygonPropertyName>
-		<Fill ogcTag="Fill" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PolygonSymbolizer</XPath>
-		</Fill>
-		<PolygonStroke ogcTag="Stroke" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PolygonSymbolizer</XPath>
-		</PolygonStroke>
-		<PolyCssParameter ogcTag="CssParameter" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PolygonSymbolizer/sld:Fill</XPath>
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PolygonSymbolizer/sld:Stroke</XPath>
-		</PolyCssParameter>
-		<LineStroke ogcTag="Stroke" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:LineSymbolizer</XPath>
-		</LineStroke>
-		<LineCssParameter ogcTag="CssParameter" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:LineSymbolizer/sld:Stroke</XPath>
-		</LineCssParameter>
-		<LineGraphicStroke ogcTag="GraphicStroke" Namespace="sld">
-		</LineGraphicStroke>
-		<PointGraphic ogcTag="Graphic" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer</XPath>
-		</PointGraphic>
-		<Mark ogcTag="Mark" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic</XPath>
-		</Mark>
-		<PointExternalGraphic ogcTag="ExternalGraphic" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic</XPath>
-		</PointExternalGraphic>
-		<PointOnlineResource ogcTag="OnlineResource" Namespace="sld">
-		<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic/sld:ExternalGraphic</XPath>
-		</PointOnlineResource>
-		<PointFormat ogcTag="Format" Namespace="sld">
-		<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic/sld:ExternalGraphic</XPath>
-		</PointFormat>
-		<PointOpacity ogcTag="Opacity" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic</XPath>
-		</PointOpacity>
-		<PointSize ogcTag="Size" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic</XPath>
-		</PointSize>
-		<PointRotation ogcTag="Rotation" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic</XPath>
-		</PointRotation>
-		<PointAdd ogcTag="Add" Namespace="ogc">
-		<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic</XPath>
-		</PointAdd>
-		<PointWellKnownName ogcTag="WellKnownName" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic/sld:Mark</XPath>
-		</PointWellKnownName>
-		<PointGeometry ogcTag="Geometry" Namespace="sld">
-		<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer</XPath>
-		</PointGeometry>
-		<PointFunction ogcTag="Function" Namespace="ogc">
-		<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Geometry</XPath>
-		</PointFunction>
-		<PointFill ogcTag="Fill" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic/sld:Mark</XPath>
-		</PointFill>
-		<PointFillCssParameter ogcTag="CssParameter" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic/sld:Mark/sld:Fill</XPath>
-		</PointFillCssParameter>
-		<PointStroke ogcTag="Stroke" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic/sld:Mark</XPath>
-		</PointStroke>
-		<PointStrokeCssParameter ogcTag="CssParameter" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic/sld:Mark/sld:Stroke</XPath>
-		</PointStrokeCssParameter>
-		<PolygonGraphicFill ogcTag="GraphicFill" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PolygonSymbolizer/sld:Fill</XPath>
-		</PolygonGraphicFill>
-		<PolygonGraphic ogcTag="Graphic" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PolygonSymbolizer/sld:Fill/sld:GraphicFill</XPath>
-		</PolygonGraphic>
-		<PolygonSize ogcTag="Size" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PolygonSymbolizer/sld:Fill/sld:GraphicFill/sld:Graphic</XPath>
-		</PolygonSize>
-		<PolygonMark ogcTag="Mark" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PolygonSymbolizer/sld:Fill/sld:GraphicFill/sld:Graphic</XPath>
-		</PolygonMark>
-		<PolygonWellKnownName ogcTag="WellKnownName" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PolygonSymbolizer/sld:Fill/sld:GraphicFill/sld:Graphic/sld:Mark</XPath>
-		</PolygonWellKnownName>
-		<PolygonGraphicParamFill ogcTag="Fill" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PolygonSymbolizer/sld:Fill/sld:GraphicFill/sld:Graphic/sld:Mark</XPath>
-		</PolygonGraphicParamFill>
-		<PolygonGraphicCssParameter ogcTag="CssParameter" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PolygonSymbolizer/sld:Fill/sld:GraphicFill/sld:Graphic/sld:Mark/sld:Fill</XPath>
-		</PolygonGraphicCssParameter>
-		<TextLabel ogcTag="Label" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:TextSymbolizer</XPath>
-		</TextLabel>
-		<TextLabelProperty ogcTag="PropertyName" Namespace="ogc">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:TextSymbolizer/sld:Label</XPath>
-		</TextLabelProperty>
-		<TextFont ogcTag="Font" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:TextSymbolizer</XPath>
-		</TextFont>
-		<TextFontCssParameter ogcTag="CssParameter" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:TextSymbolizer/sld:Font</XPath>
-		</TextFontCssParameter>
-		<TextFill ogcTag="Fill" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:TextSymbolizer</XPath>
-		</TextFill>
-		<TextFillCssParameter ogcTag="CssParameter" Namespace="sld">
-			<XPath>/sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:TextSymbolizer/sld:Fill</XPath>
-		</TextFillCssParameter>
+		<StyledLayerDescriptor ogcTag="StyledLayerDescriptor" Namespace="sld"/>
+		<NamedLayer ogcTag="NamedLayer" Namespace="sld"/>
+		<LayerName ogcTag="Name" Namespace="sld"/>
+		<UserStyle ogcTag="UserStyle" Namespace="sld"/>
+		<FeatureTypeStyle ogcTag="FeatureTypeStyle" Namespace="sld"/>
+		<StyleName ogcTag="Name" Namespace="sld"/>
+		<FeatureTypeName ogcTag="FeatureTypeName" Namespace="sld"/>
+		<Rule ogcTag="Rule" Namespace="sld"/>
+		<Title ogcTag="Title" Namespace="sld"/>
+		<RuleName ogcTag="Name" Namespace="sld"/>
+		<Filter ogcTag="Filter" Namespace="ogc"/>
+		<MinScale ogcTag="MinScaleDenominator" Namespace="sld"/>
+		<MaxScale ogcTag="MaxScaleDenominator" Namespace="sld"/>
+		<PolygonSymbolizer ogcTag="PolygonSymbolizer" Namespace="sld"/>
+		<LineSymbolizer ogcTag="LineSymbolizer" Namespace="sld"/>
+		<PointSymbolizer ogcTag="PointSymbolizer" Namespace="sld"/>
+		<TextSymbolizer ogcTag="TextSymbolizer" Namespace="sld"/>
+		<And ogcTag="And" Namespace="ogc"/>
+		<Or ogcTag="Or" Namespace="ogc"/>
+		<PropertyIsEqualTo ogcTag="PropertyIsEqualTo" Namespace="ogc"/>
+		<PropertyIsBetween ogcTag="PropertyIsBetween" Namespace="ogc"/>
+		<LowerBoundary ogcTag="LowerBoundary" Namespace="ogc"/>
+		<UpperBoundary ogcTag="UpperBoundary" Namespace="ogc"/>
+		<PropertyName ogcTag="PropertyName" Namespace="ogc"/>
+		<Fieldvalue ogcTag="Literal" Namespace="ogc"/>
+		<PolygonGeometry ogcTag="Geometry" Namespace="sld"/>
+		<PolygonPropertyName ogcTag="PropertyName" Namespace="ogc"/>
+		<Fill ogcTag="Fill" Namespace="sld"/>
+		<PolygonStroke ogcTag="Stroke" Namespace="sld"/>
+		<PolyCssParameter ogcTag="CssParameter" Namespace="sld"/>
+		<LineStroke ogcTag="Stroke" Namespace="sld"/>
+		<LineCssParameter ogcTag="CssParameter" Namespace="sld"/>
+		<LineGraphicStroke ogcTag="GraphicStroke" Namespace="sld"/>
+		<PointGraphic ogcTag="Graphic" Namespace="sld"/>
+		<Mark ogcTag="Mark" Namespace="sld"/>
+		<PointExternalGraphic ogcTag="ExternalGraphic" Namespace="sld"/>
+		<PointOnlineResource ogcTag="OnlineResource" Namespace="sld"/>
+		<PointFormat ogcTag="Format" Namespace="sld"/>
+		<PointOpacity ogcTag="Opacity" Namespace="sld"/>
+		<PointSize ogcTag="Size" Namespace="sld"/>
+		<PointRotation ogcTag="Rotation" Namespace="sld"/>
+		<PointAdd ogcTag="Add" Namespace="ogc"/>
+		<PointWellKnownName ogcTag="WellKnownName" Namespace="sld"/>
+		<PointGeometry ogcTag="Geometry" Namespace="sld"/>
+		<PointFunction ogcTag="Function" Namespace="ogc"/>
+		<PointFill ogcTag="Fill" Namespace="sld"/>
+		<PointFillCssParameter ogcTag="CssParameter" Namespace="sld"/>
+		<PointStroke ogcTag="Stroke" Namespace="sld"/>
+		<PointStrokeCssParameter ogcTag="CssParameter" Namespace="sld"/>
+		<PolygonGraphicFill ogcTag="GraphicFill" Namespace="sld"/>
+		<PolygonGraphic ogcTag="Graphic" Namespace="sld"/>
+		<PolygonSize ogcTag="Size" Namespace="sld"/>
+		<PolygonMark ogcTag="Mark" Namespace="sld"/>
+		<PolygonWellKnownName ogcTag="WellKnownName" Namespace="sld"/>
+		<PolygonGraphicParamFill ogcTag="Fill" Namespace="sld"/>
+		<PolygonGraphicCssParameter ogcTag="CssParameter" Namespace="sld"/>
+		<TextLabel ogcTag="Label" Namespace="sld"/>
+		<TextLabelProperty ogcTag="PropertyName" Namespace="ogc"/>
+		<TextFont ogcTag="Font" Namespace="sld"/>
+		<TextFontCssParameter ogcTag="CssParameter" Namespace="sld"/>
+		<TextFill ogcTag="Fill" Namespace="sld"/>
+		<TextFillCssParameter ogcTag="CssParameter" Namespace="sld"/>
 	</sldSyntax>
 </LUT>

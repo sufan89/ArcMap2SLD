@@ -11,20 +11,26 @@ using System.Windows.Forms;
 
 namespace ArcGIS_SLD_Converter
 {
+    /// <summary>
+    /// 写日志
+    /// </summary>
+    /// <param name="logStr"></param>
+    public delegate void WriteConverterLogDelegate(string logStr);
     public partial class MainForm : Form
     {
-        /// <summary>
-        /// 写日志
-        /// </summary>
-        /// <param name="logStr"></param>
-        public delegate void WriteConverterLogDelegate(string logStr); 
+        WriteConverterLogDelegate writeLog;
         public MainForm(IMxDocument mainDocument)
         {
             InitializeComponent();
             m_MianDocument = mainDocument;
+           
             string tempStr = System.IO.Path.GetDirectoryName(GetType().Assembly.Location);
             string LogFileName = tempStr + "\\" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".log";
             ptLogManager.Create_LogFile(LogFileName);
+            if (writeLog == null)
+            {
+                writeLog =WriteConvertLog;
+            }
         }
         /// <summary>
         /// 是否保存为单个SLD文件
@@ -37,7 +43,7 @@ namespace ArcGIS_SLD_Converter
         /// <summary>
         /// SLD文件中是否包含图层名称
         /// </summary>
-        private bool m_IncludeLayerName = false;
+        private bool m_IncludeLayerName = true;
         /// <summary>
         /// 转换所有图层
         /// </summary>
@@ -83,6 +89,7 @@ namespace ArcGIS_SLD_Converter
                 if (SelectFilePath.ShowDialog() != DialogResult.OK) return;
                 m_SelectSaveFile = SelectFilePath.SelectedPath;
             }
+            txtSLDSavePath.Text = m_SelectSaveFile;
         }
         /// <summary>
         /// 是否包含图层名状态改变
@@ -165,7 +172,29 @@ namespace ArcGIS_SLD_Converter
         /// <param name="e"></param>
         private void btStart_Click(object sender, EventArgs e)
         {
-
+            if (string.IsNullOrEmpty(m_SelectSaveFile))
+            {
+                MessageBox.Show("请选择SLD文件保存路径!","提示",MessageBoxButtons.OK,MessageBoxIcon.Error);
+                return;
+            }
+            Analize_ArcMap_Symbols analize = new Analize_ArcMap_Symbols(m_SelectSaveFile, m_MianDocument, writeLog);
+            string filePath = string.Empty;
+            if (m_IsSingleFile)
+            {
+                filePath = System.IO.Path.GetDirectoryName(m_SelectSaveFile);
+            }
+            else
+            {
+                filePath = m_SelectSaveFile;
+            }
+            if (analize.CentralProcessingFunc(m_AllLayer, filePath, !m_IsSingleFile, m_IncludeLayerName))
+            {
+                writeLog(string.Format("转换完成"));
+            }
+            else
+            {
+                writeLog(string.Format("转换失败"));
+            }
         }
         /// <summary>
         /// 窗体加载时，读取配置文件信息
@@ -200,11 +229,11 @@ namespace ArcGIS_SLD_Converter
         /// 写日志信息
         /// </summary>
         /// <param name="strLog"></param>
-        private void WriteConvertLog(string strLog)
+        public void WriteConvertLog(string strLog)
         {
             txtMessage.Select(txtMessage.Text.Length, 0);
             txtMessage.ScrollToCaret();
-            txtMessage.AppendText(string.Format("{0}:{1}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:ffff"), strLog));
+            txtMessage.AppendText(string.Format("{0}:{1}{2}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:ffff"), strLog,Environment.NewLine));
             txtMessage.Refresh();
         }
     }

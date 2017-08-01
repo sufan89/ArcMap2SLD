@@ -413,8 +413,6 @@ namespace ArcGIS_SLD_Converter
 			}
 		}
         #endregion
-		
-		
 #region 公共方法
         /// <summary>
         /// 读取XML文档配置信息

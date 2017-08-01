@@ -54,43 +54,39 @@
             this.groupBox1.Controls.Add(this.btnGet);
             this.groupBox1.Controls.Add(this.txtSLDSavePath);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Location = new System.Drawing.Point(16, 16);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(4);
-            this.groupBox1.Size = new System.Drawing.Size(756, 176);
+            this.groupBox1.Size = new System.Drawing.Size(567, 132);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "基本设置";
             // 
             // txtXsdFilePath
             // 
-            this.txtXsdFilePath.Location = new System.Drawing.Point(155, 87);
-            this.txtXsdFilePath.Margin = new System.Windows.Forms.Padding(4);
+            this.txtXsdFilePath.Location = new System.Drawing.Point(116, 65);
             this.txtXsdFilePath.Name = "txtXsdFilePath";
             this.txtXsdFilePath.ReadOnly = true;
-            this.txtXsdFilePath.Size = new System.Drawing.Size(484, 22);
+            this.txtXsdFilePath.Size = new System.Drawing.Size(364, 21);
             this.txtXsdFilePath.TabIndex = 5;
             this.txtXsdFilePath.Visible = false;
             // 
             // chkValidate
             // 
             this.chkValidate.AutoSize = true;
-            this.chkValidate.Location = new System.Drawing.Point(11, 89);
-            this.chkValidate.Margin = new System.Windows.Forms.Padding(4);
+            this.chkValidate.Location = new System.Drawing.Point(8, 67);
             this.chkValidate.Name = "chkValidate";
-            this.chkValidate.Size = new System.Drawing.Size(127, 21);
+            this.chkValidate.Size = new System.Drawing.Size(102, 16);
             this.chkValidate.TabIndex = 4;
             this.chkValidate.Text = "SLD自定义文件";
             this.chkValidate.UseVisualStyleBackColor = true;
+            this.chkValidate.Visible = false;
             this.chkValidate.CheckedChanged += new System.EventHandler(this.chkValidate_CheckedChanged);
             // 
             // btnGet
             // 
-            this.btnGet.Location = new System.Drawing.Point(648, 32);
-            this.btnGet.Margin = new System.Windows.Forms.Padding(4);
+            this.btnGet.Location = new System.Drawing.Point(486, 24);
             this.btnGet.Name = "btnGet";
-            this.btnGet.Size = new System.Drawing.Size(100, 31);
+            this.btnGet.Size = new System.Drawing.Size(75, 23);
             this.btnGet.TabIndex = 3;
             this.btnGet.Text = "...";
             this.btnGet.UseVisualStyleBackColor = true;
@@ -98,20 +94,18 @@
             // 
             // txtSLDSavePath
             // 
-            this.txtSLDSavePath.Location = new System.Drawing.Point(155, 35);
-            this.txtSLDSavePath.Margin = new System.Windows.Forms.Padding(4);
+            this.txtSLDSavePath.Location = new System.Drawing.Point(116, 26);
             this.txtSLDSavePath.Name = "txtSLDSavePath";
             this.txtSLDSavePath.ReadOnly = true;
-            this.txtSLDSavePath.Size = new System.Drawing.Size(484, 22);
+            this.txtSLDSavePath.Size = new System.Drawing.Size(364, 21);
             this.txtSLDSavePath.TabIndex = 1;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(8, 39);
-            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label1.Location = new System.Drawing.Point(6, 29);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(91, 17);
+            this.label1.Size = new System.Drawing.Size(71, 12);
             this.label1.TabIndex = 0;
             this.label1.Text = "SLD保存路径";
             // 
@@ -121,11 +115,9 @@
             this.groupBox2.Controls.Add(this.rbVisibleLayer);
             this.groupBox2.Controls.Add(this.rbAllLayer);
             this.groupBox2.Controls.Add(this.cbIncludeLayerName);
-            this.groupBox2.Location = new System.Drawing.Point(16, 212);
-            this.groupBox2.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox2.Location = new System.Drawing.Point(12, 159);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Padding = new System.Windows.Forms.Padding(4);
-            this.groupBox2.Size = new System.Drawing.Size(756, 176);
+            this.groupBox2.Size = new System.Drawing.Size(567, 132);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "转换图层设置";
@@ -133,10 +125,9 @@
             // cbSaveSingleFile
             // 
             this.cbSaveSingleFile.AutoSize = true;
-            this.cbSaveSingleFile.Location = new System.Drawing.Point(284, 27);
-            this.cbSaveSingleFile.Margin = new System.Windows.Forms.Padding(4);
+            this.cbSaveSingleFile.Location = new System.Drawing.Point(213, 20);
             this.cbSaveSingleFile.Name = "cbSaveSingleFile";
-            this.cbSaveSingleFile.Size = new System.Drawing.Size(113, 21);
+            this.cbSaveSingleFile.Size = new System.Drawing.Size(90, 16);
             this.cbSaveSingleFile.TabIndex = 8;
             this.cbSaveSingleFile.Text = "单个SLD文件";
             this.cbSaveSingleFile.UseVisualStyleBackColor = true;
@@ -145,10 +136,9 @@
             // rbVisibleLayer
             // 
             this.rbVisibleLayer.AutoSize = true;
-            this.rbVisibleLayer.Location = new System.Drawing.Point(284, 89);
-            this.rbVisibleLayer.Margin = new System.Windows.Forms.Padding(4);
+            this.rbVisibleLayer.Location = new System.Drawing.Point(213, 67);
             this.rbVisibleLayer.Name = "rbVisibleLayer";
-            this.rbVisibleLayer.Size = new System.Drawing.Size(85, 21);
+            this.rbVisibleLayer.Size = new System.Drawing.Size(71, 16);
             this.rbVisibleLayer.TabIndex = 7;
             this.rbVisibleLayer.Text = "可视图层";
             this.rbVisibleLayer.UseVisualStyleBackColor = true;
@@ -158,10 +148,9 @@
             // 
             this.rbAllLayer.AutoSize = true;
             this.rbAllLayer.Checked = true;
-            this.rbAllLayer.Location = new System.Drawing.Point(8, 89);
-            this.rbAllLayer.Margin = new System.Windows.Forms.Padding(4);
+            this.rbAllLayer.Location = new System.Drawing.Point(6, 67);
             this.rbAllLayer.Name = "rbAllLayer";
-            this.rbAllLayer.Size = new System.Drawing.Size(85, 21);
+            this.rbAllLayer.Size = new System.Drawing.Size(71, 16);
             this.rbAllLayer.TabIndex = 6;
             this.rbAllLayer.TabStop = true;
             this.rbAllLayer.Text = "所有图层";
@@ -173,10 +162,9 @@
             this.cbIncludeLayerName.AutoSize = true;
             this.cbIncludeLayerName.Checked = true;
             this.cbIncludeLayerName.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbIncludeLayerName.Location = new System.Drawing.Point(11, 27);
-            this.cbIncludeLayerName.Margin = new System.Windows.Forms.Padding(4);
+            this.cbIncludeLayerName.Location = new System.Drawing.Point(8, 20);
             this.cbIncludeLayerName.Name = "cbIncludeLayerName";
-            this.cbIncludeLayerName.Size = new System.Drawing.Size(100, 21);
+            this.cbIncludeLayerName.Size = new System.Drawing.Size(84, 16);
             this.cbIncludeLayerName.TabIndex = 5;
             this.cbIncludeLayerName.Text = "包含图层名";
             this.cbIncludeLayerName.UseVisualStyleBackColor = true;
@@ -184,10 +172,9 @@
             // 
             // btStart
             // 
-            this.btStart.Location = new System.Drawing.Point(672, 580);
-            this.btStart.Margin = new System.Windows.Forms.Padding(4);
+            this.btStart.Location = new System.Drawing.Point(504, 435);
             this.btStart.Name = "btStart";
-            this.btStart.Size = new System.Drawing.Size(100, 31);
+            this.btStart.Size = new System.Drawing.Size(75, 23);
             this.btStart.TabIndex = 2;
             this.btStart.Text = "开始转换";
             this.btStart.UseVisualStyleBackColor = true;
@@ -196,36 +183,38 @@
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.txtMessage);
-            this.groupBox3.Location = new System.Drawing.Point(16, 396);
-            this.groupBox3.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox3.Location = new System.Drawing.Point(12, 297);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Padding = new System.Windows.Forms.Padding(4);
-            this.groupBox3.Size = new System.Drawing.Size(756, 176);
+            this.groupBox3.Size = new System.Drawing.Size(567, 132);
             this.groupBox3.TabIndex = 3;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "信息显示";
             // 
             // txtMessage
             // 
-            this.txtMessage.Location = new System.Drawing.Point(11, 22);
+            this.txtMessage.Location = new System.Drawing.Point(8, 16);
+            this.txtMessage.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtMessage.Name = "txtMessage";
             this.txtMessage.ReadOnly = true;
-            this.txtMessage.Size = new System.Drawing.Size(737, 135);
+            this.txtMessage.Size = new System.Drawing.Size(554, 102);
             this.txtMessage.TabIndex = 0;
             this.txtMessage.Text = "";
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(788, 625);
+            this.ClientSize = new System.Drawing.Size(591, 469);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.btStart);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
-            this.Margin = new System.Windows.Forms.Padding(4);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "MainForm";
             this.ShowIcon = false;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "MXD转换SLD";
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.groupBox1.ResumeLayout(false);
