@@ -578,7 +578,7 @@ namespace ArcGIS_SLD_Converter
 			this.Height = 324;
 			this.GroupBox2.Height = 96;
 
-			AnalizeArcMap = new Analize_ArcMap_Symbols(this, m_cSLDFilename,m_MianDocument);
+			//AnalizeArcMap = new Analize_ArcMap_Symbols(this, m_cSLDFilename,m_MianDocument);
 
 			if (this.chkValidate.Checked == false)
 			{

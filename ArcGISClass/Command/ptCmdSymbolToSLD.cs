@@ -123,7 +123,7 @@ namespace ArcGIS_SLD_Converter
             IDocument pMainDocument = m_application.Document;
             MainForm mainForm = new MainForm(pMainDocument as IMxDocument);
             //Motherform mainForm = new Motherform(pMainDocument as IMxDocument);
-            mainForm.Show();
+            mainForm.ShowDialog();
         }
 
         #endregion

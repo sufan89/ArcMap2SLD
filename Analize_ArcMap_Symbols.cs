@@ -31,10 +31,6 @@ namespace ArcGIS_SLD_Converter
         /// </summary>
         private IMap m_ObjMap;
         /// <summary>
-        /// 主窗体
-        /// </summary>
-        private Motherform frmMotherform;
-        /// <summary>
         /// 工程对象
         /// </summary>
         internal ProjectClass m_StrProject;
@@ -42,6 +38,7 @@ namespace ArcGIS_SLD_Converter
         /// SLD文件路径
         /// </summary>
         private string m_cFilename;
+        private WriteConverterLogDelegate m_WriteLog;
         #endregion
         #region 主要处理函数 
         /// <summary>
@@ -49,69 +46,69 @@ namespace ArcGIS_SLD_Converter
         /// </summary>
         /// <param name="value">主窗体</param>
         /// <param name="Filename">保存文件路径</param>
-        public Analize_ArcMap_Symbols(Motherform value, string Filename,IMxDocument mxDoc)
+        public Analize_ArcMap_Symbols(string Filename,IMxDocument mxDoc, WriteConverterLogDelegate WriteLog)
         {
             m_cFilename = Filename;
-            frmMotherform = value;
             m_ObjDoc = mxDoc;
-            CentralProcessingFunc();
+            m_WriteLog = WriteLog;
+            //CentralProcessingFunc();
         }
         #endregion
         /// <summary>
         /// 分析符号信息主函数
         /// </summary>
         /// <returns></returns>
-        private bool CentralProcessingFunc()
+        public bool CentralProcessingFunc(bool ConvertAllLayers,string sldFilePath,bool SepFile,bool IncludeNames)
         {
-            frmMotherform.CHLabelTop("正在分析ArcMap符号...");
-            bool blnAnswer = false;
-            Output_SLD objOutputSLD;
-
-            if (GetMap() == false)//获取地图文档
+            try
             {
-                return false;
-            }
-            if (AnalyseLayerSymbology() == false)//分析地图文档中的图层符号信息
-            {
-                return false;
-            }
-
-            if (string.IsNullOrEmpty(m_cFilename))
-            {
-                frmMotherform.CHLabelTop(string.Format("ArcMap符号分析完成"));
-                blnAnswer = MessageBox.Show("请先选择SLD文件保存路径", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes;
-                if (blnAnswer)
+                m_WriteLog("正在分析ArcMap符号...");
+                bool blnAnswer = false;
+                Output_SLD objOutputSLD = null;
+                if (GetMap() == false)//获取地图文档
                 {
-                    if (File.Exists(frmMotherform.GetSLDFileFromConfigXML))
+                    return false;
+                }
+                if (AnalyseLayerSymbology(ConvertAllLayers) == false)//分析地图文档中的图层符号信息
+                {
+                    return false;
+                }
+                if (string.IsNullOrEmpty(m_cFilename))
+                {
+                    blnAnswer = MessageBox.Show("请先选择SLD文件保存路径", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes;
+                    if (blnAnswer)
                     {
-                        frmMotherform.dlgSave.InitialDirectory = frmMotherform.GetSLDFileFromConfigXML;
-                    }
-                    if (frmMotherform.dlgSave.ShowDialog() == DialogResult.OK)
-                    {
-                        frmMotherform.dlgSave.CheckFileExists = false;
-                        frmMotherform.dlgSave.CheckPathExists = true;
-                        frmMotherform.dlgSave.DefaultExt = "sld";
-                        frmMotherform.dlgSave.Filter = "SLD-files (*.sld)|*.sld";
-                        frmMotherform.dlgSave.AddExtension = true;
-                        frmMotherform.dlgSave.InitialDirectory = System.IO.Path.GetDirectoryName(m_cFilename);
-                        frmMotherform.dlgSave.OverwritePrompt = true;
-                        frmMotherform.dlgSave.CreatePrompt = false;
-                        if (frmMotherform.dlgSave.ShowDialog() == DialogResult.OK)
+                        SaveFileDialog GetSaveFile = new SaveFileDialog();
+                        GetSaveFile.CheckFileExists = false;
+                        GetSaveFile.CheckPathExists = true;
+                        GetSaveFile.DefaultExt = "sld";
+                        GetSaveFile.Filter = "SLD-files (*.sld)|*.sld";
+                        GetSaveFile.AddExtension = true;
+                        GetSaveFile.InitialDirectory = System.IO.Path.GetDirectoryName(m_cFilename);
+                        GetSaveFile.OverwritePrompt = true;
+                        GetSaveFile.CreatePrompt = false;
+                        if (GetSaveFile.ShowDialog() == DialogResult.OK)
                         {
-                            m_cFilename = frmMotherform.dlgSave.FileName;
-                            frmMotherform.txtFileName.Text = m_cFilename;
+                            m_cFilename = GetSaveFile.FileName;
+                            objOutputSLD = new Output_SLD(m_WriteLog, m_StrProject, m_cFilename, sldFilePath); //输出SLD文件
                         }
-                        objOutputSLD = new Output_SLD(frmMotherform, m_StrProject, m_cFilename); //输出SLD文件
                     }
                 }
+                else
+                {
+                    objOutputSLD = new Output_SLD(m_WriteLog, m_StrProject, m_cFilename, sldFilePath);//输出SLD文件
+                }
+                if (objOutputSLD != null)
+                {
+                    objOutputSLD.CentralProcessingFunc(SepFile, IncludeNames);
+                }
+                return true;
             }
-            else
+            catch (Exception ex)
             {
-                objOutputSLD = new Output_SLD(frmMotherform, m_StrProject, m_cFilename);//输出SLD文件
+                m_WriteLog(string.Format("图层转换失败:{0}", ex.Message));
+                return false;
             }
-            frmMotherform.CHLabelBottom("");
-            frmMotherform.CHLabelSmall("");
-            return false;
         }
         #region 
         /// <summary>
@@ -120,7 +117,7 @@ namespace ArcGIS_SLD_Converter
         /// <returns></returns>
 		private bool GetMap()
         {
-            frmMotherform.CHLabelTop(string.Format("获取当前的地图信息..."));
+            m_WriteLog(string.Format("获取当前的地图信息..."));
             try
             {
                 if (m_ObjDoc.Maps.Count > 1)
@@ -152,7 +149,7 @@ namespace ArcGIS_SLD_Converter
         /// 地图符号预分析
         /// </summary>
         /// <returns></returns>
-		private bool AnalyseLayerSymbology()
+		private bool AnalyseLayerSymbology(bool isAllLayers)
         {
             ILayer objLayer = default(ILayer);
             int iNumberLayers = 0;
@@ -168,16 +165,15 @@ namespace ArcGIS_SLD_Converter
                 {
                     objLayer = m_ObjMap.Layer[i];
                     cLayerName = objLayer.Name;
-                    if (frmMotherform.m_bAllLayers == false && objLayer.Visible == false)
+                    if (isAllLayers == false && objLayer.Visible == false)
                     {
-                        frmMotherform.CHLabelBottom(string.Format("图层【{0}】不可见，不进行分析", cLayerName));
+                        m_WriteLog(string.Format("图层【{0}】不可见，不进行分析", cLayerName));
                     }
                     else
                     {
-                        frmMotherform.CHLabelBottom(string.Format("正在分析图层【{0}】...", cLayerName));
+                        m_WriteLog(string.Format("正在分析图层【{0}】...", cLayerName));
                         SpreadLayerStructure(objLayer);
                     }
-                    frmMotherform.CHLabelSmall("");
                 }
                 return true;
             }
@@ -237,10 +233,9 @@ namespace ArcGIS_SLD_Converter
         /// <param name="Stack"></param>
         /// <param name="FunctionName"></param>
         /// <returns></returns>
-		private object ErrorMsg(string Message, string ExMessage, string Stack, string FunctionName)
+		private void ErrorMsg(string Message, string ExMessage, string Stack, string FunctionName)
         {
-            ptLogManager.WriteMessage(string.Format("{0}{1}{2}{3}{4} 方法名称:{5}",Message,Environment.NewLine,ExMessage,Environment.NewLine,Stack,FunctionName));
-            return null;
+            m_WriteLog(string.Format("{0}{1}{2}{3}{4} 方法名称:{5}",Message,Environment.NewLine,ExMessage,Environment.NewLine,Stack,FunctionName));
         }
         /// <summary>
         /// 消息处理
@@ -248,10 +243,9 @@ namespace ArcGIS_SLD_Converter
         /// <param name="Message"></param>
         /// <param name="FunctionName"></param>
         /// <returns></returns>
-		private object InfoMsg(string Message, string FunctionName)
+		private void InfoMsg(string Message, string FunctionName)
         {
-            ptLogManager.WriteMessage(string.Format("{0} 方法名称:{1}", Message, FunctionName));
-            return null;
+            m_WriteLog(string.Format("{0} 方法名称:{1}", Message, FunctionName));
         }
         #endregion
     }

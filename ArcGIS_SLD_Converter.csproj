@@ -244,13 +244,13 @@
     <Compile Include="CommClass\ProjectClass.cs" />
     <Compile Include="CommClass\ptLayer.cs" />
     <Compile Include="LogManager\ptLogManager.cs" />
-    <Compile Include="MainForm.cs">
+    <Compile Include="From\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MainForm.Designer.cs">
+    <Compile Include="From\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Motherform.cs">
+    <Compile Include="From\Motherform.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Output_SLD.cs">
@@ -264,7 +264,7 @@
     <Compile Include="ValidateSLD.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Validation_Message.cs">
+    <Compile Include="From\Validation_Message.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="XMLHandle.cs">
@@ -277,17 +277,14 @@
     <Content Include="TempXmlDoc\LUT_sld_WorldMap_mapping_file.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="TempXmlDoc\Preconfigure_Converter.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <EmbeddedResource Include="MainForm.resx">
+    <EmbeddedResource Include="From\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Motherform.resx">
+    <EmbeddedResource Include="From\Motherform.resx">
       <DependentUpon>Motherform.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Validation_Message.resx">
+    <EmbeddedResource Include="From\Validation_Message.resx">
       <DependentUpon>Validation_Message.cs</DependentUpon>
     </EmbeddedResource>
     <Content Include="ArcMap2SLDConverter.ico" />
